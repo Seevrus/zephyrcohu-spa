@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\FrontendController;
 use Illuminate\Support\Facades\Route;
 
-Route::any('/{any}', [FrontendController::class, 'index'])->where('any', '^(?!api).*$');
+Route::get('/{any}', function () {
+  return file_get_contents(public_path('zephyr.html'));
+})->where('any', '^(?!api).*$');

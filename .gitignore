@@ -1,9 +1,9 @@
 /.phpunit.cache
 /node_modules
-/public/assets/frontend
-/public/build
-/public/hot
-/public/storage
+/public/*
+/public/!.htaccess
+/public/!index.php
+/public/!robots.txt
 /storage/*.key
 /storage/pail
 /vendor

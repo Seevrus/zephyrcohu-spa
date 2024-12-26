@@ -13,7 +13,7 @@ For the frontend:
 
 ```bash
 cd resources/frontend
-pnpm run start
+pnpm run dev
 ```
 
 ESLint, Prettier, and Laravel Pint have been configured.

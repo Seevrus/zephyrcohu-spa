@@ -5,8 +5,8 @@
   "packageManager": "pnpm@9.15.1",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --configuration development",
-    "build": "ng build && copy \"..\\..\\public\\assets\\frontend\\browser\\index.html\" \"..\\views\\frontend.blade.php\"",
+    "dev": "ng serve --configuration development",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "format:check": "prettier . --check",
@@ -15,10 +15,12 @@
   },
   "dependencies": {
     "@angular/animations": "^19.0.0",
+    "@angular/cdk": "19.0.4",
     "@angular/common": "^19.0.0",
     "@angular/compiler": "^19.0.0",
     "@angular/core": "^19.0.0",
     "@angular/forms": "^19.0.0",
+    "@angular/material": "19.0.4",
     "@angular/platform-browser": "^19.0.0",
     "@angular/platform-browser-dynamic": "^19.0.0",
     "@angular/router": "^19.0.0",

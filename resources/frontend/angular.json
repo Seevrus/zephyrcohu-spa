@@ -17,18 +17,25 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "index": "src/index.html",
+            "index": {
+              "input": "src/index.html",
+              "output": "zephyr.html"
+            },
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "src/assets",
+                "output": "assets"
               }
             ],
-            "styles": ["src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
+              "src/styles.css"
+            ]
           },
           "configurations": {
             "production": {
@@ -44,15 +51,21 @@
                   "maximumError": "8kB"
                 }
               ],
-              "deployUrl": "/assets/frontend/browser/",
+              "baseHref": "/",
               "outputHashing": "all",
-              "outputPath": "../../public/assets/frontend"
+              "outputPath": {
+                "base": "dist",
+                "browser": ""
+              }
             },
             "development": {
-              "baseHref": "/assets/frontend/",
+              "baseHref": "/",
               "extractLicenses": false,
               "optimization": false,
-              "outputPath": "dist/assets/frontend",
+              "outputPath": {
+                "base": "dist",
+                "browser": ""
+              },
               "sourceMap": true
             }
           },
@@ -84,7 +97,10 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css"],
+            "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
+              "src/styles.css"
+            ],
             "scripts": []
           }
         },
