@@ -1,0 +1,42 @@
+<div class="mobile-nav-main">
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="menu"
+    aria-label="Zephyr Navigation Menu Icon"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item>Főoldal</button>
+    <button mat-menu-item>Hírek</button>
+    <button mat-menu-item>Ajánlatok</button>
+    <button
+      mat-menu-item
+      [matMenuTriggerFor]="integra"
+      (click)="handleIntegraMenuClick()"
+    >
+      Integra
+    </button>
+    <button
+      mat-menu-item
+      [matMenuTriggerFor]="kb"
+      (click)="handleKbMenuClick()"
+    >
+      Tudásbázis
+    </button>
+    <button mat-menu-item>Árajánlat kérése</button>
+  </mat-menu>
+
+  <mat-menu #integra="matMenu">
+    <button mat-menu-item>Tájékoztató</button>
+    <button mat-menu-item>Próbaverzió</button>
+    <button mat-menu-item>Dokumentáció</button>
+    <button mat-menu-item>Programfrissítés</button>
+    <button mat-menu-item>Egyéb dokumentumok</button>
+  </mat-menu>
+
+  <mat-menu #kb="matMenu">
+    <button mat-menu-item>Cikkek</button>
+    <button mat-menu-item>Hasznos linkek</button>
+  </mat-menu>
+</div>

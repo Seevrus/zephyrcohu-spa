@@ -1,12 +1,11 @@
 import { Component } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
+
+import { HeaderComponent } from "./header/header.component";
 
 @Component({
   selector: "app-root",
-  imports: [RouterOutlet],
+  imports: [HeaderComponent],
   templateUrl: "./app.component.html",
-  styleUrl: "./app.component.css",
+  styleUrl: "./app.component.scss",
 })
-export class AppComponent {
-  imagePath = "./assets/IMG_20231228_105028.jpg";
-}
+export class AppComponent {}
