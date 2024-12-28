@@ -1,6 +1,7 @@
 .app-root {
   display: grid;
   grid-template-rows: auto 1fr auto;
+  row-gap: 1rem;
   min-height: 100vh;
   width: 100%;
 
@@ -8,5 +9,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .app-main {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
   }
 }

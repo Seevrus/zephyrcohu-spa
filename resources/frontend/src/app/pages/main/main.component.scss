@@ -1,0 +1,9 @@
+@use "../../../shared/mixins";
+
+.main-content {
+  @include mixins.zephyr-main;
+
+  .signature {
+    text-align: right;
+  }
+}
