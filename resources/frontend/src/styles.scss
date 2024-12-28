@@ -22,4 +22,17 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+
+  .active-link {
+    color: var(--mat-sys-on-primary);
+    background-color: var(--mat-sys-primary);
+
+    @include mat.menu-overrides(
+      (
+        item-hover-state-layer-color: var(--mat-sys-primary),
+        item-icon-color: var(--mat-sys-on-primary),
+        item-label-text-color: var(--mat-sys-on-primary),
+      )
+    );
+  }
 }

@@ -7,10 +7,17 @@ import {
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule, MatMenuTrigger } from "@angular/material/menu";
+import { RouterLink, RouterLinkActive } from "@angular/router";
 
 @Component({
   selector: "app-mobile-nav",
-  imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    RouterLink,
+    RouterLinkActive,
+  ],
   templateUrl: "./mobile-nav.component.html",
   styleUrl: "./mobile-nav.component.scss",
 })

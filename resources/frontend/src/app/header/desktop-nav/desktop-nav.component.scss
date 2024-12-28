@@ -13,4 +13,8 @@
       text-label-text-size: var(--mat-sys-body-large),
     )
   );
+
+  .active-link {
+    color: var(--mat-sys-on-primary);
+  }
 }
