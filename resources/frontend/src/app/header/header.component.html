@@ -15,7 +15,10 @@
       <a mat-button>Regisztráció</a>
     </div>
     <div class="header-breadcrumb">
-      <span class="header-breadcrumb--title">Megjelenített lap:</span> Főoldal
+      @if (breadcrumb) {
+        <span class="header-breadcrumb--title">Megjelenített lap:</span>
+        {{ breadcrumb }}
+      }
     </div>
   </div>
 </div>

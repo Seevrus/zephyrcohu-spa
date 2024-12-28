@@ -1,6 +1,6 @@
 @use "../../../shared/mixins";
 
-.main-content {
+:host(.app-main) {
   @include mixins.zephyr-main;
 
   .signature {

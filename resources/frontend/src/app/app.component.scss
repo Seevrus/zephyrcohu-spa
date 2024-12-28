@@ -12,9 +12,8 @@
   }
 
   .app-main {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+    display: grid;
+    grid-template-rows: 0 1fr;
+    justify-content: center;
   }
 }
