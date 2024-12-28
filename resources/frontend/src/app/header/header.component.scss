@@ -1,39 +1,87 @@
 @use "../../shared/mixins";
+@use "../../shared/variables";
+@use "@angular/material" as mat;
 
 .header-main {
-  padding: 0 0.5rem;
+  display: flex;
+  flex-direction: column-reverse;
+  margin: 0 0.5rem;
 
-  .header-logo-container {
+  .header-logo {
     display: flex;
-    flex-direction: column-reverse;
+    justify-content: center;
 
+    > img {
+      height: auto;
+      max-width: 389px;
+      width: 100%;
+    }
+  }
+
+  .header-actions-container {
     .header-breadcrumb {
       display: none;
-    }
-
-    .header-logo {
-      display: flex;
-      justify-content: center;
-
-      > img {
-        height: auto;
-        max-width: 389px;
-        width: 100%;
-      }
     }
 
     .header-user-actions {
       column-gap: 1rem;
       display: flex;
-      margin: 1.4rem 0 1rem 0;
+      margin: 0.5rem 0 1rem 0;
 
-      .header-user-action {
-        @include mixins.zephyr-link;
+      @include mat.button-overrides(
+        (
+          text-label-text-size: var(--mat-sys-body-large),
+        )
+      );
+    }
+  }
 
-        &:hover {
-          @include mixins.zephyr-link-hover;
+  @media (min-width: variables.$tablet-width) {
+    align-items: flex-end;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .header-logo {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (min-width: variables.$desktop-width) {
+    align-items: stretch;
+    justify-content: space-between;
+    max-width: variables.$desktop-width;
+    width: 100%;
+
+    .header-actions-container {
+      align-items: flex-end;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .header-breadcrumb {
+        display: block;
+        margin: 0 0.8rem 0.5rem 0;
+
+        &--title {
+          color: var(--mat-sys-primary);
+          font-weight: 500;
         }
       }
     }
+  }
+}
+
+.desktop-nav {
+  display: none;
+}
+
+@media (min-width: variables.$desktop-width) {
+  .desktop-nav {
+    display: block;
+    width: 100%;
+  }
+
+  .mobile-nav {
+    display: none;
   }
 }

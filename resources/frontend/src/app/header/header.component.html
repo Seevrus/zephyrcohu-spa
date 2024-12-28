@@ -1,20 +1,23 @@
 <div class="header-main">
-  <div class="header-logo-container">
-    <div class="header-logo">
-      <img
-        ngSrc="assets/logo.png"
-        alt="Zephyr Bt. Logo"
-        width="389"
-        height="119"
-        sizes="((min-width: 768px) 30vw, (max-width: 768px) 90vw)"
-        priority
-      />
-    </div>
+  <div class="header-logo">
+    <img
+      ngSrc="assets/logo.png"
+      alt="Zephyr Bt. Logo"
+      width="389"
+      height="119"
+      sizes="((min-width: 768px) 30vw, (max-width: 768px) 90vw)"
+      priority
+    />
+  </div>
+  <div class="header-actions-container">
     <div class="header-user-actions">
-      <div><a href="" class="header-user-action">Bejelentkezés</a></div>
-      <div><a href="" class="header-user-action">Regisztráció</a></div>
+      <button mat-button>Bejelentkezés</button>
+      <button mat-button>Regisztráció</button>
     </div>
-    <app-mobile-nav />
-    <div class="header-breadcrumb">Megjelenített lap: Főoldal</div>
+    <div class="header-breadcrumb">
+      <span class="header-breadcrumb--title">Megjelenített lap:</span> Főoldal
+    </div>
   </div>
 </div>
+<app-desktop-nav class="desktop-nav" />
+<app-mobile-nav class="mobile-nav" />

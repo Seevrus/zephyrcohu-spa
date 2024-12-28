@@ -1,0 +1,16 @@
+@use "../../../shared/variables";
+@use "@angular/material" as mat;
+
+.desktop-nav-main {
+  background-color: var(--mat-sys-primary-container);
+  border-top: 0.2rem solid var(--mat-sys-primary);
+  display: flex;
+  justify-content: center;
+  width: 100%;
+
+  @include mat.button-overrides(
+    (
+      text-label-text-size: var(--mat-sys-body-large),
+    )
+  );
+}

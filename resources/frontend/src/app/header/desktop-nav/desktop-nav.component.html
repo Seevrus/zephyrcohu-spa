@@ -1,0 +1,28 @@
+<div class="desktop-nav-main">
+  <button mat-button>Főoldal</button>
+  <button mat-button>Hírek</button>
+  <button mat-button>Ajánlatok</button>
+
+  <button mat-button [matMenuTriggerFor]="integra">
+    <mat-icon>arrow_drop_down</mat-icon>
+    <span>Integra</span>
+  </button>
+  <mat-menu #integra="matMenu">
+    <button mat-menu-item>Tájékoztató</button>
+    <button mat-menu-item>Próbaverzió</button>
+    <button mat-menu-item>Dokumentáció</button>
+    <button mat-menu-item>Programfrissítés</button>
+    <button mat-menu-item>Egyéb dokumentumok</button>
+  </mat-menu>
+
+  <button mat-button [matMenuTriggerFor]="kb">
+    <mat-icon>arrow_drop_down</mat-icon>
+    <span>Tudásbázis</span>
+  </button>
+  <mat-menu #kb="matMenu">
+    <button mat-menu-item>Cikkek</button>
+    <button mat-menu-item>Hasznos linkek</button>
+  </mat-menu>
+
+  <button mat-button>Árajánlat kérése</button>
+</div>

@@ -1,5 +1,17 @@
+@use "@angular/material" as mat;
+
 * {
   box-sizing: border-box;
+}
+
+:root {
+  @include mat.menu-overrides(
+    (
+      container-color: var(--mat-sys-primary-container),
+      item-icon-color: var(--mat-sys-primary),
+      item-label-text-color: var(--mat-sys-primary),
+    )
+  );
 }
 
 html,
