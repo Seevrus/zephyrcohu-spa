@@ -1,18 +1,18 @@
 <div class="desktop-nav-main">
-  <button mat-button>Főoldal</button>
-  <button mat-button>Hírek</button>
-  <button mat-button>Ajánlatok</button>
+  <a mat-button>Főoldal</a>
+  <a mat-button>Hírek</a>
+  <a mat-button>Ajánlatok</a>
 
   <button mat-button [matMenuTriggerFor]="integra">
     <mat-icon>arrow_drop_down</mat-icon>
     <span>Integra</span>
   </button>
   <mat-menu #integra="matMenu">
-    <button mat-menu-item>Tájékoztató</button>
-    <button mat-menu-item>Próbaverzió</button>
-    <button mat-menu-item>Dokumentáció</button>
-    <button mat-menu-item>Programfrissítés</button>
-    <button mat-menu-item>Egyéb dokumentumok</button>
+    <a mat-menu-item>Tájékoztató</a>
+    <a mat-menu-item>Próbaverzió</a>
+    <a mat-menu-item>Dokumentáció</a>
+    <a mat-menu-item>Programfrissítés</a>
+    <a mat-menu-item>Egyéb dokumentumok</a>
   </mat-menu>
 
   <button mat-button [matMenuTriggerFor]="kb">
@@ -20,9 +20,9 @@
     <span>Tudásbázis</span>
   </button>
   <mat-menu #kb="matMenu">
-    <button mat-menu-item>Cikkek</button>
-    <button mat-menu-item>Hasznos linkek</button>
+    <a mat-menu-item>Cikkek</a>
+    <a mat-menu-item>Hasznos linkek</a>
   </mat-menu>
 
-  <button mat-button>Árajánlat kérése</button>
+  <a mat-button>Árajánlat kérése</a>
 </div>

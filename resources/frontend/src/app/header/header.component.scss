@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column-reverse;
   margin: 0 0.5rem;
+  width: 100%;
 
   .header-logo {
     display: flex;
@@ -50,7 +51,6 @@
     align-items: stretch;
     justify-content: space-between;
     max-width: variables.$desktop-width;
-    width: 100%;
 
     .header-actions-container {
       align-items: flex-end;

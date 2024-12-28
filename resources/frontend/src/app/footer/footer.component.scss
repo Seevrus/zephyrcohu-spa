@@ -1,0 +1,20 @@
+.footer-main {
+  background-color: var(--mat-sys-primary-container);
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  row-gap: 1.5rem;
+  width: 100%;
+
+  .copyright-notice {
+    text-align: center;
+  }
+
+  .footer-actions {
+    align-items: center;
+    column-gap: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

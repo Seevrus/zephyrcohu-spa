@@ -1,6 +1,6 @@
 import { NgOptimizedImage } from "@angular/common";
 import { Component } from "@angular/core";
-import { MatButton } from "@angular/material/button";
+import { MatAnchor } from "@angular/material/button";
 
 import { DesktopNavComponent } from "./desktop-nav/desktop-nav.component";
 import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
@@ -9,7 +9,7 @@ import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
   selector: "app-header",
   imports: [
     DesktopNavComponent,
-    MatButton,
+    MatAnchor,
     MobileNavComponent,
     NgOptimizedImage,
   ],
