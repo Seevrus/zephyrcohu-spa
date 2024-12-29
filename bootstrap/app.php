@@ -1,9 +1,17 @@
 <?php
 
+use App\ErrorHandling;
 use App\Http\Middleware\ZephyrJwtMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\LockedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,5 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(fn (AccessDeniedHttpException $e) => ErrorHandling::forbidden());
+        $exceptions->render(fn (BadRequestException $e) => ErrorHandling::bad_request());
+        $exceptions->render(fn (LockedHttpException $e) => ErrorHandling::locked());
+        $exceptions->render(fn (MethodNotAllowedException $e) => ErrorHandling::method_not_allowed());
+        $exceptions->render(fn (UnauthorizedHttpException $e) => ErrorHandling::unauthorized());
+        $exceptions->render(fn (UnsupportedMediaTypeHttpException $e) => ErrorHandling::unsupported_media_type());
+        $exceptions->render(fn (ThrottleRequestsException $e) => ErrorHandling::too_many_requests());
     })->create();

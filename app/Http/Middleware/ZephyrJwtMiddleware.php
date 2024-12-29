@@ -23,7 +23,7 @@ class ZephyrJwtMiddleware {
             return $next($request);
         }
 
-        $key = Config::get('zephyr_key');
+        $key = Config::get('app.zephyr_key');
         $user_token = JWT::decode($jwt, new Key($key, 'HS512'));
 
         $request->merge(['user_jwt' => (array) $user_token]);

@@ -13,8 +13,21 @@ class User extends Model {
         return $this->hasOne(UserAdmin::class);
     }
 
+    protected function casts(): array {
+        return [
+            'confirmed' => 'boolean',
+            'cookies' => 'boolean',
+            'last_active' => 'datetime',
+            'newsletter' => 'boolean',
+        ];
+    }
+
+    protected $fillable = [
+        'cookies', 'email', 'newsletter', 'password',
+    ];
+
     public static function issueJwt(array $payload): string {
-        $key = Config::get('zephyr_key');
+        $key = Config::get('app.zephyr_key');
 
         return JWT::encode($payload, $key, 'HS512');
     }
@@ -34,4 +47,6 @@ class User extends Model {
     public function passwords(): HasMany {
         return $this->hasMany(UserPassword::class);
     }
+
+    public $timestamps = false;
 }
