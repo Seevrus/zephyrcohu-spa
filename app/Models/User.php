@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Config;
+use Firebase\JWT\JWT;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -9,6 +11,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class User extends Model {
     public function admin(): HasOne {
         return $this->hasOne(UserAdmin::class);
+    }
+
+    public static function issueJwt(array $payload): string {
+        $key = Config::get('zephyr_key');
+
+        return JWT::encode($payload, $key, 'HS512');
     }
 
     public function newEmail(): HasOne {
