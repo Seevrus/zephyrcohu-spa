@@ -11,7 +11,9 @@
       "control_structures_opening_brace": "same_line",
       "functions_opening_brace": "same_line"
     },
-    "control_structure_continuation_position": "same_line",
+    "control_structure_continuation_position": {
+      "position": "same_line"
+    },
     "elseif": false,
     "indentation_type": true
   }
