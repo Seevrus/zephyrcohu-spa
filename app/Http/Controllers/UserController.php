@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ConfirmEmailRequest;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\ErrorCode;
 use App\Http\Resources\ErrorResource;
@@ -23,6 +24,38 @@ class UserController extends Controller {
         return rand(pow(10, 8), pow(10, 9) - 1);
     }
 
+    public function confirm_email(ConfirmEmailRequest $request) {
+        try {
+            $email = $request->email;
+            $emailCode = (int) $request->code;
+
+            $canConfirm = Gate::inspect('confirm_user', [User::class, $email, $emailCode]);
+
+            if ($canConfirm->denied()) {
+                return response(
+                    new ErrorResource($canConfirm->status(), ErrorCode::from($canConfirm->message())),
+                    $canConfirm->status()
+                );
+            }
+
+            $user = User::where('email', $email)->firstOrFail();
+            $user->confirmed = true;
+            $user->newUser()->delete();
+            $user->save();
+
+            return new UserResource($user);
+        } catch (Throwable $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) {
+                throw $e;
+            }
+
+            throw new BadRequestHttpException;
+        }
+    }
+
     public function create_user(CreateUserRequest $request) {
         try {
             $email = $request->email;
@@ -39,27 +72,27 @@ class UserController extends Controller {
                 );
             }
 
-            $new_user = User::create([
+            $newUser = User::create([
                 'email' => $email,
                 'cookies' => $cookiesAccepted,
                 'newsletter' => $newsletter,
             ]);
 
-            $new_user->passwords()->create([
-                'user_id' => $new_user->id,
+            $newUser->passwords()->create([
+                'user_id' => $newUser->id,
                 'password' => Hash::make($password),
             ]);
 
-            $email_code = $this->generate_code();
+            $emailCode = $this->generate_code();
 
-            $new_user->newUser()->create([
-                'user_id' => $new_user->id,
-                'email_code' => $email_code,
+            $newUser->newUser()->create([
+                'user_id' => $newUser->id,
+                'email_code' => $emailCode,
             ]);
 
-            Mail::to($email)->queue(new UserRegistered($email_code));
+            Mail::to($email)->queue(new UserRegistered($emailCode));
 
-            return new UserResource($new_user);
+            return new UserResource($newUser);
         } catch (Throwable $e) {
             if (
                 $e instanceof UnauthorizedHttpException
