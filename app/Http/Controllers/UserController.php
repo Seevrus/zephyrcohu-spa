@@ -9,7 +9,7 @@ use App\Http\Resources\UserResource;
 use App\Mail\UserRegistered;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -30,19 +30,13 @@ class UserController extends Controller {
             $cookiesAccepted = $request->cookiesAccepted;
             $newsletter = $request->newsletter;
 
-            $existingUser = DB::table('users')
-                ->select('users.email', 'users.confirmed', 'users_new_emails.new_email')
-                ->leftJoin('users_new_emails', 'users.id', '=', 'users_new_emails.user_id')
-                ->where('users.email', '=', $email)
-                ->orWhere('users_new_emails.new_email', '=', $email)
-                ->first();
+            $canCreate = Gate::inspect('create_user', [User::class, $email]);
 
-            if ($existingUser) {
-                if (! $existingUser->confirmed) {
-                    return response(new ErrorResource(409, ErrorCode::USER_NOT_CONFIRMED), 409);
-                }
-
-                return response(new ErrorResource(409, ErrorCode::USER_EXISTS), 409);
+            if ($canCreate->denied()) {
+                return response(
+                    new ErrorResource($canCreate->status(), ErrorCode::from($canCreate->message())),
+                    $canCreate->status()
+                );
             }
 
             $new_user = User::create([
