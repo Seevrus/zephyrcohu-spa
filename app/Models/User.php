@@ -13,6 +13,14 @@ class User extends Model {
         return $this->hasOne(UserAdmin::class);
     }
 
+    protected $attributes = [
+        'confirmed' => 0,
+        'cookies' => 0,
+        'ip_address' => null,
+        'last_Active' => null,
+        'newsletter' => 0,
+    ];
+
     protected function casts(): array {
         return [
             'confirmed' => 'boolean',

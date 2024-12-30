@@ -10,6 +10,8 @@ class UserPassword extends Model {
         'is_generated', 'password',  'user_id',
     ];
 
+    public $timestamps = false;
+
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }

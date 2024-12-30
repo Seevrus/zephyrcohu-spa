@@ -22,7 +22,7 @@ class CreateUserRequest extends FormRequest {
         return [
             'email' => 'required|email',
             'password' => 'required|regex:/^([a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-]){8,}$/',
-            'cookies' => 'required|boolean|accepted',
+            'cookiesAccepted' => 'required|boolean|accepted',
             'newsletter' => 'required|boolean',
         ];
     }

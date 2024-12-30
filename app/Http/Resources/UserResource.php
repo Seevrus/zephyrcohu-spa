@@ -17,7 +17,7 @@ class UserResource extends JsonResource {
             'email' => $this->email,
             'confirmed' => $this->confirmed,
             'newsletter' => $this->newsletter,
-            'cookies' => $this->cookies,
+            'cookiesAccepted' => $this->cookies,
         ];
     }
 }
