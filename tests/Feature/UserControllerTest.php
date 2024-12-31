@@ -14,7 +14,7 @@ describe('User Controller', function () {
 
         describe('Request validation', function () {
             test('checks for required fields', function () {
-                $response = $this->postJson('/api/users/confirm_email', []);
+                $response = $this->postJson('/api/users/register/confirm_email', []);
                 $response->assertStatus(422)->assertExactJson([
                     'message' => 'validation.required (and 1 more error)',
                     'errors' => [
@@ -26,7 +26,7 @@ describe('User Controller', function () {
 
             test('email should be well-formed', function () {
                 $request = [...$this->okRequest, 'email' => 'hello-there'];
-                $response = $this->postJson('/api/users/confirm_email', $request);
+                $response = $this->postJson('/api/users/register/confirm_email', $request);
 
                 $response->assertStatus(422)->assertExactJson([
                     'message' => 'validation.email',
@@ -44,7 +44,7 @@ describe('User Controller', function () {
 
             test('should fail if the user is not found', function () {
                 $request = [...$this->okRequest, 'email' => 'user005@example.com'];
-                $response = $this->postJson('/api/users/confirm_email', $request);
+                $response = $this->postJson('/api/users/register/confirm_email', $request);
 
                 $response->assertStatus(404)->assertExactJson([
                     'status' => 404,
@@ -54,7 +54,7 @@ describe('User Controller', function () {
 
             test('should fail if the email code is incorrect', function () {
                 $request = [...$this->okRequest, 'code' => 'awas'];
-                $response = $this->postJson('/api/users/confirm_email', $request);
+                $response = $this->postJson('/api/users/register/confirm_email', $request);
 
                 $response->assertStatus(404)->assertExactJson([
                     'status' => 404,
@@ -64,7 +64,7 @@ describe('User Controller', function () {
 
             test('should fail if the user is already confirmed', function () {
                 $request = [...$this->okRequest, 'email' => 'user001@example.com'];
-                $response = $this->postJson('/api/users/confirm_email', $request);
+                $response = $this->postJson('/api/users/register/confirm_email', $request);
 
                 $response->assertStatus(410)->assertExactJson([
                     'status' => 410,
@@ -73,7 +73,7 @@ describe('User Controller', function () {
             });
 
             test('should confirm the user email', function () {
-                $response = $this->postJson('/api/users/confirm_email', $this->okRequest);
+                $response = $this->postJson('/api/users/register/confirm_email', $this->okRequest);
 
                 $this->assertDatabaseHas('users', [
                     'email' => 'user004@example.com',
@@ -100,7 +100,7 @@ describe('User Controller', function () {
         });
     });
 
-    describe('Create User', function () {
+    describe('Register User', function () {
         beforeEach(function () {
             $this->okRequest = [
                 'email' => 'test@example.com',
@@ -112,7 +112,7 @@ describe('User Controller', function () {
 
         describe('Request validation', function () {
             test('checks for required fields', function () {
-                $response = $this->postJson('/api/users/create', []);
+                $response = $this->postJson('/api/users/register', []);
                 $response->assertStatus(422)->assertExactJson([
                     'message' => 'validation.required (and 3 more errors)',
                     'errors' => [
@@ -126,7 +126,7 @@ describe('User Controller', function () {
 
             test('email should be well-formed', function () {
                 $request = [...$this->okRequest, 'email' => 'hello-there'];
-                $response = $this->postJson('/api/users/create', $request);
+                $response = $this->postJson('/api/users/register', $request);
 
                 $response->assertStatus(422)->assertExactJson([
                     'message' => 'validation.email',
@@ -138,7 +138,7 @@ describe('User Controller', function () {
 
             test('password should be well-formed', function (string $password) {
                 $request = [...$this->okRequest, 'password' => $password];
-                $response = $this->postJson('/api/users/create', $request);
+                $response = $this->postJson('/api/users/register', $request);
 
                 $response->assertStatus(422)->assertExactJson([
                     'message' => 'validation.regex',
@@ -150,7 +150,7 @@ describe('User Controller', function () {
 
             test('cookies should be a boolean', function () {
                 $request = [...$this->okRequest, 'cookiesAccepted' => 'yes'];
-                $response = $this->postJson('/api/users/create', $request);
+                $response = $this->postJson('/api/users/register', $request);
 
                 $response->assertStatus(422)->assertExactJson([
                     'message' => 'validation.boolean',
@@ -162,7 +162,7 @@ describe('User Controller', function () {
 
             test('cookies should be accepted', function () {
                 $request = [...$this->okRequest, 'cookiesAccepted' => false];
-                $response = $this->postJson('/api/users/create', $request);
+                $response = $this->postJson('/api/users/register', $request);
 
                 $response->assertStatus(422)->assertExactJson([
                     'message' => 'validation.accepted',
@@ -174,7 +174,7 @@ describe('User Controller', function () {
 
             test('newsletter should be a boolean', function () {
                 $request = [...$this->okRequest, 'newsletter' => 'yes'];
-                $response = $this->postJson('/api/users/create', $request);
+                $response = $this->postJson('/api/users/register', $request);
 
                 $response->assertStatus(422)->assertExactJson([
                     'message' => 'validation.boolean',
@@ -192,7 +192,7 @@ describe('User Controller', function () {
 
             test('should fail for existing user', function () {
                 $request = [...$this->okRequest, 'email' => 'user001@example.com'];
-                $response = $this->postJson('/api/users/create', $request);
+                $response = $this->postJson('/api/users/register', $request);
 
                 $this->assertDatabaseCount('users', 4);
 
@@ -204,7 +204,7 @@ describe('User Controller', function () {
 
             test('should fail for existing user with a new email', function () {
                 $request = [...$this->okRequest, 'email' => 'user002_new_email@example.com'];
-                $response = $this->postJson('/api/users/create', $request);
+                $response = $this->postJson('/api/users/register', $request);
 
                 $this->assertDatabaseCount('users', 4);
 
@@ -216,7 +216,7 @@ describe('User Controller', function () {
 
             test('should fail if the user exists, but email is not confirmed', function () {
                 $request = [...$this->okRequest, 'email' => 'user003@example.com'];
-                $response = $this->postJson('/api/users/create', $request);
+                $response = $this->postJson('/api/users/register', $request);
 
                 $this->assertDatabaseCount('users', 4);
 
@@ -230,7 +230,7 @@ describe('User Controller', function () {
                 Mail::fake();
 
                 $request = [...$this->okRequest, 'email' => 'user005@example.com'];
-                $response = $this->postJson('/api/users/create', $request);
+                $response = $this->postJson('/api/users/register', $request);
 
                 $this->assertDatabaseHas('users', [
                     'email' => 'user005@example.com',
@@ -260,6 +260,88 @@ describe('User Controller', function () {
                         'newsletter' => false,
                     ],
                 ]);
+            });
+        });
+    });
+
+    describe('Revoke Registration', function () {
+        beforeEach(function () {
+            $this->okRequest = [
+                'email' => 'user004@example.com',
+                'code' => 123456789,
+            ];
+        });
+
+        describe('Request validation', function () {
+            test('checks for required fields', function () {
+                $response = $this->postJson('/api/users/register/revoke', []);
+                $response->assertStatus(422)->assertExactJson([
+                    'message' => 'validation.required (and 1 more error)',
+                    'errors' => [
+                        'email' => ['validation.required'],
+                        'code' => ['validation.required'],
+                    ],
+                ]);
+            });
+
+            test('email should be well-formed', function () {
+                $request = [...$this->okRequest, 'email' => 'hello-there'];
+                $response = $this->postJson('/api/users/register/revoke', $request);
+
+                $response->assertStatus(422)->assertExactJson([
+                    'message' => 'validation.email',
+                    'errors' => [
+                        'email' => ['validation.email'],
+                    ],
+                ]);
+            });
+        });
+
+        describe('Controller behavior', function () {
+            beforeEach(function () {
+                resetTables();
+            });
+
+            test('should fail if the user is not found', function () {
+                $request = [...$this->okRequest, 'email' => 'user005@example.com'];
+                $response = $this->postJson('/api/users/register/revoke', $request);
+
+                $response->assertStatus(404)->assertExactJson([
+                    'status' => 404,
+                    'code' => 'BAD_EMAIL_CODE',
+                ]);
+            });
+
+            test('should fail if the email code is incorrect', function () {
+                $request = [...$this->okRequest, 'code' => 'awas'];
+                $response = $this->postJson('/api/users/register/revoke', $request);
+
+                $response->assertStatus(404)->assertExactJson([
+                    'status' => 404,
+                    'code' => 'BAD_EMAIL_CODE',
+                ]);
+            });
+
+            test('should fail if the user is already confirmed', function () {
+                $request = [...$this->okRequest, 'email' => 'user001@example.com'];
+                $response = $this->postJson('/api/users/register/revoke', $request);
+
+                $response->assertStatus(410)->assertExactJson([
+                    'status' => 410,
+                    'code' => 'USER_ALREADY_CONFIRMED',
+                ]);
+            });
+
+            test('should revoke registration', function () {
+                $response = $this->postJson('/api/users/register/revoke', $this->okRequest);
+
+                $this->assertDatabaseMissing('users', [
+                    'email' => 'user004@example.com',
+                ]);
+
+                $this->assertDatabaseEmpty('users_new');
+
+                $response->assertNoContent(200);
             });
         });
     });

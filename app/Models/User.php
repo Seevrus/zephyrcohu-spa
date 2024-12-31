@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Config;
-use Firebase\JWT\JWT;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Model {
+    use HasApiTokens;
+
     public function admin(): HasOne {
         return $this->hasOne(UserAdmin::class);
     }
@@ -33,12 +34,6 @@ class User extends Model {
     protected $fillable = [
         'cookies', 'email', 'newsletter', 'password',
     ];
-
-    public static function issueJwt(array $payload): string {
-        $key = Config::get('app.zephyr_key');
-
-        return JWT::encode($payload, $key, 'HS512');
-    }
 
     public function newEmail(): HasOne {
         return $this->hasOne(UserNewEmail::class);

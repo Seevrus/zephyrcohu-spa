@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Mail\UserRegistered;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -24,12 +25,12 @@ class UserController extends Controller {
         return rand(pow(10, 8), pow(10, 9) - 1);
     }
 
-    public function confirm_email(ConfirmEmailRequest $request) {
+    public function confirmEmail(ConfirmEmailRequest $request) {
         try {
             $email = $request->email;
             $emailCode = (int) $request->code;
 
-            $canConfirm = Gate::inspect('confirm_user', [User::class, $email, $emailCode]);
+            $canConfirm = Gate::inspect('confirmEmail', [User::class, $email, $emailCode]);
 
             if ($canConfirm->denied()) {
                 return response(
@@ -56,14 +57,14 @@ class UserController extends Controller {
         }
     }
 
-    public function create_user(CreateUserRequest $request) {
+    public function registerUser(CreateUserRequest $request) {
         try {
             $email = $request->email;
             $password = $request->password;
             $cookiesAccepted = $request->cookiesAccepted;
             $newsletter = $request->newsletter;
 
-            $canCreate = Gate::inspect('create_user', [User::class, $email]);
+            $canCreate = Gate::inspect('registerUser', [User::class, $email]);
 
             if ($canCreate->denied()) {
                 return response(
@@ -93,6 +94,35 @@ class UserController extends Controller {
             Mail::to($email)->queue(new UserRegistered($emailCode));
 
             return new UserResource($newUser->load('admin'));
+        } catch (Throwable $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) {
+                throw $e;
+            }
+
+            throw new BadRequestHttpException;
+        }
+    }
+
+    public function revokeRegistration(ConfirmEmailRequest $request) {
+        try {
+            $email = $request->email;
+            $emailCode = (int) $request->code;
+
+            $canRevoke = Gate::inspect('revokeRegistration', [User::class, $email, $emailCode]);
+
+            if ($canRevoke->denied()) {
+                return response(
+                    new ErrorResource($canRevoke->status(), ErrorCode::from($canRevoke->message())),
+                    $canRevoke->status()
+                );
+            }
+
+            DB::table('users')->where('email', $email)->delete();
+
+            return null;
         } catch (Throwable $e) {
             if (
                 $e instanceof UnauthorizedHttpException
