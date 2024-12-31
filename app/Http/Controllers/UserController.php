@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\ErrorCode;
 use App\Http\Requests\ConfirmEmailRequest;
 use App\Http\Requests\CreateUserRequest;
-use App\Http\Requests\ErrorCode;
 use App\Http\Resources\ErrorResource;
 use App\Http\Resources\UserResource;
 use App\Mail\UserRegistered;
@@ -38,7 +38,7 @@ class UserController extends Controller {
                 );
             }
 
-            $user = User::where('email', $email)->firstOrFail();
+            $user = User::with('admin')->where('email', $email)->firstOrFail();
             $user->confirmed = true;
             $user->newUser()->delete();
             $user->save();
@@ -92,7 +92,7 @@ class UserController extends Controller {
 
             Mail::to($email)->queue(new UserRegistered($emailCode));
 
-            return new UserResource($newUser);
+            return new UserResource($newUser->load('admin'));
         } catch (Throwable $e) {
             if (
                 $e instanceof UnauthorizedHttpException

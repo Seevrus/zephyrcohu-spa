@@ -90,9 +90,10 @@ describe('User Controller', function () {
                     'data' => [
                         'id' => 4,
                         'email' => 'user004@example.com',
+                        'isAdmin' => false,
                         'confirmed' => true,
-                        'newsletter' => false,
                         'cookiesAccepted' => true,
+                        'newsletter' => false,
                     ],
                 ]);
             });
@@ -253,9 +254,10 @@ describe('User Controller', function () {
                     'data' => [
                         'id' => 5,
                         'email' => 'user005@example.com',
+                        'isAdmin' => false,
                         'confirmed' => false,
-                        'newsletter' => false,
                         'cookiesAccepted' => true,
+                        'newsletter' => false,
                     ],
                 ]);
             });
