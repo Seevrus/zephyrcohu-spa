@@ -4,8 +4,11 @@ namespace App\Policies;
 
 use App\ErrorCode;
 use App\Models\User;
+use App\Models\UserLoginAttempt;
+use Carbon\Carbon;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserPolicy {
     public function confirmEmail(?User $sender, string $email, int $code): Response {
@@ -21,6 +24,52 @@ class UserPolicy {
 
         if ($user->confirmed) {
             return Response::denyWithStatus(410, ErrorCode::USER_ALREADY_CONFIRMED->value);
+        }
+
+        return Response::allow();
+    }
+
+    public function login(?User $sender, string $email, string $password): Response {
+        UserLoginAttempt::where('last_attempt', '<', Carbon::now()->subHour())
+            ->delete();
+
+        $user = User::with('loginAttempts')->firstWhere('email', '=', $email);
+
+        if (is_null($user)) {
+            return Response::denyWithStatus(401, ErrorCode::BAD_CREDENTIALS->value);
+        }
+
+        if (! $user->confirmed) {
+            return Response::denyWithStatus(403, ErrorCode::USER_NOT_CONFIRMED->value);
+        }
+
+        $loginAttempts = $user->loginAttempts?->attempts ?? 0;
+
+        if ($loginAttempts >= 3) {
+            return Response::denyWithStatus(429, ErrorCode::TOO_MANY_LOGIN_ATTEMPTS->value);
+        }
+
+        $isPasswordCorrect = Hash::check($password, $user->password);
+
+        if (! $isPasswordCorrect) {
+            DB::table('users_login_attempts')->upsert(
+                [
+                    'user_id' => $user->id,
+                    'attempts' => $loginAttempts + 1,
+                    'last_attempt' => Carbon::now(),
+                ],
+                ['user_id'],
+                ['attempts', 'last_attempt']
+            );
+
+            return Response::denyWithStatus(401, ErrorCode::BAD_CREDENTIALS->value);
+        }
+
+        if (
+            $user->ip_address !== request()->ip() &&
+            $user->last_active->gt(Carbon::now()->subHour())
+        ) {
+            return Response::denyWithStatus(423, ErrorCode::USER_ALREADY_LOGGED_IN->value);
         }
 
         return Response::allow();

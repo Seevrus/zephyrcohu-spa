@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Model {
+class User extends Authenticatable {
     use HasApiTokens;
 
     public function admin(): HasOne {
@@ -28,12 +27,17 @@ class User extends Model {
             'cookies' => 'boolean',
             'last_active' => 'datetime',
             'newsletter' => 'boolean',
+            'password_set_at' => 'datetime',
         ];
     }
 
     protected $fillable = [
-        'cookies', 'email', 'newsletter', 'password',
+        'cookies', 'email', 'newsletter', 'password', 'password_set_at',
     ];
+
+    public function loginAttempts(): HasOne {
+        return $this->hasOne(UserLoginAttempt::class);
+    }
 
     public function newEmail(): HasOne {
         return $this->hasOne(UserNewEmail::class);
@@ -45,10 +49,6 @@ class User extends Model {
 
     public function newUser(): HasOne {
         return $this->hasOne(UserNew::class);
-    }
-
-    public function passwords(): HasMany {
-        return $this->hasMany(UserPassword::class);
     }
 
     public $timestamps = false;

@@ -9,4 +9,6 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
         Route::post('/confirm_email', 'confirmEmail');
         Route::post('/revoke', 'revokeRegistration');
     });
+
+    Route::post('/login', 'login');
 });

@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->id();
             $table->string('email')->unique();
             $table->string('password');
+            $table->timestamp('password_set_at')->useCurrent();
             $table->tinyInteger('confirmed')->unsigned()->default(0);
             $table->tinyInteger('newsletter')->unsigned()->default(0);
             $table->tinyInteger('cookies')->unsigned()->default(0);

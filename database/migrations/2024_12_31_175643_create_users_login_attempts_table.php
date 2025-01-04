@@ -10,15 +10,14 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        Schema::create('user_passwords', function (Blueprint $table) {
-            $table->id();
+        Schema::create('users_login_attempts', function (Blueprint $table) {
             $table->foreignIdFor(User::class)
+                ->primary()
                 ->constrained('users', 'id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('password');
-            $table->tinyInteger('is_generated')->unsigned()->default(0);
-            $table->timestamp('set_time')->useCurrent();
+            $table->tinyInteger('attempts')->unsigned();
+            $table->timestamp('last_attempt')->useCurrent();
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
-        Schema::dropIfExists('user_passwords');
+        Schema::dropIfExists('users_login_attempts');
     }
 };

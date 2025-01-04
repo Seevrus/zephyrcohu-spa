@@ -5,22 +5,19 @@ namespace App\Http\Controllers;
 use App\ErrorCode;
 use App\Http\Requests\ConfirmEmailRequest;
 use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\LoginRequest;
 use App\Http\Resources\ErrorResource;
 use App\Http\Resources\UserResource;
 use App\Mail\UserRegistered;
 use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Throwable;
 
 class UserController extends Controller {
-    private $password_max_lifetime = 90 * 24 * 60 * 60;
-
     private function generate_code() {
         return rand(pow(10, 8), pow(10, 9) - 1);
     }
@@ -46,14 +43,36 @@ class UserController extends Controller {
 
             return new UserResource($user);
         } catch (Throwable $e) {
-            if (
-                $e instanceof UnauthorizedHttpException
-                || $e instanceof AuthorizationException
-            ) {
-                throw $e;
+            abort(500);
+        }
+    }
+
+    public function login(LoginRequest $request) {
+        try {
+            $email = $request->email;
+            $password = $request->password;
+
+            $canLogin = Gate::inspect('login', [User::class, $email, $password]);
+
+            if ($canLogin->denied()) {
+                return response(
+                    new ErrorResource($canLogin->status(), ErrorCode::from($canLogin->message())),
+                    $canLogin->status()
+                );
             }
 
-            throw new BadRequestHttpException;
+            if (Auth::attempt(['email' => $email, 'password' => $password])) {
+                $request->session()->regenerate();
+                $user = Auth::user();
+
+                return new UserResource($user->load('admin'));
+            }
+
+            return response(
+                new ErrorResource(401, ErrorCode::BAD_CREDENTIALS)
+            );
+        } catch (Throwable $e) {
+            abort(500);
         }
     }
 
@@ -77,10 +96,6 @@ class UserController extends Controller {
                 'email' => $email,
                 'cookies' => $cookiesAccepted,
                 'newsletter' => $newsletter,
-            ]);
-
-            $newUser->passwords()->create([
-                'user_id' => $newUser->id,
                 'password' => Hash::make($password),
             ]);
 
@@ -93,16 +108,11 @@ class UserController extends Controller {
 
             Mail::to($email)->queue(new UserRegistered($emailCode));
 
+            $newUser->refresh();
+
             return new UserResource($newUser->load('admin'));
         } catch (Throwable $e) {
-            if (
-                $e instanceof UnauthorizedHttpException
-                || $e instanceof AuthorizationException
-            ) {
-                throw $e;
-            }
-
-            throw new BadRequestHttpException;
+            abort(500);
         }
     }
 
@@ -124,14 +134,7 @@ class UserController extends Controller {
 
             return null;
         } catch (Throwable $e) {
-            if (
-                $e instanceof UnauthorizedHttpException
-                || $e instanceof AuthorizationException
-            ) {
-                throw $e;
-            }
-
-            throw new BadRequestHttpException;
+            abort(500);
         }
     }
 }
