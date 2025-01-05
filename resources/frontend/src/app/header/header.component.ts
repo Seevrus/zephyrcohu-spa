@@ -4,7 +4,7 @@ import { Component, OnDestroy, type OnInit } from "@angular/core";
 import { MatAnchor } from "@angular/material/button";
 import { Subscription } from "rxjs";
 
-import { BreadcrumbService } from "../breadcrumb.service";
+import { BreadcrumbService } from "../services/breadcrumb.service";
 import { DesktopNavComponent } from "./desktop-nav/desktop-nav.component";
 import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
 

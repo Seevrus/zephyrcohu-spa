@@ -4,12 +4,11 @@ import { EventEmitter, Injectable } from "@angular/core";
   providedIn: "root",
 })
 export class BreadcrumbService {
-  private breadcrumb: string | undefined;
   breadcrumbChanged = new EventEmitter<string | undefined>();
 
-  setBreadCrumb(title: string) {
-    this.breadcrumb = this.breadcrumbsByTitle[title];
-    this.breadcrumbChanged.emit(this.breadcrumb);
+  setBreadcrumb(title: string) {
+    const breadcrumb = this.breadcrumbsByTitle[title];
+    this.breadcrumbChanged.emit(breadcrumb);
   }
 
   private readonly breadcrumbsByTitle: Record<string, string> = {

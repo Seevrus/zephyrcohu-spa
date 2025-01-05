@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { type RouterStateSnapshot, TitleStrategy } from "@angular/router";
 
-import { BreadcrumbService } from "./breadcrumb.service";
+import { BreadcrumbService } from "./services/breadcrumb.service";
 
 @Injectable({ providedIn: "root" })
 export class AppTitleStrategy extends TitleStrategy {
@@ -19,7 +19,7 @@ export class AppTitleStrategy extends TitleStrategy {
 
     if (routeTitle !== undefined) {
       this.title.setTitle(`${routeTitle} - Zephyr Bt.`);
-      this.breadCrumbService.setBreadCrumb(routeTitle);
+      this.breadCrumbService.setBreadcrumb(routeTitle);
     }
   }
 }
