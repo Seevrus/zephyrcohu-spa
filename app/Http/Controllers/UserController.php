@@ -10,11 +10,14 @@ use App\Http\Resources\ErrorResource;
 use App\Http\Resources\UserResource;
 use App\Mail\UserRegistered;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Throwable;
 
 class UserController extends Controller {
@@ -72,6 +75,24 @@ class UserController extends Controller {
                 new ErrorResource(401, ErrorCode::BAD_CREDENTIALS)
             );
         } catch (Throwable $e) {
+            if ($e instanceof RuntimeException) {
+                throw new BadRequestException;
+            }
+
+            abort(500);
+        }
+    }
+
+    public function logout(Request $request) {
+        try {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        } catch (Throwable $e) {
+            if ($e instanceof RuntimeException) {
+                throw new BadRequestException;
+            }
+
             abort(500);
         }
     }

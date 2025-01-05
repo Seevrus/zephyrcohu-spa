@@ -135,6 +135,17 @@ describe('Login Controller', function () {
         ]);
     });
 
+    test('returns with 400 if the request does not come from the UI', function () {
+        $response = $this->withHeaders(['Origin' => 'https://google.com'])
+            ->postJson('/api/users/login', $this->okRequest);
+
+        $response->assertStatus(400)->assertExactJson([
+            'code' => 'Bad Request',
+            'message' => 'The server cannot or will not process the request due to something that is perceived to be a client error.',
+            'status' => 400,
+        ]);
+    });
+
     test('logs in the user', function () {
         $response = $this->withHeaders(['Origin' => 'http://localhost:4200'])
             ->postJson('/api/users/login', $this->okRequest);

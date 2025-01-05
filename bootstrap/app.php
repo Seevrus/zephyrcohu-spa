@@ -1,6 +1,7 @@
 <?php
 
 use App\ErrorHandling;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(fn (AccessDeniedHttpException $e) => ErrorHandling::forbidden());
+        $exceptions->render(fn (AuthenticationException $e) => ErrorHandling::unauthorized());
         $exceptions->render(fn (BadRequestHttpException $e) => ErrorHandling::bad_request());
         $exceptions->render(fn (HttpException $e) => ErrorHandling::internal_Server_error());
         $exceptions->render(fn (LockedHttpException $e) => ErrorHandling::locked());
