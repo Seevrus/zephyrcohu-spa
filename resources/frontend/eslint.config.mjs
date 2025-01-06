@@ -159,6 +159,15 @@ export default tseslint.config(
     },
   },
   {
+    files: ["**/*.spec.ts"],
+    rules: {
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/unbound-method": "off",
+    },
+  },
+  {
     files: ["**/*.html"],
     extends: [
       ...angular.configs.templateRecommended,
