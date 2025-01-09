@@ -21,15 +21,15 @@ import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   breadcrumb: string | undefined;
-  breadcrumbSubscription: Subscription | undefined;
+  private breadcrumbSubscription: Subscription | undefined;
 
   constructor(private readonly breadcrumbService: BreadcrumbService) {}
 
   ngOnInit() {
     this.breadcrumbSubscription =
-      this.breadcrumbService.breadcrumbChanged.subscribe(
-        (breadcrumb) => (this.breadcrumb = breadcrumb),
-      );
+      this.breadcrumbService.breadcrumbChanged.subscribe((breadcrumb) => {
+        this.breadcrumb = breadcrumb;
+      });
   }
 
   ngOnDestroy() {

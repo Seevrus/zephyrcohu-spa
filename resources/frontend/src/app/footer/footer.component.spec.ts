@@ -12,8 +12,6 @@ describe("Footer Component", () => {
   });
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [FooterComponent] });
-
     fixture = TestBed.createComponent(FooterComponent);
     fixture.detectChanges();
 
