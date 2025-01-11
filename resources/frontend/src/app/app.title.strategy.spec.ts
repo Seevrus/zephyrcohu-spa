@@ -1,8 +1,9 @@
-import { type Title } from "@angular/platform-browser";
+import { TestBed } from "@angular/core/testing";
+import { Title } from "@angular/platform-browser";
 import { type RouterStateSnapshot } from "@angular/router";
 
 import { AppTitleStrategy } from "./app.title.strategy";
-import { type BreadcrumbService } from "./services/breadcrumb.service";
+import { BreadcrumbService } from "./services/breadcrumb.service";
 
 describe("App Title Strategy", () => {
   let appTitleStrategy: AppTitleStrategy;
@@ -20,7 +21,14 @@ describe("App Title Strategy", () => {
 
     titleSpy = jasmine.createSpyObj<Title>(["setTitle"]);
 
-    appTitleStrategy = new AppTitleStrategy(breadcrumbServiceSpy, titleSpy);
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: Title, useValue: titleSpy },
+        { provide: BreadcrumbService, useValue: breadcrumbServiceSpy },
+      ],
+    });
+
+    appTitleStrategy = TestBed.inject(AppTitleStrategy);
   });
 
   it("updates the title correctly", () => {

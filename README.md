@@ -6,7 +6,7 @@ out https://medium.com/swlh/how-to-setup-laravel-with-angular-d3de171afa03
 To start the backend:
 
 ```bash
-php artisan serve
+php artisan serve --host=192.168.0.183 --port=8000
 ```
 
 For the frontend:

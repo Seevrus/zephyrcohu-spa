@@ -119,6 +119,7 @@ export default tseslint.config(
           style: "kebab-case",
         },
       ],
+      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "@typescript-eslint/consistent-type-exports": [
         "error",
         {
@@ -139,6 +140,7 @@ export default tseslint.config(
           varsIgnorePattern: "^_",
         },
       ],
+      "@typescript-eslint/unbound-method": "off",
       "arrow-body-style": ["error", "as-needed"],
       "default-param-last": "error",
       "import/first": "error",
@@ -164,7 +166,6 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
-      "@typescript-eslint/unbound-method": "off",
     },
   },
   {

@@ -1,10 +1,11 @@
-/* eslint-disable @typescript-eslint/consistent-type-imports */
 import { NgOptimizedImage } from "@angular/common";
-import { Component, OnDestroy, type OnInit } from "@angular/core";
+import { Component, inject, type OnDestroy, type OnInit } from "@angular/core";
 import { MatAnchor } from "@angular/material/button";
-import { Subscription } from "rxjs";
+import { injectQuery } from "@tanstack/angular-query-experimental";
+import { type Subscription } from "rxjs";
 
 import { BreadcrumbService } from "../services/breadcrumb.service";
+import { UsersQueryService } from "../services/users.query.service";
 import { DesktopNavComponent } from "./desktop-nav/desktop-nav.component";
 import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
 
@@ -20,10 +21,11 @@ import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
   styleUrl: "./header.component.scss",
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  private readonly breadcrumbService = inject(BreadcrumbService);
+  private readonly usersQueryService = inject(UsersQueryService);
+
   breadcrumb: string | undefined;
   private breadcrumbSubscription: Subscription | undefined;
-
-  constructor(private readonly breadcrumbService: BreadcrumbService) {}
 
   ngOnInit() {
     this.breadcrumbSubscription =
@@ -35,4 +37,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.breadcrumbSubscription?.unsubscribe();
   }
+
+  readonly sessionQuery = injectQuery(() => this.usersQueryService.session());
 }
