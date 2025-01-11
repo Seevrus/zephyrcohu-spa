@@ -158,4 +158,14 @@ class UserController extends Controller {
             abort(500);
         }
     }
+
+    public function session(Request $request) {
+        try {
+            $user = $request->user();
+
+            return new UserResource($user->load('admin'));
+        } catch (Throwable $e) {
+            abort(500);
+        }
+    }
 }
