@@ -1,8 +1,12 @@
+import { provideHttpClient, withFetch } from "@angular/common/http";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideLocationMocks } from "@angular/common/testing";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideRouter } from "@angular/router";
 import { RouterTestingHarness } from "@angular/router/testing";
+import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 
+import { testQueryClient } from "../mocks/testQueryClient";
 import { AppComponent } from "./app.component";
 import { routes } from "./app.routes";
 import { MainComponent } from "./pages/main/main.component";
@@ -14,7 +18,13 @@ describe("App Component", () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      providers: [provideRouter(routes), provideLocationMocks()],
+      providers: [
+        provideHttpClient(withFetch()),
+        provideHttpClientTesting(),
+        provideTanStackQuery(testQueryClient),
+        provideRouter(routes),
+        provideLocationMocks(),
+      ],
     });
 
     fixture = TestBed.createComponent(AppComponent);

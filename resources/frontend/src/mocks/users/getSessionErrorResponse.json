@@ -1,0 +1,5 @@
+{
+  "code": "GENERIC_UNAUTHORIZED",
+  "message": "The client must authenticate itself to get the requested response.",
+  "status": 401
+}

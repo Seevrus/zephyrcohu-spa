@@ -133,6 +133,7 @@ export default tseslint.config(
           prefer: "type-imports",
         },
       ],
+      "@typescript-eslint/no-floating-promises": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
