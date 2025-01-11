@@ -1,6 +1,7 @@
 import { NgOptimizedImage } from "@angular/common";
 import { Component, inject, type OnDestroy, type OnInit } from "@angular/core";
 import { MatAnchor } from "@angular/material/button";
+import { RouterLink, RouterLinkActive } from "@angular/router";
 import { injectQuery } from "@tanstack/angular-query-experimental";
 import { type Subscription } from "rxjs";
 
@@ -16,6 +17,8 @@ import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
     MatAnchor,
     MobileNavComponent,
     NgOptimizedImage,
+    RouterLink,
+    RouterLinkActive,
   ],
   templateUrl: "./header.component.html",
   styleUrl: "./header.component.scss",

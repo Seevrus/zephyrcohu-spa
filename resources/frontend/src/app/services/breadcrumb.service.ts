@@ -12,6 +12,7 @@ export class BreadcrumbService {
   }
 
   private readonly breadcrumbsByTitle: Record<string, string> = {
+    Bejelentkezés: "Bejelentkezés",
     Főoldal: "Főoldal",
   };
 }

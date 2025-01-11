@@ -9,4 +9,12 @@ export const routes: Routes = [
     },
     title: "Főoldal",
   },
+  {
+    path: "bejelentkezes",
+    async loadComponent() {
+      const { LoginComponent } = await import("./pages/login/login.component");
+      return LoginComponent;
+    },
+    title: "Bejelentkezés",
+  },
 ];
