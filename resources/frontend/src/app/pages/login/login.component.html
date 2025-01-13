@@ -1,11 +1,11 @@
-<div data-testid="main-component">
+<div class="login-component" data-testid="login-component">
   <h1>Bejelentkezés</h1>
   <div>
     <p>A bejelentkezéshez kérem adja meg regisztrált email címét és a hozzá tartozó jelszavát:</p>
   </div>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <div>
-      <mat-form-field>
+    <div class="form-elements-container">
+      <mat-form-field data-testid="email">
         <mat-label>Email cím</mat-label>
         <input matInput formControlName="email">
         @if (email?.hasError('required')) {
@@ -14,8 +14,8 @@
           <mat-error>Email cím formátuma nem megfelelő</mat-error>
         }
       </mat-form-field>
-      <div>
-        <mat-form-field>
+      <div class="password-container">
+        <mat-form-field data-testid="password">
           <mat-label>Jelszó</mat-label>
           <input
             matInput
@@ -27,12 +27,13 @@
             <mat-error>Jelszó formátuma nem megfelelő</mat-error>
           }
         </mat-form-field>
-        <button mat-button type="button" (click)="togglePassword()">
+        <button mat-button data-testid="toggle-password" type="button" (click)="togglePassword()">
           {{ isPasswordVisible ? 'Jelszó elrejtése' : 'Jelszó megjelenítése' }}
         </button>
       </div>
       <button
         mat-flat-button
+        data-testid="submit-button"
         type="submit"
         [disabled]="!loginForm.valid || !loginForm.dirty"
       >
@@ -40,5 +41,5 @@
       </button>
     </div>
   </form>
-  <div>Amennyiben elfelejtette a jelszavát, ide kattintva tud új jelszót létrehozni!</div>
+  <p class="forgot-password">Amennyiben elfelejtette a jelszavát, ide kattintva tud új jelszót létrehozni!</p>
 </div>
