@@ -1,0 +1,35 @@
+@use "../login/shared.register";
+@use "../../../shared/mixins";
+@use "../../../shared/variables";
+
+:host(.app-register) {
+  @include mixins.zephyr-main;
+
+  .register-component {
+    @include shared.form-layout;
+
+    .form-elements-container {
+      .password-container {
+        .strength {
+          font-weight: 600;
+
+          &.very-weak {
+            color: var(--mat-sys-error);
+          }
+
+          &.weak {
+            color: orange;
+          }
+
+          &.strong {
+            color: yellowgreen;
+          }
+
+          &.very-strong {
+            color: darkgreen;
+          }
+        }
+      }
+    }
+  }
+}

@@ -12,8 +12,18 @@
   <div class="header-actions-container">
     @if (sessionQuery.isError()) {
       <div class="header-user-actions">
-        <a mat-button routerLink="/bejelentkezes" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Bejelentkezés</a>
-        <a mat-button>Regisztráció</a>
+        <a
+          mat-button
+          routerLink="/bejelentkezes"
+          routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{exact: true}"
+        >Bejelentkezés</a>
+        <a
+          mat-button
+          routerLink="/regisztracio"
+          routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{exact: true}"
+        >Regisztráció</a>
       </div>
     }
     <div class="header-breadcrumb">

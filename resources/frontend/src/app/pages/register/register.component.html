@@ -1,7 +1,6 @@
-<div class="login-component" data-testid="login-component">
-  <h1>Bejelentkezés</h1>
-  <p>A bejelentkezéshez kérem adja meg regisztrált email címét és a hozzá tartozó jelszavát:</p>
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+<div class="register-component" data-testid="register-component">
+  <h1>Regisztráció</h1>
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <div class="form-elements-container">
       <mat-form-field data-testid="email">
         <mat-label>Email cím</mat-label>
@@ -25,6 +24,28 @@
             <mat-error>Jelszó formátuma nem megfelelő</mat-error>
           }
         </mat-form-field>
+        <div>
+          <p>
+            A jelszó minimális hossza 8 karakter.
+            Engedélyezett karakterek: magyar ABC kis- és nagybetűi, számok,
+            illetve az alábbi speciális karakterek: . _ + # % &#64; -
+          </p>
+          @if (passwordStrength) {
+            <p>A jelszó erőssége:
+              <span [ngClass]="['strength', getPasswordStrengthClass(passwordStrength)]">
+                {{ passwordStrength }}
+              </span>
+            </p>
+          }
+          <p>
+            Erős jelszavak generálása pofonegyszerűen -
+            <a
+              href="https://hvg.hu/tudomany/20171117_eros_jelszo_letrehozasa_generator_nehezen_kitalalhato_jelszavak_nehezen_feltorheto_jelszo_biztonsagos_milyen_jelszot_valasszak"
+            >
+              segédlet az alábbi oldalon
+            </a>.
+          </p>
+        </div>
         <button mat-button data-testid="toggle-password" type="button" (click)="togglePassword()">
           {{ isPasswordVisible ? 'Jelszó elrejtése' : 'Jelszó megjelenítése' }}
         </button>
@@ -33,9 +54,9 @@
         mat-flat-button
         data-testid="submit-button"
         type="submit"
-        [disabled]="!loginForm.valid || !loginForm.dirty"
+        [disabled]="!registerForm.valid || !registerForm.dirty"
       >
-        Belépés
+        Regisztráció
       </button>
     </div>
   </form>

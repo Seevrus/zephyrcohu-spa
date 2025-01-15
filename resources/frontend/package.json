@@ -27,7 +27,8 @@
     "@tanstack/angular-query-experimental": "^5.62.16",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.15.0"
+    "zone.js": "~0.15.0",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^19.0.6",
@@ -35,6 +36,7 @@
     "@angular/compiler-cli": "^19.0.0",
     "@eslint/js": "^9.17.0",
     "@types/jasmine": "~5.1.0",
+    "@types/zxcvbn": "^4.4.5",
     "angular-eslint": "19.0.2",
     "eslint": "^9.16.0",
     "eslint-config-prettier": "^9.1.0",

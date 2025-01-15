@@ -2,6 +2,7 @@ import { provideHttpClient, withFetch } from "@angular/common/http";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideLocationMocks } from "@angular/common/testing";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
+import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { provideRouter } from "@angular/router";
 import { RouterTestingHarness } from "@angular/router/testing";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
@@ -9,6 +10,7 @@ import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { testQueryClient } from "../mocks/testQueryClient";
 import { AppComponent } from "./app.component";
 import { routes } from "./app.routes";
+import { LoginComponent } from "./pages/login/login.component";
 import { MainComponent } from "./pages/main/main.component";
 
 describe("App Component", () => {
@@ -19,6 +21,7 @@ describe("App Component", () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       providers: [
+        provideAnimationsAsync(),
         provideHttpClient(withFetch()),
         provideHttpClientTesting(),
         provideTanStackQuery(testQueryClient),
@@ -47,6 +50,15 @@ describe("App Component", () => {
 
     expect(
       mainComponent?.querySelector('[data-testid="main-component"]'),
+    ).toBeTruthy();
+  });
+
+  it("renders the Login Component", async () => {
+    await harness.navigateByUrl("/bejelentkezes", LoginComponent);
+    const mainComponent = harness.routeNativeElement;
+
+    expect(
+      mainComponent?.querySelector('[data-testid="login-component"]'),
     ).toBeTruthy();
   });
 });

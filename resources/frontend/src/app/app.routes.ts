@@ -17,4 +17,14 @@ export const routes: Routes = [
     },
     title: "Bejelentkezés",
   },
+  {
+    path: "regisztracio",
+    async loadComponent() {
+      const { RegisterComponent } = await import(
+        "./pages/register/register.component"
+      );
+      return RegisterComponent;
+    },
+    title: "Regisztráció",
+  },
 ];

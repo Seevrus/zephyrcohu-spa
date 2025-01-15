@@ -1,0 +1,30 @@
+@use "../../../shared/variables";
+
+@mixin form-layout {
+  width: 100%;
+
+  .form-elements-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0 auto 1rem auto;
+    max-width: 500px;
+
+    .password-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    button {
+      margin: 0 auto;
+      width: 200px;
+    }
+  }
+
+  @media (min-width: variables.$tablet-width) {
+    .forgot-password {
+      text-align: center;
+    }
+  }
+}

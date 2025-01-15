@@ -20,15 +20,12 @@ export class UsersQueryService {
   session() {
     return queryOptions<UserSession, ErrorResponse>({
       queryKey: ["session"],
-      queryFn: () => {
-        console.log(`${environment.apiUrl}/users/session`);
-
-        return lastValueFrom(
+      queryFn: () =>
+        lastValueFrom(
           this.http
             .get<SessionResponse>(`${environment.apiUrl}/users/session`)
             .pipe(map(UsersQueryService.mapSessionResponse)),
-        );
-      },
+        ),
       retry: (failureCount, error) => {
         if (error.status === 401) {
           this.queryClient.invalidateQueries();
