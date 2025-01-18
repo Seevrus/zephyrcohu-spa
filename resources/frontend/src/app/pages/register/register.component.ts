@@ -7,6 +7,8 @@ import { MatInputModule } from "@angular/material/input";
 import { type Subscription } from "rxjs";
 import zxcvbn from "zxcvbn";
 
+import { passwordMatchValidator } from "../../shared/password-match.directive";
+
 @Component({
   selector: "app-register",
   host: {
@@ -16,8 +18,8 @@ import zxcvbn from "zxcvbn";
     MatButton,
     MatFormField,
     MatInputModule,
-    ReactiveFormsModule,
     NgClass,
+    ReactiveFormsModule,
   ],
   templateUrl: "./register.component.html",
   styleUrl: "./register.component.scss",
@@ -26,6 +28,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   isPasswordVisible = false;
   private passwordChangedSubscription: Subscription | undefined;
+
+  private readonly passwordPattern =
+    /^([a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-]){8,}$/;
+
   passwordStrength = "";
 
   ngOnInit(): void {
@@ -40,13 +46,19 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   readonly registerForm = this.formBuilder.group({
     email: ["", [Validators.required, Validators.email]],
-    password: [
-      "",
-      [
-        Validators.required,
-        Validators.pattern(/^([a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-]){8,}$/),
-      ],
-    ],
+    passwords: this.formBuilder.group(
+      {
+        password: [
+          "",
+          [Validators.required, Validators.pattern(this.passwordPattern)],
+        ],
+        passwordAgain: [
+          "",
+          [Validators.required, Validators.pattern(this.passwordPattern)],
+        ],
+      },
+      { validators: [passwordMatchValidator] },
+    ),
   });
 
   get email() {
@@ -54,7 +66,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   get password() {
-    return this.registerForm.get("password");
+    return this.registerForm.get("passwords.password");
+  }
+
+  get passwords() {
+    return this.registerForm.get("passwords");
   }
 
   checkPasswordStrength() {
