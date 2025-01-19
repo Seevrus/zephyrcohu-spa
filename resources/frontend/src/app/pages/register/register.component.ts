@@ -65,10 +65,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     cookies: [false, Validators.requiredTrue],
   });
 
-  get cookies() {
-    return this.registerForm.get("cookies");
-  }
-
   get email() {
     return this.registerForm.get("email");
   }

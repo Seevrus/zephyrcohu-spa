@@ -3,7 +3,7 @@ import { provideAnimationsAsync } from "@angular/platform-browser/animations/asy
 
 import { LoginComponent } from "./login.component";
 
-describe("LoginComponent", () => {
+describe("Login Component", () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let loginElement: HTMLElement;

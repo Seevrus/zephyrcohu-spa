@@ -26,7 +26,7 @@ export class UsersQueryService {
             .pipe(
               catchError((error: HttpErrorResponse) => {
                 if (error.status === 401) {
-                  this.queryClient.invalidateQueries();
+                  // this.queryClient.invalidateQueries();
                   return of({});
                 }
 

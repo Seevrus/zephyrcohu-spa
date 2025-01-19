@@ -24,30 +24,30 @@
             <mat-error>Jelszó formátuma nem megfelelő</mat-error>
           }
         </mat-form-field>
-        <mat-form-field data-testid="password">
-          <mat-label>Jelszó újra:</mat-label>
+        <mat-form-field data-testid="password-again">
+          <mat-label>Jelszó újra</mat-label>
           <input
             matInput
             [type]="isPasswordVisible ? 'text' : 'password'"
             formControlName="passwordAgain">
-          @if (passwords?.hasError('passwordsDontMatch')) {
-            <mat-error>A beírt jelszavak nem egyeznek meg</mat-error>
-          }
         </mat-form-field>
+        @if (passwords?.hasError('passwordsDontMatch')) {
+          <p class="custom-error">A beírt jelszavak nem egyeznek meg</p>
+        }
         <div>
-          <p>
+          <p data-testid="password-characters">
             A jelszó minimális hossza 8 karakter.
             Engedélyezett karakterek: magyar ABC kis- és nagybetűi, számok,
             illetve az alábbi speciális karakterek: . _ + # % &#64; -
           </p>
           @if (passwordStrength) {
-            <p>A jelszó erőssége:
+            <p data-testid="password-strength">A jelszó erőssége:
               <span [ngClass]="['strength', getPasswordStrengthClass(passwordStrength)]">
                 {{ passwordStrength }}
               </span>
             </p>
           }
-          <p>
+          <p data-testid="password-generate-help">
             Erős jelszavak generálása pofonegyszerűen -
             <a
               class="zephyr-link"
