@@ -50,16 +50,22 @@
           <p>
             Erős jelszavak generálása pofonegyszerűen -
             <a
+              class="zephyr-link"
               href="https://hvg.hu/tudomany/20171117_eros_jelszo_letrehozasa_generator_nehezen_kitalalhato_jelszavak_nehezen_feltorheto_jelszo_biztonsagos_milyen_jelszot_valasszak"
-            >
-              segédlet az alábbi oldalon
-            </a>.
+              target="_blank"
+            >segédlet az alábbi oldalon</a>.
           </p>
         </div>
         <button mat-button data-testid="toggle-password" type="button" (click)="togglePassword()">
           {{ isPasswordVisible ? 'Jelszó elrejtése' : 'Jelszó megjelenítése' }}
         </button>
       </div>
+      <mat-checkbox formControlName="newsletter">
+        Szeretnék hírlevelet kapni a fontosabb újdonságokról.
+      </mat-checkbox>
+      <mat-checkbox formControlName="cookies">
+        * Hozzájárulok a bejelentkezési adatokat tartalmazó cookie-k tárolásához.
+      </mat-checkbox>
       <button
         mat-flat-button
         data-testid="submit-button"
@@ -70,5 +76,14 @@
       </button>
     </div>
   </form>
-  <p class="forgot-password">Amennyiben elfelejtette a jelszavát, ide kattintva tud új jelszót létrehozni!</p>
+  <div class="form-help">
+    <p>A szöveges mezők kitöltése kötelező.</p>
+    <p>A hírlevélre feliratkozás opcionális.</p>
+    <p>A regisztrációhoz kötelező a cookie-k használatának elfogadása.</p>
+  </div>
+  <div class="form-data-privacy-consent">
+    <p>
+      A Regisztráció gombra kattintva az adatvédelmi tájékoztatóban foglaltakat elfogadom.
+    </p>
+  </div>
 </div>

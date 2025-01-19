@@ -2,12 +2,13 @@ import { NgClass } from "@angular/common";
 import { Component, inject, type OnDestroy, type OnInit } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
+import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { type Subscription } from "rxjs";
 import zxcvbn from "zxcvbn";
 
-import { passwordMatchValidator } from "../../shared/password-match.directive";
+import { passwordMatchValidator } from "../../shared/password-match.validator";
 
 @Component({
   selector: "app-register",
@@ -16,6 +17,7 @@ import { passwordMatchValidator } from "../../shared/password-match.directive";
   },
   imports: [
     MatButton,
+    MatCheckbox,
     MatFormField,
     MatInputModule,
     NgClass,
@@ -59,18 +61,24 @@ export class RegisterComponent implements OnInit, OnDestroy {
       },
       { validators: [passwordMatchValidator] },
     ),
+    newsletter: false,
+    cookies: [false, Validators.requiredTrue],
   });
+
+  get cookies() {
+    return this.registerForm.get("cookies");
+  }
 
   get email() {
     return this.registerForm.get("email");
   }
 
-  get password() {
-    return this.registerForm.get("passwords.password");
-  }
-
   get passwords() {
     return this.registerForm.get("passwords");
+  }
+
+  get password() {
+    return this.registerForm.get("passwords.password");
   }
 
   checkPasswordStrength() {

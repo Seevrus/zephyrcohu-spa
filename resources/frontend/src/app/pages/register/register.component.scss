@@ -1,3 +1,5 @@
+@use "@angular/material" as mat;
+
 @use "../login/shared.register";
 @use "../../../shared/mixins";
 @use "../../../shared/variables";
@@ -8,27 +10,52 @@
   .register-component {
     @include shared.form-layout;
 
-    .form-elements-container {
-      .password-container {
-        .strength {
-          font-weight: 600;
+    form {
+      &.ng-touched.ng-invalid {
+        mat-checkbox.ng-invalid {
+          @include mat.checkbox-overrides(
+            (
+              label-text-color: var(--mat-sys-error),
+            )
+          );
+        }
+      }
 
-          &.very-weak {
-            color: var(--mat-sys-error);
-          }
+      .form-elements-container {
+        .password-container {
+          .strength {
+            font-weight: 600;
 
-          &.weak {
-            color: orange;
-          }
+            &.very-weak {
+              color: var(--mat-sys-error);
+            }
 
-          &.strong {
-            color: yellowgreen;
-          }
+            &.weak {
+              color: orange;
+            }
 
-          &.very-strong {
-            color: darkgreen;
+            &.strong {
+              color: yellowgreen;
+            }
+
+            &.very-strong {
+              color: darkgreen;
+            }
           }
         }
+      }
+    }
+
+    .form-help,
+    .form-data-privacy-consent {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin: 0 auto 1rem auto;
+      max-width: 500px;
+
+      p {
+        margin: 0;
       }
     }
   }

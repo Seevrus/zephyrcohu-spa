@@ -7,5 +7,11 @@
 
   .login-component {
     @include shared.form-layout;
+
+    @media (min-width: variables.$tablet-width) {
+      .forgot-password {
+        text-align: center;
+      }
+    }
   }
 }

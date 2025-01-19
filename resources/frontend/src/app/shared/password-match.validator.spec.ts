@@ -1,6 +1,6 @@
 import { FormControl, FormGroup } from "@angular/forms";
 
-import { passwordMatchValidator } from "./password-match.directive";
+import { passwordMatchValidator } from "./password-match.validator";
 
 describe("passwordMatchValidator", () => {
   const testGroup = new FormGroup({
