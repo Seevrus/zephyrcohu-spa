@@ -1,5 +1,5 @@
 export type SessionResponse = {
-  data: SessionData;
+  data?: SessionData;
 };
 
 type SessionData = {

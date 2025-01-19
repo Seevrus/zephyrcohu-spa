@@ -3,12 +3,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
-import {
-  type ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from "@angular/core/testing";
+import { type ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideRouter } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 
@@ -43,17 +38,15 @@ describe("Header", () => {
     headerElement = fixture.nativeElement;
   });
 
-  it("should have the correct user actions if the user is not logged in", fakeAsync(() => {
-    fixture.detectChanges();
+  it("should have the correct user actions if the user is not logged in", async () => {
+    fixture.autoDetectChanges();
+    await fixture.whenStable();
 
     const request = httpTesting.expectOne(sessionRequest);
     request.flush(getSessionErrorResponse, {
       status: 401,
       statusText: "Unauthorized",
     });
-
-    tick();
-    fixture.detectChanges();
 
     const userActions = headerElement.querySelectorAll(
       ".header-user-actions > a",
@@ -65,7 +58,7 @@ describe("Header", () => {
     ]);
 
     httpTesting.verify();
-  }));
+  });
 
   it("should show the correct location breadcrumb", () => {
     fixture.detectChanges();

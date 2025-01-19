@@ -1,13 +1,12 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import {
   QueryClient,
   queryOptions,
 } from "@tanstack/angular-query-experimental";
-import { lastValueFrom, map } from "rxjs";
+import { catchError, lastValueFrom, map, of, throwError } from "rxjs";
 
 import { environment } from "../../environments/environment";
-import { type ErrorResponse } from "../../types/errors";
 import { type SessionResponse, type UserSession } from "../../types/users";
 
 @Injectable({
@@ -18,26 +17,40 @@ export class UsersQueryService {
   private queryClient = inject(QueryClient);
 
   session() {
-    return queryOptions<UserSession, ErrorResponse>({
+    return queryOptions<UserSession | null, HttpErrorResponse>({
       queryKey: ["session"],
       queryFn: () =>
         lastValueFrom(
           this.http
             .get<SessionResponse>(`${environment.apiUrl}/users/session`)
-            .pipe(map(UsersQueryService.mapSessionResponse)),
-        ),
-      retry: (failureCount, error) => {
-        if (error.status === 401) {
-          this.queryClient.invalidateQueries();
-          return false;
-        }
+            .pipe(
+              catchError((error: HttpErrorResponse) => {
+                if (error.status === 401) {
+                  this.queryClient.invalidateQueries();
+                  return of({});
+                }
 
-        return failureCount < 3;
-      },
+                return throwError(
+                  () =>
+                    new HttpErrorResponse({
+                      ...error,
+                      url: error.url ?? undefined,
+                    }),
+                );
+              }),
+              map(UsersQueryService.mapSessionResponse),
+            ),
+        ),
     });
   }
 
-  private static mapSessionResponse(response: SessionResponse): UserSession {
+  private static mapSessionResponse(
+    response: SessionResponse,
+  ): UserSession | null {
+    if (!response.data) {
+      return null;
+    }
+
     return {
       ...response.data,
       passwordSetAt: new Date(response.data.passwordSetAt),

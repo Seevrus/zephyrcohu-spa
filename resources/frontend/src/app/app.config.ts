@@ -17,12 +17,15 @@ import { AppTitleStrategy } from "./app.title.strategy";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      gcTime: Number.POSITIVE_INFINITY,
+      refetchOnWindowFocus: true,
       retry(failureCount) {
         return failureCount < 3;
       },
       retryDelay(attemptIndex) {
         return attemptIndex * 2 * 1000;
       },
+      staleTime: 30 * 60 * 1000,
     },
   },
 });

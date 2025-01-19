@@ -8,7 +8,7 @@ import { MatInputModule } from "@angular/material/input";
 import { type Subscription } from "rxjs";
 import zxcvbn from "zxcvbn";
 
-import { passwordMatchValidator } from "../../shared/password-match.validator";
+import { passwordMatchValidator } from "../../validators/password-match.validator";
 
 @Component({
   selector: "app-register",

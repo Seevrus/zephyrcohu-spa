@@ -41,5 +41,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.breadcrumbSubscription?.unsubscribe();
   }
 
-  readonly sessionQuery = injectQuery(() => this.usersQueryService.session());
+  private readonly sessionQuery = injectQuery(() =>
+    this.usersQueryService.session(),
+  );
+
+  readonly showLogin = this.sessionQuery.isError() || !this.sessionQuery.data();
 }
