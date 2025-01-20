@@ -1,15 +1,22 @@
-export type SessionResponse = {
-  data?: SessionData;
+export type CreateUserRequest = {
+  email: string;
+  password: string;
+  cookiesAccepted: boolean;
+  newsletter: boolean;
 };
 
-type SessionData = {
+export type SessionResponse<D extends SessionData | null = SessionData> = {
+  data: D;
+};
+
+export type SessionData = {
   id: number;
   email: string;
   passwordSetAt: string;
   isAdmin: boolean;
   confirmed: boolean;
   cookiesAccepted: boolean;
-  newsLetter: boolean;
+  newsletter: boolean;
 };
 
 export type UserSession = Omit<SessionData, "passwordSetAt"> & {

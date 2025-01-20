@@ -5,9 +5,11 @@ import { MatButton } from "@angular/material/button";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
+import { injectMutation } from "@tanstack/angular-query-experimental";
 import { type Subscription } from "rxjs";
 import zxcvbn from "zxcvbn";
 
+import { UsersQueryService } from "../../services/users.query.service";
 import { passwordMatchValidator } from "../../validators/password-match.validator";
 
 @Component({
@@ -28,6 +30,8 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
+  private readonly usersQueryService = inject(UsersQueryService);
+
   isPasswordVisible = false;
   private passwordChangedSubscription: Subscription | undefined;
 
@@ -35,6 +39,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
     /^([a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-]){8,}$/;
 
   passwordStrength = "";
+
+  private readonly registerMutation = injectMutation(() =>
+    this.usersQueryService.register(),
+  );
 
   ngOnInit(): void {
     this.passwordChangedSubscription = this.password?.valueChanges.subscribe(
@@ -115,8 +123,20 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSubmit() {
-    console.log(this.registerForm);
+  async onSubmit() {
+    try {
+      const email = this.email?.value ?? "";
+      const password = this.password?.value ?? "";
+      const newsletter = this.registerForm.get("newsletter")?.value ?? false;
+      const cookiesAccepted = this.registerForm.get("cookies")?.value ?? false;
+
+      await this.registerMutation.mutateAsync({
+        email,
+        password,
+        newsletter,
+        cookiesAccepted,
+      });
+    } catch (error) {}
   }
 
   togglePassword() {
