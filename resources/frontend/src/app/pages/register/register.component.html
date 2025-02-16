@@ -66,14 +66,14 @@
       <mat-checkbox formControlName="cookies">
         * Hozzájárulok a bejelentkezési adatokat tartalmazó cookie-k tárolásához.
       </mat-checkbox>
-      <button
-        mat-flat-button
+      <app-button-loadable
         data-testid="submit-button"
-        type="submit"
+        [type]="'submit'"
+        [loading]="registerMutation.isPending()"
         [disabled]="!registerForm.valid || !registerForm.dirty"
       >
         Regisztráció
-      </button>
+      </app-button-loadable>
     </div>
   </form>
   <div class="form-help">

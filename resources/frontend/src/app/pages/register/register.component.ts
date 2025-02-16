@@ -1,7 +1,6 @@
 import { NgClass } from "@angular/common";
 import { Component, inject, type OnDestroy, type OnInit } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { MatButton } from "@angular/material/button";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
@@ -9,6 +8,7 @@ import { injectMutation } from "@tanstack/angular-query-experimental";
 import { type Subscription } from "rxjs";
 import zxcvbn from "zxcvbn";
 
+import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
 import { UsersQueryService } from "../../services/users.query.service";
 import { passwordMatchValidator } from "../../validators/password-match.validator";
 
@@ -18,7 +18,7 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
     class: "app-register",
   },
   imports: [
-    MatButton,
+    ButtonLoadableComponent,
     MatCheckbox,
     MatFormField,
     MatInputModule,
@@ -40,7 +40,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   passwordStrength = "";
 
-  private readonly registerMutation = injectMutation(() =>
+  readonly registerMutation = injectMutation(() =>
     this.usersQueryService.register(),
   );
 

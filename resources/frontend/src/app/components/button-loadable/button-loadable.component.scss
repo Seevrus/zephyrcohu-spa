@@ -1,0 +1,22 @@
+@use "@angular/material" as mat;
+
+.button-loadable {
+  width: 100%;
+
+  .loadable-content-with-progress {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+
+    .loader {
+      height: 1.5rem !important;
+      width: 1.5rem !important;
+    }
+
+    @include mat.progress-spinner-overrides(
+      (
+        active-indicator-color: var(--mat-sys-outline),
+      )
+    );
+  }
+}
