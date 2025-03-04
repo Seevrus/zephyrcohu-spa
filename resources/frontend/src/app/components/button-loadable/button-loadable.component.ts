@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { booleanAttribute, Component, Input } from "@angular/core";
 import { MatButton } from "@angular/material/button";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
@@ -9,7 +9,7 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
   styleUrl: "./button-loadable.component.scss",
 })
 export class ButtonLoadableComponent {
-  @Input() public loading = false;
-  @Input() public disabled = false;
+  @Input({ transform: booleanAttribute }) public loading = false;
+  @Input({ transform: booleanAttribute }) public disabled = false;
   @Input() public type = "button";
 }

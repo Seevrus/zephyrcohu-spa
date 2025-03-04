@@ -1,6 +1,7 @@
 import { NgClass } from "@angular/common";
 import { Component, inject, type OnDestroy, type OnInit } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { MatButton } from "@angular/material/button";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
@@ -20,6 +21,7 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   imports: [
     ButtonLoadableComponent,
     MatCheckbox,
+    MatButton,
     MatFormField,
     MatInputModule,
     NgClass,
