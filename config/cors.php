@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*'],
+    'paths' => ['api/*', 'sanctum/*'],
 
     'allowed_methods' => ['GET', 'OPTIONS', 'POST'],
 
@@ -23,7 +23,7 @@ return [
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => [],
+    'allowed_headers' => ['Content-Type', 'X-XSRF-Token'],
 
     'exposed_headers' => [],
 

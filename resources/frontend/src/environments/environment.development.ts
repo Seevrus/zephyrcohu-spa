@@ -1,4 +1,4 @@
-/* eslint-disable sonarjs/no-clear-text-protocols, import/no-unused-modules */
+/* eslint-disable import/no-unused-modules */
 export const environment = {
-  apiUrl: "http://192.168.0.35:8000/api",
+  apiUrl: "http://127.0.0.1:8000/api",
 };

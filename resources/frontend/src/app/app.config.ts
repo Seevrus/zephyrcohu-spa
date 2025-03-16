@@ -1,4 +1,8 @@
-import { provideHttpClient, withFetch } from "@angular/common/http";
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+} from "@angular/common/http";
 import {
   type ApplicationConfig,
   provideZoneChangeDetection,
@@ -13,6 +17,8 @@ import {
 
 import { routes } from "./app.routes";
 import { AppTitleStrategy } from "./app.title.strategy";
+import { credentialsInterceptor } from "./services/credentialsInterceptor";
+import { xsrfInterceptor } from "./services/xsrfInterceptor";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,7 +39,10 @@ const queryClient = new QueryClient({
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimationsAsync(),
-    provideHttpClient(withFetch()),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([credentialsInterceptor, xsrfInterceptor]),
+    ),
     provideRouter(routes),
     provideTanStackQuery(queryClient, withDevtools()),
     { provide: TitleStrategy, useClass: AppTitleStrategy },

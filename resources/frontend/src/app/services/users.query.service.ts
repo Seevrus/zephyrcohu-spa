@@ -25,7 +25,7 @@ export class UsersQueryService {
   register() {
     return mutationOptions<UserSession, HttpErrorResponse, CreateUserRequest>({
       mutationKey: ["register"],
-      /*mutationFn: (request) =>
+      mutationFn: (request) =>
         lastValueFrom(
           this.http
             .post<SessionResponse>(
@@ -42,21 +42,7 @@ export class UsersQueryService {
         await this.queryClient.invalidateQueries({
           queryKey: ["session"],
         });
-      },*/
-      mutationFn: (request) =>
-        new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({
-              id: 1,
-              email: request.email,
-              isAdmin: false,
-              confirmed: false,
-              cookiesAccepted: request.cookiesAccepted,
-              newsletter: request.newsletter,
-              passwordSetAt: new Date(),
-            });
-          }, 2000);
-        }),
+      },
     });
   }
 
