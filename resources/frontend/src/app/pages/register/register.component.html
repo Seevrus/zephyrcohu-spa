@@ -1,5 +1,7 @@
 <div class="register-component" data-testid="register-component">
   <h1>Regisztráció</h1>
+  <app-error-card title="Hiba" message="Teszt" />
+  <app-success-card title="Sikeres regisztráció" message="Teszt" />
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <div class="form-elements-container">
       <mat-form-field data-testid="email">
@@ -83,7 +85,7 @@
       </mat-checkbox>
       <app-button-loadable
         data-testid="submit-button"
-        [type]="'submit'"
+        type="submit"
         [loading]="registerMutation.isPending()"
         [disabled]="!registerForm.valid || !registerForm.dirty"
       >

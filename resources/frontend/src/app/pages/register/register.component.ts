@@ -10,6 +10,8 @@ import { type Subscription } from "rxjs";
 import zxcvbn from "zxcvbn";
 
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
+import { ErrorCardComponent } from "../../components/error-card/error-card.component";
+import { SuccessCardComponent } from "../../components/success-card/success-card.component";
 import { UsersQueryService } from "../../services/users.query.service";
 import { passwordMatchValidator } from "../../validators/password-match.validator";
 
@@ -20,12 +22,14 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   },
   imports: [
     ButtonLoadableComponent,
+    ErrorCardComponent,
     MatCheckbox,
     MatButton,
     MatFormField,
     MatInputModule,
     NgClass,
     ReactiveFormsModule,
+    SuccessCardComponent,
   ],
   templateUrl: "./register.component.html",
   styleUrl: "./register.component.scss",

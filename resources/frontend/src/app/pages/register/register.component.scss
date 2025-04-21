@@ -10,6 +10,11 @@
   .register-component {
     @include shared.form-layout;
 
+    .app-error-card,
+    .app-success-card {
+      max-width: 500px;
+    }
+
     form {
       &.ng-touched.ng-invalid {
         mat-checkbox.ng-invalid {

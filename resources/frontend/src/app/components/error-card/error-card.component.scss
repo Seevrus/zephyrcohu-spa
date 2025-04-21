@@ -1,0 +1,13 @@
+:host(.app-error-card) {
+  display: block;
+  margin: 0 auto 2rem auto;
+
+  .mat-mdc-card.mdc-card {
+    background-color: var(--mat-sys-error);
+  }
+
+  .mat-mdc-card-subtitle,
+  .mat-mdc-card-content {
+    color: var(--mat-sys-on-error);
+  }
+}
