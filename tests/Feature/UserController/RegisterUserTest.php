@@ -155,7 +155,7 @@ describe('Register User Controller', function () {
         $newUser = UserNew::firstWhere('user_id', 4);
         $this->assertMatchesRegularExpression('/^\d{9}$/', $newUser->email_code);
 
-        Mail::assertQueued(UserRegistered::class, function ($mail) {
+        Mail::assertSent(UserRegistered::class, function ($mail) {
             return $mail->hasTo('user005@example.com');
         });
 

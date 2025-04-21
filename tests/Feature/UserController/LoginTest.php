@@ -147,7 +147,7 @@ describe('Login Controller', function () {
     });
 
     test('logs in the user', function () {
-        $response = $this->withHeaders(['Origin' => 'http://localhost:4200'])
+        $response = $this->withHeaders(['Origin' => 'http://127.0.0.1:4200'])
             ->postJson('/api/users/login', $this->okRequest);
 
         $response->assertStatus(200)->assertJson([

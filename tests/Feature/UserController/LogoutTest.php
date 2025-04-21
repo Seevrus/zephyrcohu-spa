@@ -33,7 +33,7 @@ describe('Logout', function () {
             new User,
         );
 
-        $response = $this->withHeaders(['Origin' => 'http://localhost:4200'])
+        $response = $this->withHeaders(['Origin' => 'http://127.0.0.1:4200'])
             ->postJson('/api/users/logout');
 
         $response->assertStatus(200);
@@ -44,7 +44,7 @@ describe('Logout', function () {
             new User,
         );
 
-        $response = $this->withHeaders(['Origin' => 'http://localhost:4200'])
+        $response = $this->withHeaders(['Origin' => 'http://127.0.0.1:4200'])
             ->withSession(['foo' => 'bar'])
             ->postJson('/api/users/logout');
 
