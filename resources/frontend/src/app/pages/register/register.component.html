@@ -4,10 +4,10 @@
     <div class="form-elements-container">
       <mat-form-field data-testid="email">
         <mat-label>Email cím</mat-label>
-        <input matInput formControlName="email">
-        @if (email?.hasError('required')) {
+        <input matInput formControlName="email" />
+        @if (email?.hasError("required")) {
           <mat-error>Kötelező mező</mat-error>
-        } @else if (email?.hasError('email')) {
+        } @else if (email?.hasError("email")) {
           <mat-error>Email cím formátuma nem megfelelő</mat-error>
         }
       </mat-form-field>
@@ -17,10 +17,11 @@
           <input
             matInput
             [type]="isPasswordVisible ? 'text' : 'password'"
-            formControlName="password">
-          @if (password?.hasError('required')) {
+            formControlName="password"
+          />
+          @if (password?.hasError("required")) {
             <mat-error>Kötelező mező</mat-error>
-          } @else if (password?.hasError('pattern')) {
+          } @else if (password?.hasError("pattern")) {
             <mat-error>Jelszó formátuma nem megfelelő</mat-error>
           }
         </mat-form-field>
@@ -29,20 +30,27 @@
           <input
             matInput
             [type]="isPasswordVisible ? 'text' : 'password'"
-            formControlName="passwordAgain">
+            formControlName="passwordAgain"
+          />
         </mat-form-field>
-        @if (passwords?.hasError('passwordsDontMatch')) {
+        @if (passwords?.hasError("passwordsDontMatch")) {
           <p class="custom-error">A beírt jelszavak nem egyeznek meg</p>
         }
         <div>
           <p data-testid="password-characters">
-            A jelszó minimális hossza 8 karakter.
-            Engedélyezett karakterek: magyar ABC kis- és nagybetűi, számok,
-            illetve az alábbi speciális karakterek: . _ + # % &#64; -
+            A jelszó minimális hossza 8 karakter. Engedélyezett karakterek:
+            magyar ABC kis- és nagybetűi, számok, illetve az alábbi speciális
+            karakterek: . _ + # % &#64; -
           </p>
           @if (passwordStrength) {
-            <p data-testid="password-strength">A jelszó erőssége:
-              <span [ngClass]="['strength', getPasswordStrengthClass(passwordStrength)]">
+            <p data-testid="password-strength">
+              A jelszó erőssége:
+              <span
+                [ngClass]="[
+                  'strength',
+                  getPasswordStrengthClass(passwordStrength),
+                ]"
+              >
                 {{ passwordStrength }}
               </span>
             </p>
@@ -53,18 +61,25 @@
               class="zephyr-link"
               href="https://hvg.hu/tudomany/20171117_eros_jelszo_letrehozasa_generator_nehezen_kitalalhato_jelszavak_nehezen_feltorheto_jelszo_biztonsagos_milyen_jelszot_valasszak"
               target="_blank"
-            >segédlet az alábbi oldalon</a>.
+              >segédlet az alábbi oldalon</a
+            >.
           </p>
         </div>
-        <button mat-button data-testid="toggle-password" type="button" (click)="togglePassword()">
-          {{ isPasswordVisible ? 'Jelszó elrejtése' : 'Jelszó megjelenítése' }}
+        <button
+          mat-button
+          data-testid="toggle-password"
+          type="button"
+          (click)="togglePassword()"
+        >
+          {{ isPasswordVisible ? "Jelszó elrejtése" : "Jelszó megjelenítése" }}
         </button>
       </div>
       <mat-checkbox formControlName="newsletter">
         Szeretnék hírlevelet kapni a fontosabb újdonságokról.
       </mat-checkbox>
       <mat-checkbox formControlName="cookies">
-        * Hozzájárulok a bejelentkezési adatokat tartalmazó cookie-k tárolásához.
+        * Hozzájárulok a bejelentkezési adatokat tartalmazó cookie-k
+        tárolásához.
       </mat-checkbox>
       <app-button-loadable
         data-testid="submit-button"
@@ -83,7 +98,8 @@
   </div>
   <div class="form-data-privacy-consent">
     <p>
-      A Regisztráció gombra kattintva az adatvédelmi tájékoztatóban foglaltakat elfogadom.
+      A Regisztráció gombra kattintva az adatvédelmi tájékoztatóban foglaltakat
+      elfogadom.
     </p>
   </div>
 </div>

@@ -1,14 +1,17 @@
 <div class="login-component" data-testid="login-component">
   <h1>Bejelentkezés</h1>
-  <p>A bejelentkezéshez kérem adja meg regisztrált email címét és a hozzá tartozó jelszavát:</p>
+  <p>
+    A bejelentkezéshez kérem adja meg regisztrált email címét és a hozzá tartozó
+    jelszavát:
+  </p>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <div class="form-elements-container">
       <mat-form-field data-testid="email">
         <mat-label>Email cím</mat-label>
-        <input matInput formControlName="email">
-        @if (email?.hasError('required')) {
+        <input matInput formControlName="email" />
+        @if (email?.hasError("required")) {
           <mat-error>Kötelező mező</mat-error>
-        } @else if (email?.hasError('email')) {
+        } @else if (email?.hasError("email")) {
           <mat-error>Email cím formátuma nem megfelelő</mat-error>
         }
       </mat-form-field>
@@ -18,15 +21,21 @@
           <input
             matInput
             [type]="isPasswordVisible ? 'text' : 'password'"
-            formControlName="password">
-          @if (password?.hasError('required')) {
+            formControlName="password"
+          />
+          @if (password?.hasError("required")) {
             <mat-error>Kötelező mező</mat-error>
-          } @else if (password?.hasError('pattern')) {
+          } @else if (password?.hasError("pattern")) {
             <mat-error>Jelszó formátuma nem megfelelő</mat-error>
           }
         </mat-form-field>
-        <button mat-button data-testid="toggle-password" type="button" (click)="togglePassword()">
-          {{ isPasswordVisible ? 'Jelszó elrejtése' : 'Jelszó megjelenítése' }}
+        <button
+          mat-button
+          data-testid="toggle-password"
+          type="button"
+          (click)="togglePassword()"
+        >
+          {{ isPasswordVisible ? "Jelszó elrejtése" : "Jelszó megjelenítése" }}
         </button>
       </div>
       <button
@@ -39,5 +48,8 @@
       </button>
     </div>
   </form>
-  <p class="forgot-password">Amennyiben elfelejtette a jelszavát, ide kattintva tud új jelszót létrehozni!</p>
+  <p class="forgot-password">
+    Amennyiben elfelejtette a jelszavát, ide kattintva tud új jelszót
+    létrehozni!
+  </p>
 </div>
