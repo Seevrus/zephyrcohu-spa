@@ -5,9 +5,9 @@ import {
 } from "@angular/common/http";
 import {
   type ApplicationConfig,
-  provideZoneChangeDetection,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
 } from "@angular/core";
-import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { provideRouter, TitleStrategy } from "@angular/router";
 import {
   provideTanStackQuery,
@@ -38,7 +38,7 @@ const queryClient = new QueryClient({
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideAnimationsAsync(),
+    provideBrowserGlobalErrorListeners(),
     provideHttpClient(
       withFetch(),
       withInterceptors([credentialsInterceptor, xsrfInterceptor]),
@@ -46,6 +46,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideTanStackQuery(queryClient, withDevtools()),
     { provide: TitleStrategy, useClass: AppTitleStrategy },
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
   ],
 };
