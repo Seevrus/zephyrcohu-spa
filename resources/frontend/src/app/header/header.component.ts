@@ -1,9 +1,8 @@
 import { NgOptimizedImage } from "@angular/common";
-import { Component, inject, type OnDestroy, type OnInit } from "@angular/core";
-import { MatAnchor } from "@angular/material/button";
+import { Component, inject } from "@angular/core";
+import { MatAnchor, MatButton } from "@angular/material/button";
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { injectQuery } from "@tanstack/angular-query-experimental";
-import { type Subscription } from "rxjs";
 
 import { BreadcrumbService } from "../services/breadcrumb.service";
 import { UsersQueryService } from "../services/users.query.service";
@@ -15,6 +14,7 @@ import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
   imports: [
     DesktopNavComponent,
     MatAnchor,
+    MatButton,
     MobileNavComponent,
     NgOptimizedImage,
     RouterLink,
@@ -23,23 +23,11 @@ import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
   templateUrl: "./header.component.html",
   styleUrl: "./header.component.scss",
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent {
   private readonly breadcrumbService = inject(BreadcrumbService);
   private readonly usersQueryService = inject(UsersQueryService);
 
-  breadcrumb: string | undefined;
-  private breadcrumbSubscription: Subscription | undefined;
-
-  ngOnInit() {
-    this.breadcrumbSubscription =
-      this.breadcrumbService.breadcrumbChanged.subscribe((breadcrumb) => {
-        this.breadcrumb = breadcrumb;
-      });
-  }
-
-  ngOnDestroy() {
-    this.breadcrumbSubscription?.unsubscribe();
-  }
+  readonly breadcrumb = this.breadcrumbService.breadcrumb;
 
   private readonly sessionQuery = injectQuery(() =>
     this.usersQueryService.session(),

@@ -29,9 +29,9 @@
       </div>
     }
     <div class="header-breadcrumb">
-      @if (breadcrumb) {
+      @if (breadcrumb()) {
         <span class="header-breadcrumb--title">Megjelenített lap:</span>
-        {{ breadcrumb }}
+        {{ breadcrumb() }}
       }
     </div>
   </div>

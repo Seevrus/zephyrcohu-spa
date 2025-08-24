@@ -1,8 +1,8 @@
 import { provideHttpClient, withFetch } from "@angular/common/http";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideLocationMocks } from "@angular/common/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
-import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { provideRouter } from "@angular/router";
 import { RouterTestingHarness } from "@angular/router/testing";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
@@ -21,12 +21,12 @@ describe("App Component", () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       providers: [
-        provideAnimationsAsync(),
         provideHttpClient(withFetch()),
         provideHttpClientTesting(),
         provideTanStackQuery(testQueryClient),
         provideRouter(routes),
         provideLocationMocks(),
+        provideZonelessChangeDetection(),
       ],
     });
 

@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { Title } from "@angular/platform-browser";
 import { type RouterStateSnapshot } from "@angular/router";
@@ -23,6 +24,7 @@ describe("App Title Strategy", () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         { provide: Title, useValue: titleSpy },
         { provide: BreadcrumbService, useValue: breadcrumbServiceSpy },
       ],
