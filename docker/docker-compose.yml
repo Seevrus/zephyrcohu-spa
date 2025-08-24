@@ -1,0 +1,14 @@
+name: zephyrcohu-spa
+
+services:
+  mysql:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+    volumes:
+      - mysqldata:/var/lib/mysql
+      - ./migrations:/docker-entrypoint-initdb.d
+    ports:
+      - '3306:3306'
+volumes:
+  mysqldata: {}
