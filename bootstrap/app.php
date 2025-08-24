@@ -22,10 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware) {
+    ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
     })
-    ->withExceptions(function (Exceptions $exceptions) {
+    ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(fn (AccessDeniedHttpException $e) => ErrorHandling::forbidden());
         $exceptions->render(fn (AuthenticationException $e) => ErrorHandling::unauthorized());
         $exceptions->render(fn (BadRequestHttpException $e) => ErrorHandling::bad_request());
