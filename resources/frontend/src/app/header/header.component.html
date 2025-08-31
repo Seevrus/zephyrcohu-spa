@@ -13,6 +13,7 @@
     @if (showLogin) {
       <div class="header-user-actions">
         <a
+          data-testid="header-user-action"
           mat-button
           routerLink="/bejelentkezes"
           routerLinkActive="active-link"
@@ -20,6 +21,7 @@
           >Bejelentkezés</a
         >
         <a
+          data-testid="header-user-action"
           mat-button
           routerLink="/regisztracio"
           routerLinkActive="active-link"
@@ -28,7 +30,7 @@
         >
       </div>
     }
-    <div class="header-breadcrumb">
+    <div data-testid="header-breadcrumb" class="header-breadcrumb">
       @if (breadcrumb()) {
         <span class="header-breadcrumb--title">Megjelenített lap:</span>
         {{ breadcrumb() }}

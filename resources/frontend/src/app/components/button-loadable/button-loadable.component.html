@@ -1,12 +1,16 @@
 <button
   class="button-loadable"
+  data-testid="button-loadable"
   mat-flat-button
   [type]="type"
   [disabled]="disabled"
 >
   <div class="loadable-content-with-progress">
     @if (loading) {
-      <mat-spinner class="loader"></mat-spinner>
+      <mat-spinner
+        class="loader"
+        data-testid="button-loadable-progress"
+      ></mat-spinner>
     }
     <ng-content></ng-content>
   </div>

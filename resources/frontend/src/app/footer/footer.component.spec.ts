@@ -1,34 +1,21 @@
 import { provideZonelessChangeDetection } from "@angular/core";
-import { type ComponentFixture, TestBed } from "@angular/core/testing";
+import { render } from "@testing-library/angular";
 
 import { FooterComponent } from "./footer.component";
 
 describe("Footer Component", () => {
-  let fixture: ComponentFixture<FooterComponent>;
-  let footerElement: HTMLElement;
-
   beforeAll(() => {
-    jasmine.clock().install();
-    jasmine.clock().mockDate(new Date("2024-07-02"));
-  });
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
-
-    fixture = TestBed.createComponent(FooterComponent);
-    fixture.detectChanges();
-
-    footerElement = fixture.nativeElement;
+    jest.useFakeTimers().setSystemTime(new Date("2025-08-31"));
   });
 
   afterAll(() => {
-    jasmine.clock().uninstall();
+    jest.useRealTimers();
   });
 
-  it("should have the correct navigation items", () => {
-    const footerNavLabels = footerElement.querySelectorAll(
+  test("should have the correct navigation items", async () => {
+    const { container } = await renderFooter();
+
+    const footerNavLabels = container.querySelectorAll(
       ".footer-actions > a > .mdc-button__label",
     );
 
@@ -39,11 +26,19 @@ describe("Footer Component", () => {
     ]);
   });
 
-  it("should have the correct copyright notice", () => {
-    const copyrightElement = footerElement.querySelector(".copyright-notice");
+  test("should have the correct copyright notice", async () => {
+    const { container } = await renderFooter();
 
-    expect(copyrightElement?.textContent).toEqual(
-      " Copyright © Zephyr Számítástechnikai Fejlesztő és Gazdasági Szolgáltató Bt. 2018-2024. ",
+    const copyrightElement = container.querySelector(".copyright-notice");
+
+    expect(copyrightElement).toHaveTextContent(
+      "Copyright © Zephyr Számítástechnikai Fejlesztő és Gazdasági Szolgáltató Bt. 2018-2025.",
     );
   });
 });
+
+async function renderFooter() {
+  return render(FooterComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
+}

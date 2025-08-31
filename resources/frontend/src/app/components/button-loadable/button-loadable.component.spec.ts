@@ -1,61 +1,37 @@
-import { Component, provideZonelessChangeDetection } from "@angular/core";
-import { TestBed } from "@angular/core/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { render, screen } from "@testing-library/angular";
 
 import { ButtonLoadableComponent } from "./button-loadable.component";
 
 describe("ButtonLoadableComponent", () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
+  test("should have the correct content", async () => {
+    await renderLoadableButton();
+
+    expect(screen.getByTestId("button-loadable")).toHaveTextContent("Click Me");
   });
 
-  it("should have the correct content", async () => {
-    @Component({
-      template: `<app-button-loadable>Click Me</app-button-loadable>`,
-      imports: [ButtonLoadableComponent],
-    })
-    class TestHostComponent {}
+  test("should have a disabled state", async () => {
+    await renderLoadableButton({ disabled: true });
 
-    const fixture = TestBed.createComponent(TestHostComponent);
-    const buttonElement = fixture.nativeElement;
-
-    await fixture.whenStable();
-
-    expect(buttonElement.textContent?.trim()).toEqual("Click Me");
+    expect(screen.getByTestId("button-loadable")).toBeDisabled();
   });
 
-  it("should have a disabled state", async () => {
-    @Component({
-      template: `<app-button-loadable disabled="true"
-        >Click Me</app-button-loadable
-      >`,
-      imports: [ButtonLoadableComponent],
-    })
-    class TestHostComponent {}
+  test("should have a loading state", async () => {
+    await renderLoadableButton({ loading: true });
 
-    const fixture = TestBed.createComponent(TestHostComponent);
-    const buttonElement = fixture.nativeElement;
-
-    await fixture.whenStable();
-
-    expect(buttonElement.querySelector("button")?.disabled).toBeTruthy();
-  });
-
-  it("should have a loading state", async () => {
-    @Component({
-      template: `<app-button-loadable loading="true"
-        >Click Me</app-button-loadable
-      >`,
-      imports: [ButtonLoadableComponent],
-    })
-    class TestHostComponent {}
-
-    const fixture = TestBed.createComponent(TestHostComponent);
-    const buttonElement = fixture.nativeElement;
-
-    await fixture.whenStable();
-
-    expect(buttonElement.querySelector(".loader")).toBeTruthy();
+    expect(screen.getByTestId("button-loadable-progress")).toBeInTheDocument();
   });
 });
+
+async function renderLoadableButton({
+  loading = false,
+  disabled = false,
+}: { loading?: boolean; disabled?: boolean } = {}) {
+  return render(
+    `<app-button-loadable [disabled]="${disabled}" [loading]="${loading}">Click Me</app-button-loadable>`,
+    {
+      imports: [ButtonLoadableComponent],
+      providers: [provideZonelessChangeDetection()],
+    },
+  );
+}

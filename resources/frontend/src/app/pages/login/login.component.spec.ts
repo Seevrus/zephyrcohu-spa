@@ -1,112 +1,110 @@
-import { type ComponentFixture, TestBed } from "@angular/core/testing";
-import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { render, screen, waitFor } from "@testing-library/angular";
+import userEvent from "@testing-library/user-event";
 
 import { LoginComponent } from "./login.component";
 
 describe("Login Component", () => {
-  let component: LoginComponent;
-  let fixture: ComponentFixture<LoginComponent>;
-  let loginElement: HTMLElement;
+  const user = userEvent.setup();
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideAnimationsAsync()],
-    });
+  test("should render the form correctly", async () => {
+    await renderLoginComponent();
 
-    fixture = TestBed.createComponent(LoginComponent);
-    component = fixture.componentInstance;
-    loginElement = fixture.nativeElement;
-
-    fixture.detectChanges();
-  });
-
-  it("should render the form correctly", () => {
-    const emailField = loginElement.querySelector("[data-testid='email']");
+    const emailField = screen.getByTestId("email");
     expect(emailField?.querySelector("label")?.textContent).toEqual(
       "Email cím",
     );
     expect(emailField?.querySelector("input")?.type).toEqual("text");
 
-    const passwordField = loginElement.querySelector(
-      "[data-testid='password']",
-    );
+    const passwordField = screen.getByTestId("password");
     expect(passwordField?.querySelector("label")?.textContent).toEqual(
       "Jelszó",
     );
     expect(passwordField?.querySelector("input")?.type).toEqual("password");
 
-    const togglePassword = loginElement?.querySelector<HTMLButtonElement>(
-      "[data-testid='toggle-password']",
-    );
-    expect(togglePassword?.disabled).toBeFalse();
+    const togglePassword =
+      screen.getByTestId<HTMLButtonElement>("toggle-password");
+    expect(togglePassword?.disabled).toBeFalsy();
 
-    const submitButton = loginElement.querySelector<HTMLButtonElement>(
-      "[data-testid='submit-button']",
-    );
-    expect(submitButton?.disabled).toBeTrue();
+    const submitButton = screen.getByTestId<HTMLButtonElement>("submit-button");
+    expect(submitButton?.disabled).toBeTruthy();
   });
 
-  it("validates email correctly", () => {
-    const form = component.loginForm;
-    form.controls.email.markAsTouched();
-    fixture.detectChanges();
+  test("validates email correctly", async () => {
+    const { container } = await renderLoginComponent();
 
-    expect(loginElement.querySelector("mat-error")?.textContent).toEqual(
-      "Kötelező mező",
-    );
+    const emailInput = screen.getByTestId("email").querySelector("input")!;
+    await user.click(emailInput);
+    await user.tab();
 
-    form.controls.email.setValue("invalid-email");
-    fixture.detectChanges();
+    await waitFor(() => {
+      expect(container.querySelector("mat-error")).toHaveTextContent(
+        "Kötelező mező",
+      );
+    });
 
-    expect(loginElement.querySelector("mat-error")?.textContent).toEqual(
+    await user.type(emailInput, "invalid-email");
+    await user.tab();
+
+    expect(container.querySelector("mat-error")).toHaveTextContent(
       "Email cím formátuma nem megfelelő",
     );
   });
 
-  it("validates password correctly", () => {
-    const form = component.loginForm;
-    form.controls.password.markAsTouched();
-    fixture.detectChanges();
+  test("validates password correctly", async () => {
+    const { container } = await renderLoginComponent();
 
-    expect(loginElement.querySelector("mat-error")?.textContent).toEqual(
-      "Kötelező mező",
-    );
+    const passwordInput = screen
+      .getByTestId("password")
+      .querySelector("input")!;
+    await user.click(passwordInput);
+    await user.tab();
 
-    form.controls.password.setValue("12");
-    fixture.detectChanges();
+    await waitFor(() => {
+      expect(container.querySelector("mat-error")).toHaveTextContent(
+        "Kötelező mező",
+      );
+    });
 
-    expect(loginElement.querySelector("mat-error")?.textContent).toEqual(
+    await user.type(passwordInput, "12");
+    await user.tab();
+
+    expect(container.querySelector("mat-error")).toHaveTextContent(
       "Jelszó formátuma nem megfelelő",
     );
   });
 
-  it("toggle password button changes the type of the password input", () => {
-    const togglePassword = loginElement?.querySelector<HTMLButtonElement>(
-      "[data-testid='toggle-password']",
-    );
+  test("toggle password button changes the type of the password input", async () => {
+    await renderLoginComponent();
 
-    togglePassword?.click();
-    fixture.detectChanges();
+    const togglePassword = screen.getByTestId("toggle-password");
+    await user.click(togglePassword);
 
-    expect(
-      loginElement.querySelector<HTMLInputElement>(
-        "[formcontrolname='password']",
-      )?.type,
-    ).toBe("text");
+    const passwordInput = screen
+      .getByTestId("password")
+      .querySelector("input")!;
+
+    expect(passwordInput.type).toBe("text");
   });
 
-  it("enables submit if the form is filled correctly", () => {
-    const form = component.loginForm;
-    form.controls.email.setValue("abc123@abc.com");
-    form.controls.email.markAsDirty();
-    form.controls.password.setValue("abc123xyz");
-    form.controls.password.markAsDirty();
+  test("enables submit if the form is filled correctly", async () => {
+    await renderLoginComponent();
 
-    fixture.detectChanges();
+    const emailInput = screen.getByTestId("email").querySelector("input")!;
+    await user.type(emailInput, "abc123@abc.com");
 
-    const submitButton = loginElement.querySelector<HTMLButtonElement>(
-      "[data-testid='submit-button']",
-    );
-    expect(submitButton?.disabled).toBeFalse();
+    const passwordInput = screen
+      .getByTestId("password")
+      .querySelector("input")!;
+    await user.type(passwordInput, "abc123xyz");
+
+    const submitButton = screen.getByTestId("submit-button");
+    expect(submitButton).not.toBeDisabled();
   });
 });
+
+async function renderLoginComponent() {
+  return render(LoginComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
+}

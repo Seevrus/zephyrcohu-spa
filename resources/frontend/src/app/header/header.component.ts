@@ -33,5 +33,10 @@ export class HeaderComponent {
     this.usersQueryService.session(),
   );
 
-  readonly showLogin = this.sessionQuery.isError() || !this.sessionQuery.data();
+  get showLogin() {
+    return (
+      !this.sessionQuery.isPending() &&
+      (this.sessionQuery.isError() || !this.sessionQuery.data())
+    );
+  }
 }

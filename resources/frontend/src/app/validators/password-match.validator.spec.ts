@@ -12,7 +12,7 @@ describe("passwordMatchValidator", () => {
     testGroup.reset();
   });
 
-  it("returns null if the password is missing", () => {
+  test("returns null if the password is missing", () => {
     testGroup.setValue({
       password: "",
       passwordAgain: "abc123",
@@ -22,7 +22,7 @@ describe("passwordMatchValidator", () => {
     expect(validationResult).toBeNull();
   });
 
-  it("returns null if the second password is missing", () => {
+  test("returns null if the second password is missing", () => {
     testGroup.setValue({
       password: "abc123",
       passwordAgain: "",
@@ -32,7 +32,7 @@ describe("passwordMatchValidator", () => {
     expect(validationResult).toBeNull();
   });
 
-  it("returns null if the passwords match", () => {
+  test("returns null if the passwords match", () => {
     testGroup.setValue({
       password: "abc123",
       passwordAgain: "abc123",
@@ -42,7 +42,7 @@ describe("passwordMatchValidator", () => {
     expect(validationResult).toBeNull();
   });
 
-  it("returns with 'passwordsDontMatch' if the passwords don't match", () => {
+  test("returns with 'passwordsDontMatch' if the passwords don't match", () => {
     testGroup.setValue({
       password: "abc123",
       passwordAgain: "abv123",

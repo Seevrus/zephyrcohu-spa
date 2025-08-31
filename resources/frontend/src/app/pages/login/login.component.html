@@ -9,9 +9,9 @@
       <mat-form-field data-testid="email">
         <mat-label>Email cím</mat-label>
         <input matInput formControlName="email" />
-        @if (email?.hasError("required")) {
+        @if (loginForm.hasError("required", "email")) {
           <mat-error>Kötelező mező</mat-error>
-        } @else if (email?.hasError("email")) {
+        } @else if (loginForm.hasError("email", "email")) {
           <mat-error>Email cím formátuma nem megfelelő</mat-error>
         }
       </mat-form-field>
@@ -23,9 +23,9 @@
             [type]="isPasswordVisible ? 'text' : 'password'"
             formControlName="password"
           />
-          @if (password?.hasError("required")) {
+          @if (loginForm.hasError("required", "password")) {
             <mat-error>Kötelező mező</mat-error>
-          } @else if (password?.hasError("pattern")) {
+          } @else if (loginForm.hasError("pattern", "password")) {
             <mat-error>Jelszó formátuma nem megfelelő</mat-error>
           }
         </mat-form-field>

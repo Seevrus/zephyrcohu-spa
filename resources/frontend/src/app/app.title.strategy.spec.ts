@@ -8,25 +8,22 @@ import { BreadcrumbService } from "./services/breadcrumb.service";
 
 describe("App Title Strategy", () => {
   let appTitleStrategy: AppTitleStrategy;
-  let breadcrumbServiceSpy: jasmine.SpyObj<BreadcrumbService>;
-  let titleSpy: jasmine.SpyObj<Title>;
+  let setBreadCrumbSpy: jest.SpyInstance<void, [title: string]>;
+  let setTitleSpy: jest.SpyInstance<void, [newTitle: string]>;
 
   beforeEach(() => {
-    spyOn(AppTitleStrategy.prototype, "buildTitle").and.returnValue(
-      "Test Title",
-    );
+    jest
+      .spyOn(AppTitleStrategy.prototype, "buildTitle")
+      .mockReturnValue("Test Title");
 
-    breadcrumbServiceSpy = jasmine.createSpyObj<BreadcrumbService>([
-      "setBreadcrumb",
-    ]);
-
-    titleSpy = jasmine.createSpyObj<Title>(["setTitle"]);
+    setBreadCrumbSpy = jest.spyOn(BreadcrumbService.prototype, "setBreadcrumb");
+    setTitleSpy = jest.spyOn(Title.prototype, "setTitle");
 
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
-        { provide: Title, useValue: titleSpy },
-        { provide: BreadcrumbService, useValue: breadcrumbServiceSpy },
+        { provide: Title },
+        { provide: BreadcrumbService },
       ],
     });
 
@@ -36,9 +33,7 @@ describe("App Title Strategy", () => {
   it("updates the title correctly", () => {
     appTitleStrategy.updateTitle({} as unknown as RouterStateSnapshot);
 
-    expect(titleSpy.setTitle).toHaveBeenCalledWith("Test Title - Zephyr Bt.");
-    expect(breadcrumbServiceSpy.setBreadcrumb).toHaveBeenCalledWith(
-      "Test Title",
-    );
+    expect(setTitleSpy).toHaveBeenCalledWith("Test Title - Zephyr Bt.");
+    expect(setBreadCrumbSpy).toHaveBeenCalledWith("Test Title");
   });
 });

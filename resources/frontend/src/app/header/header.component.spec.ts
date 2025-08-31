@@ -3,9 +3,10 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
-import { type ComponentFixture, TestBed } from "@angular/core/testing";
-import { provideRouter } from "@angular/router";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { TestBed } from "@angular/core/testing";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
+import { render, screen, waitFor } from "@testing-library/angular";
 
 import { testQueryClient } from "../../mocks/testQueryClient";
 import getSessionErrorResponse from "../../mocks/users/getSessionErrorResponse.json";
@@ -14,45 +15,21 @@ import { BreadcrumbService } from "../services/breadcrumb.service";
 import { HeaderComponent } from "./header.component";
 
 describe("Header", () => {
-  let breadcrumbService: BreadcrumbService;
-  let fixture: ComponentFixture<HeaderComponent>;
-  let httpTesting: HttpTestingController;
-  let headerElement: HTMLElement;
+  test("should have the correct user actions if the user is not logged in", async () => {
+    const { httpTesting } = await renderHeader();
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        BreadcrumbService,
-        provideHttpClient(withFetch()),
-        provideHttpClientTesting(),
-        provideTanStackQuery(testQueryClient),
-        provideRouter([{ path: "**", component: HeaderComponent }]),
-      ],
+    const request = await waitFor(() => httpTesting.expectOne(sessionRequest), {
+      timeout: 30000,
     });
 
-    httpTesting = TestBed.inject(HttpTestingController);
-
-    fixture = TestBed.createComponent(HeaderComponent);
-
-    breadcrumbService = fixture.debugElement.injector.get(BreadcrumbService);
-    headerElement = fixture.nativeElement;
-  });
-
-  it("should have the correct user actions if the user is not logged in", async () => {
-    fixture.autoDetectChanges();
-    await fixture.whenStable();
-
-    const request = httpTesting.expectOne(sessionRequest);
     request.flush(getSessionErrorResponse, {
       status: 401,
       statusText: "Unauthorized",
     });
 
-    const userActions = headerElement.querySelectorAll(
-      ".header-user-actions > a",
-    );
+    const userActions = await screen.findAllByTestId("header-user-action");
 
-    expect([...userActions].map((a) => a.textContent)).toEqual([
+    expect([...userActions].map((action) => action.textContent)).toEqual([
       "Bejelentkezés",
       "Regisztráció",
     ]);
@@ -60,15 +37,36 @@ describe("Header", () => {
     httpTesting.verify();
   });
 
-  it("should show the correct location breadcrumb", () => {
-    fixture.detectChanges();
-    breadcrumbService.breadcrumbChanged.emit("Test Breadcrumb");
-    fixture.detectChanges();
+  test("should show the correct location breadcrumb", async () => {
+    const { breadcrumbService, fixture } = await renderHeader();
 
-    const pageShown = headerElement.querySelector(".header-breadcrumb");
+    breadcrumbService.setBreadcrumb("Főoldal");
+    await fixture.whenStable();
 
-    expect(pageShown?.textContent).toEqual(
-      "Megjelenített lap: Test Breadcrumb ",
+    expect(await screen.findByTestId("header-breadcrumb")).toHaveTextContent(
+      "Megjelenített lap: Főoldal",
     );
   });
 });
+
+async function renderHeader() {
+  const renderResult = await render(HeaderComponent, {
+    providers: [
+      provideHttpClient(withFetch()),
+      provideHttpClientTesting(),
+      provideTanStackQuery(testQueryClient),
+      provideZonelessChangeDetection(),
+    ],
+  });
+
+  const httpTesting = TestBed.inject(HttpTestingController);
+
+  const breadcrumbService =
+    renderResult.fixture.debugElement.injector.get(BreadcrumbService);
+
+  return {
+    ...renderResult,
+    breadcrumbService,
+    httpTesting,
+  };
+}
