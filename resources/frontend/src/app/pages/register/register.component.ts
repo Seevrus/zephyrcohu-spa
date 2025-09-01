@@ -6,8 +6,8 @@ import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { injectMutation } from "@tanstack/angular-query-experimental";
+import { passwordStrength } from "check-password-strength";
 import { type Subscription } from "rxjs";
-import zxcvbn from "zxcvbn";
 
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
 import { ErrorCardComponent } from "../../components/error-card/error-card.component";
@@ -83,12 +83,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
     return this.registerForm.get("email");
   }
 
-  get passwords() {
-    return this.registerForm.get("passwords");
-  }
-
   get password() {
     return this.registerForm.get("passwords.password");
+  }
+
+  get passwords() {
+    return this.registerForm.get("passwords");
   }
 
   checkPasswordStrength() {
@@ -97,19 +97,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const email = this.email?.value ?? "";
     const password = this.password?.value ?? "";
 
-    const { score } = zxcvbn(password, [email]);
+    const { id: score } = passwordStrength(
+      password,
+      undefined,
+      "a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-",
+    );
 
-    const feedbackByStrength = {
-      0: "nagyon gyenge",
-      1: "gyenge",
-      2: "közepes",
-      3: "erős",
-      4: "nagyon erős",
-    };
-
+    const feedbackByStrength = ["nagyon gyenge", "gyenge", "közepes", "erős"];
     this.passwordStrength = feedbackByStrength[score];
   }
 

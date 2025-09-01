@@ -25,9 +25,9 @@
     "@angular/platform-browser-dynamic": "^20.2.1",
     "@angular/router": "^20.2.1",
     "@tanstack/angular-query-experimental": "^5.85.5",
+    "check-password-strength": "^3.0.0",
     "rxjs": "~7.8.2",
-    "tslib": "^2.3.0",
-    "zxcvbn": "^4.4.2"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^20.2.0",
@@ -39,9 +39,7 @@
     "@testing-library/jest-dom": "6.8.0",
     "@testing-library/user-event": "^14.5.2",
     "@types/jest": "^30.0.0",
-    "@types/zxcvbn": "^4.4.5",
     "angular-eslint": "20.2.0",
-    "cross-env": "^10.0.0",
     "esbuild-register": "^3.6.0",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.8",
