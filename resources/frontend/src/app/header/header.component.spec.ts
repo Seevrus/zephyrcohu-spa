@@ -1,8 +1,5 @@
 import { provideHttpClient, withFetch } from "@angular/common/http";
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from "@angular/common/http/testing";
+import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
@@ -18,9 +15,7 @@ describe("Header", () => {
   test("should have the correct user actions if the user is not logged in", async () => {
     const { httpTesting } = await renderHeader();
 
-    const request = await waitFor(() => httpTesting.expectOne(sessionRequest), {
-      timeout: 30000,
-    });
+    const request = await waitFor(() => httpTesting.expectOne(sessionRequest));
 
     request.flush(getSessionErrorResponse, {
       status: 401,

@@ -1,11 +1,17 @@
 import { provideHttpClient, withFetch } from "@angular/common/http";
-import { provideHttpClientTesting } from "@angular/common/http/testing";
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
+import { type ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
-import { render, screen } from "@testing-library/angular";
+import { render, screen, waitFor } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
 
 import { testQueryClient } from "../../../mocks/testQueryClient";
+import { createRegisterErrorResponse } from "../../../mocks/users/createRegisterErrorResponse";
+import { registerRequest } from "../../../mocks/users/registerRequest";
 import { RegisterComponent } from "./register.component";
 
 describe("Register Component", () => {
@@ -201,25 +207,116 @@ describe("Register Component", () => {
 
       expect(submitButton).toBeDisabled();
 
-      fixture.componentInstance.registerForm.setValue({
-        email: "abc123@gmail.com",
-        passwords: {
-          password: "12345678",
-          passwordAgain: "12345678",
-        },
-        newsletter: false,
-        cookies: true,
-      });
-      fixture.componentInstance.registerForm.markAsDirty();
-      await fixture.whenStable();
+      await fillForm(fixture);
 
       expect(submitButton).toBeEnabled();
     });
   });
+
+  describe("should show the correct API error messages", () => {
+    test("if the user already exists", async () => {
+      const { fixture, httpTesting } = await renderRegisterComponent();
+      await fillForm(fixture);
+
+      const submitButton = screen
+        .getByTestId("submit-button")
+        .querySelector("button")!;
+
+      await user.click(submitButton);
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(registerRequest),
+      );
+
+      request.flush(createRegisterErrorResponse("USER_EXISTS"), {
+        status: 409,
+        statusText: "Conflict",
+      });
+
+      expect(
+        (await screen.findByTestId("zephyr-error-card-content")).innerHTML,
+      ).toEqual(
+        '<p>Ezzel az e-mail címmel korábban már regisztráltak honlapunkon.</p><p>Bejelentkezéshez kérjük <a routerlink="/bejelentkezes" class="zephyr-link on-error" href="/bejelentkezes">kattintson ide</a>.</p><p>Amennyiben elfelejtette a jelszavát, TODO: <a href="index.php?content=pwdrecover" class="zephyr-link on-error">ide kattintva tud új jelszót létrehozni</a>.</p><!--container--><!--container--><!--container--><p>Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre.</p>',
+      );
+
+      httpTesting.verify();
+    });
+
+    test("if the user is not confirmed", async () => {
+      const { fixture, httpTesting } = await renderRegisterComponent();
+      await fillForm(fixture);
+
+      const submitButton = screen
+        .getByTestId("submit-button")
+        .querySelector("button")!;
+
+      await user.click(submitButton);
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(registerRequest),
+      );
+
+      request.flush(createRegisterErrorResponse("USER_NOT_CONFIRMED"), {
+        status: 409,
+        statusText: "Conflict",
+      });
+
+      expect(
+        (await screen.findByTestId("zephyr-error-card-content")).innerHTML,
+      ).toEqual(
+        '<!--container--><p>A(z) abc123@gmail.com email címmel már regisztráltak honlapunkon, azonban még nem került megerősítésre. Kérjük, lépjen be e-mail fiókjába és a kapott levélben található linken erősítse meg a regisztrációját; előtte nem tud belépni honlapunkra.</p><p><span style="font-weight: bold;">Fontos:</span> Amennyiben nem kapott megerősítő e-mailt, ellenőrizze levélfiókjának Spam (levélszemét) mappáját, mert egyes levelezőrendszerek levélszemétnek minősíthetik a honlap rendszeréből küldött üzeneteket!</p><p>Amennyiben szeretné, hogy újra elküldjük a regisztráció megerősítéséhez szükséges e-mailt, TODO: <a href="index.php?content=register&amp;hol=4&amp;mit=<?php echo ($email_kod); ?>" class="zephyr-link on-error">kérjük kattintson az alábbi linkre.</a></p><!--container--><!--container--><p>Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre.</p>',
+      );
+
+      httpTesting.verify();
+    });
+
+    test("in the case of an unknown error", async () => {
+      const { fixture, httpTesting } = await renderRegisterComponent();
+      await fillForm(fixture);
+
+      const submitButton = screen
+        .getByTestId("submit-button")
+        .querySelector("button")!;
+
+      await user.click(submitButton);
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(registerRequest),
+      );
+
+      request.flush(createRegisterErrorResponse("INTERNAL_SERVER_ERROR"), {
+        status: 500,
+        statusText: "Internal Server Error",
+      });
+
+      expect(
+        (await screen.findByTestId("zephyr-error-card-content")).innerHTML,
+      ).toEqual(
+        '<!--container--><!--container--><p>Váratlan hiba lépett fel a bejelentkezés során.</p><!--container--><p>Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre.</p>',
+      );
+
+      httpTesting.verify();
+    });
+  });
 });
 
+async function fillForm(fixture: ComponentFixture<RegisterComponent>) {
+  fixture.componentInstance.registerForm.setValue({
+    email: "abc123@gmail.com",
+    passwords: {
+      password: "12345678",
+      passwordAgain: "12345678",
+    },
+    newsletter: false,
+    cookies: true,
+  });
+  fixture.componentInstance.registerForm.markAsDirty();
+
+  await fixture.whenStable();
+}
+
 async function renderRegisterComponent() {
-  return render(RegisterComponent, {
+  const renderResult = await render(RegisterComponent, {
     providers: [
       provideHttpClient(withFetch()),
       provideHttpClientTesting(),
@@ -227,4 +324,11 @@ async function renderRegisterComponent() {
       provideZonelessChangeDetection(),
     ],
   });
+
+  const httpTesting = TestBed.inject(HttpTestingController);
+
+  return {
+    ...renderResult,
+    httpTesting,
+  };
 }
