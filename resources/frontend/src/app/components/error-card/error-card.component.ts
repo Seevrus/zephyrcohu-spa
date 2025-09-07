@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import {
   MatCard,
   MatCardContent,
@@ -7,15 +7,14 @@ import {
 } from "@angular/material/card";
 
 @Component({
-  selector: "app-error-card",
   host: {
     class: "app-error-card",
   },
   imports: [MatCard, MatCardContent, MatCardHeader, MatCardSubtitle],
-  templateUrl: "./error-card.component.html",
+  selector: "app-error-card",
   styleUrl: "./error-card.component.scss",
+  templateUrl: "./error-card.component.html",
 })
 export class ErrorCardComponent {
-  @Input({ required: true }) public title = "";
-  @Input({ required: true }) public message = "";
+  title = input.required<string>();
 }
