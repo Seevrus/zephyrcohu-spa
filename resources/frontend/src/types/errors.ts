@@ -1,14 +1,10 @@
-enum ApiError {
-  GENERIC_UNAUTHORIZED = "GENERIC_UNAUTHORIZED",
-}
+export type ApiError =
+  | "GENERIC_UNAUTHORIZED"
+  | "INTERNAL_SERVER_ERROR"
+  | "USER_EXISTS";
 
-type ErrorData = {
+export type ZephyrErrorData = {
   status: number;
   code: ApiError;
-  message: string;
-};
-
-export type ErrorResponse = {
-  error: ErrorData;
-  status: number;
+  message?: string;
 };

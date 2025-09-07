@@ -7,6 +7,7 @@ import {
 } from "@tanstack/angular-query-experimental";
 import { catchError, lastValueFrom, map, of, throwError } from "rxjs";
 
+import { type ZephyrHttpError } from "../../api/ZephyrHttpError";
 import { environment } from "../../environments/environment";
 import {
   type CreateUserRequest,
@@ -14,6 +15,7 @@ import {
   type SessionResponse,
   type UserSession,
 } from "../../types/users";
+import { throwHttpError } from "../../utils/throwHttpError";
 
 @Injectable({
   providedIn: "root",
@@ -23,7 +25,7 @@ export class UsersQueryService {
   private readonly queryClient = inject(QueryClient);
 
   register() {
-    return mutationOptions<UserSession, HttpErrorResponse, CreateUserRequest>({
+    return mutationOptions<UserSession, ZephyrHttpError, CreateUserRequest>({
       mutationKey: ["register"],
       mutationFn: (request) =>
         lastValueFrom(
@@ -33,6 +35,9 @@ export class UsersQueryService {
               request,
             )
             .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
               map<SessionResponse, UserSession>(
                 UsersQueryService.mapSessionResponse,
               ),
@@ -56,7 +61,8 @@ export class UsersQueryService {
             .pipe<SessionResponse<SessionData | null>, UserSession | null>(
               catchError((error: HttpErrorResponse) => {
                 if (error.status === 401) {
-                  // this.queryClient.invalidateQueries();
+                  this.queryClient.invalidateQueries();
+
                   return of({
                     data: null,
                   } as SessionResponse<null>);
