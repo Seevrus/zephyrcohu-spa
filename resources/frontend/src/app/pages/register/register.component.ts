@@ -5,10 +5,13 @@ import { MatButton } from "@angular/material/button";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
+import { RouterLink } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
 import { passwordStrength } from "check-password-strength";
 import { type Subscription } from "rxjs";
 
+import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
+import { zephyr } from "../../../constants/email";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
 import { ErrorCardComponent } from "../../components/error-card/error-card.component";
 import { SuccessCardComponent } from "../../components/success-card/success-card.component";
@@ -30,6 +33,7 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
     NgClass,
     ReactiveFormsModule,
     SuccessCardComponent,
+    RouterLink,
   ],
   templateUrl: "./register.component.html",
   styleUrl: "./register.component.scss",
@@ -41,14 +45,21 @@ export class RegisterComponent implements OnInit, OnDestroy {
   isPasswordVisible = false;
   private passwordChangedSubscription: Subscription | undefined;
 
-  private readonly passwordPattern =
-    /^([a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-]){8,}$/;
+  private readonly allowedPasswordCharacters =
+    "a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-";
+
+  private readonly passwordPattern = new RegExp(
+    `([${this.allowedPasswordCharacters}]){8,}`,
+  );
 
   passwordStrength = "";
+  registerErrorMessage = "";
 
   readonly registerMutation = injectMutation(() =>
     this.usersQueryService.register(),
   );
+
+  readonly zephyrEmail = zephyr;
 
   ngOnInit(): void {
     this.passwordChangedSubscription = this.password?.valueChanges.subscribe(
@@ -102,7 +113,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     const { id: score } = passwordStrength(
       password,
       undefined,
-      "a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-",
+      this.allowedPasswordCharacters,
     );
 
     const feedbackByStrength = ["nagyon gyenge", "gyenge", "közepes", "erős"];
@@ -138,7 +149,13 @@ export class RegisterComponent implements OnInit, OnDestroy {
         newsletter,
         cookiesAccepted,
       });
-    } catch (error) {}
+    } catch (error) {
+      if (error instanceof ZephyrHttpError) {
+        this.registerErrorMessage = error.code;
+      } else {
+        this.registerErrorMessage = "Ismeretlen hiba";
+      }
+    }
   }
 
   togglePassword() {
