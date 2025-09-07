@@ -11,6 +11,7 @@ import userEvent from "@testing-library/user-event";
 
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createRegisterErrorResponse } from "../../../mocks/users/createRegisterErrorResponse";
+import registerOkResponse from "../../../mocks/users/registerOkResponse.json";
 import { registerRequest } from "../../../mocks/users/registerRequest";
 import { RegisterComponent } from "./register.component";
 
@@ -297,6 +298,28 @@ describe("Register Component", () => {
 
       httpTesting.verify();
     });
+  });
+
+  test("should show the correct API success message", async () => {
+    const { fixture, httpTesting } = await renderRegisterComponent();
+    await fillForm(fixture);
+
+    const submitButton = screen
+      .getByTestId("submit-button")
+      .querySelector("button")!;
+
+    await user.click(submitButton);
+
+    const request = await waitFor(() => httpTesting.expectOne(registerRequest));
+    request.flush(registerOkResponse);
+
+    expect(
+      (await screen.findByTestId("zephyr-success-card-content")).innerHTML,
+    ).toEqual(
+      '<p>Email: abc123@gmail.com</p><p>Regisztrációjának megerősítéséhez egy e-mailt küldtünk a fenti email címre. Kérjük, lépjen be e-mail fiókjába és a kapott levélben található linken erősítse meg a regisztrációját; előtte nem tud belépni honlapunkra.</p><p><span style="font-weight: bold;">Fontos:</span> Amennyiben nem kapott megerősítő e-mailt, ellenőrizze levélfiókjának Spam (levélszemét) mappáját, mert egyes levelezőrendszerek levélszemétnek minősíthetik a honlap rendszeréből küldött üzeneteket!</p><p>Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-success" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre.</p>',
+    );
+
+    httpTesting.verify();
   });
 });
 

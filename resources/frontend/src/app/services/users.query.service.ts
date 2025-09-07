@@ -16,6 +16,7 @@ import {
   type UserSession,
 } from "../../types/users";
 import { throwHttpError } from "../../utils/throwHttpError";
+import { queryKeys } from "./queryKeys";
 
 @Injectable({
   providedIn: "root",
@@ -53,7 +54,7 @@ export class UsersQueryService {
 
   session() {
     return queryOptions<UserSession | null, HttpErrorResponse>({
-      queryKey: ["session"],
+      queryKey: queryKeys.session,
       queryFn: () =>
         lastValueFrom(
           this.http
@@ -61,7 +62,8 @@ export class UsersQueryService {
             .pipe<SessionResponse<SessionData | null>, UserSession | null>(
               catchError((error: HttpErrorResponse) => {
                 if (error.status === 401) {
-                  this.queryClient.invalidateQueries();
+                  // TODO: invalidate some queries as they come in
+                  // this.queryClient.invalidateQueries();
 
                   return of({
                     data: null,

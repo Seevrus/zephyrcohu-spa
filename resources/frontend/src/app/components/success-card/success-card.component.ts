@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import {
   MatCard,
   MatCardContent,
@@ -16,6 +16,5 @@ import {
   styleUrl: "./success-card.component.scss",
 })
 export class SuccessCardComponent {
-  @Input({ required: true }) public title = "";
-  @Input({ required: true }) public message = "";
+  title = input.required<string>();
 }

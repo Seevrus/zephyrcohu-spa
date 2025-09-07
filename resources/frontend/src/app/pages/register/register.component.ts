@@ -53,6 +53,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   );
 
   passwordStrength = "";
+  registeredEmail = "";
   registerErrorMessage = "";
 
   readonly registerMutation = injectMutation(() =>
@@ -149,6 +150,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
         newsletter,
         cookiesAccepted,
       });
+
+      this.registeredEmail = email;
+      this.registerForm.reset();
     } catch (error) {
       if (error instanceof ZephyrHttpError) {
         this.registerErrorMessage = error.code;
