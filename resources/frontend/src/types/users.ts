@@ -1,3 +1,8 @@
+export type ConfirmEmailRequest = {
+  code: string;
+  email: string;
+};
+
 export type CreateUserRequest = {
   email: string;
   password: string;

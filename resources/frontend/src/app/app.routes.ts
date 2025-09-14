@@ -1,5 +1,12 @@
 import { type Routes } from "@angular/router";
 
+export type QueryParamsByPath = {
+  "regisztracio/megerosit": {
+    code?: string;
+    email?: string;
+  };
+};
+
 export const routes: Routes = [
   {
     path: "",
@@ -26,5 +33,15 @@ export const routes: Routes = [
       return RegisterComponent;
     },
     title: "Regisztráció",
+  },
+  {
+    path: "regisztracio/megerosit",
+    async loadComponent() {
+      const { RegisterMailAcceptComponent } = await import(
+        "./pages/register-mail-accept/register-mail-accept.component"
+      );
+      return RegisterMailAcceptComponent;
+    },
+    title: "Regisztráció megerősítése",
   },
 ];

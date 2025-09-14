@@ -19,7 +19,6 @@ import { UsersQueryService } from "../../services/users.query.service";
 import { passwordMatchValidator } from "../../validators/password-match.validator";
 
 @Component({
-  selector: "app-register",
   host: {
     class: "app-register",
   },
@@ -35,8 +34,9 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
     SuccessCardComponent,
     RouterLink,
   ],
-  templateUrl: "./register.component.html",
+  selector: "app-register",
   styleUrl: "./register.component.scss",
+  templateUrl: "./register.component.html",
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);

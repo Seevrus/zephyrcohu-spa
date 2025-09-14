@@ -10,13 +10,14 @@ import { catchError, lastValueFrom, map, of, throwError } from "rxjs";
 import { type ZephyrHttpError } from "../../api/ZephyrHttpError";
 import { environment } from "../../environments/environment";
 import {
+  type ConfirmEmailRequest,
   type CreateUserRequest,
   type SessionData,
   type SessionResponse,
   type UserSession,
 } from "../../types/users";
 import { throwHttpError } from "../../utils/throwHttpError";
-import { queryKeys } from "./queryKeys";
+import { mutationKeys, queryKeys } from "./queryKeys";
 
 @Injectable({
   providedIn: "root",
@@ -25,9 +26,32 @@ export class UsersQueryService {
   private readonly http = inject(HttpClient);
   private readonly queryClient = inject(QueryClient);
 
+  confirmEmail() {
+    return mutationOptions<
+      SessionResponse,
+      ZephyrHttpError,
+      ConfirmEmailRequest
+    >({
+      mutationKey: mutationKeys.confirmEmail,
+      mutationFn: (request) =>
+        lastValueFrom(
+          this.http
+            .post<SessionResponse>(
+              `${environment.apiUrl}/users/register/confirm_email`,
+              request,
+            )
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
+    });
+  }
+
   register() {
     return mutationOptions<UserSession, ZephyrHttpError, CreateUserRequest>({
-      mutationKey: ["register"],
+      mutationKey: mutationKeys.register,
       mutationFn: (request) =>
         lastValueFrom(
           this.http

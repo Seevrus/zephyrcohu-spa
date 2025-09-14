@@ -1,4 +1,5 @@
-import { RequestMatch } from "@angular/common/http/testing";
+import { type RequestMatch } from "@angular/common/http/testing";
+
 import { environment } from "../../environments/environment";
 
 export const registerRequest: RequestMatch = {

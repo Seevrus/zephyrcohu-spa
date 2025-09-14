@@ -1,7 +1,10 @@
 import { type HttpErrorResponse } from "@angular/common/http";
 
 import { ZephyrHttpError } from "../api/ZephyrHttpError";
-import { type ZephyrErrorData } from "../types/errors";
+import {
+  type ZephyrErrorData,
+  type ZephyrValidationErrorData,
+} from "../types/errors";
 
 export function throwHttpError(error: HttpErrorResponse) {
   if (isZephyrError(error.error)) {
@@ -10,6 +13,8 @@ export function throwHttpError(error: HttpErrorResponse) {
       error.error.code,
       error.message,
     );
+  } else if (isZephyrValidationError(error.error)) {
+    throw new ZephyrHttpError(error.status, "INVALID_REQUEST_DATA");
   }
 
   throw new ZephyrHttpError(
@@ -28,4 +33,10 @@ function isZephyrError(error: unknown): error is ZephyrErrorData {
     "code" in error &&
     typeof error.code === "string"
   );
+}
+
+function isZephyrValidationError(
+  error: unknown,
+): error is ZephyrValidationErrorData {
+  return typeof error === "object" && error !== null && "errors" in error;
 }
