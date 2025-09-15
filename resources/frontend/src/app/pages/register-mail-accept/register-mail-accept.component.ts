@@ -25,6 +25,7 @@ export class RegisterMailAcceptComponent implements OnInit {
     this.usersQueryService.confirmEmail(),
   );
 
+  readonly confirmedEmail = signal<string>("");
   /**
    * BAD_EMAIL_CODE
    * || BAD_QUERY_PARAMS
@@ -54,6 +55,8 @@ export class RegisterMailAcceptComponent implements OnInit {
         code,
         email,
       });
+
+      this.confirmedEmail.set(email);
     } catch (error) {
       if (error instanceof ZephyrHttpError) {
         this.confirmError.set(error.code);
