@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
-import { zephyr } from "../../../constants/email";
+import { zephyrEmail, zephyrMailTo } from "../../../constants/email";
 import { type QueryParamsByPath } from "../../app.routes";
 import { UsersQueryService } from "../../services/users.query.service";
 
@@ -33,7 +33,8 @@ export class RegisterMailAcceptComponent implements OnInit {
    * || USER_ALREADY_CONFIRMED
    */
   readonly confirmError = signal<string>("");
-  readonly zephyrEmail = zephyr;
+  readonly zephyrEmail = zephyrEmail;
+  readonly zephyrMailTo = zephyrMailTo;
 
   ngOnInit() {
     this.route.queryParams.subscribe(
