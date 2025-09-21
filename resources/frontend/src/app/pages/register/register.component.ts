@@ -11,7 +11,7 @@ import { passwordStrength } from "check-password-strength";
 import { type Subscription } from "rxjs";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
-import { zephyrEmail, zephyrMailTo } from "../../../constants/email";
+import { zephyr } from "../../../constants/email";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
 import { ErrorCardComponent } from "../../components/error-card/error-card.component";
 import { SuccessCardComponent } from "../../components/success-card/success-card.component";
@@ -60,8 +60,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.usersQueryService.register(),
   );
 
-  readonly zephyrEmail = zephyrEmail;
-  readonly zephyrMailTo = zephyrMailTo;
+  readonly zephyrEmail = zephyr;
 
   ngOnInit(): void {
     this.passwordChangedSubscription = this.password?.valueChanges.subscribe(

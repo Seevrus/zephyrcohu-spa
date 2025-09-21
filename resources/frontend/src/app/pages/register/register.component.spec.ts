@@ -11,7 +11,7 @@ import userEvent from "@testing-library/user-event";
 
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createRegisterErrorResponse } from "../../../mocks/users/createRegisterErrorResponse";
-import registerOkResponse from "../../../mocks/users/registerOkResponse.json";
+import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
 import { registerRequest } from "../../../mocks/users/registerRequest";
 import { RegisterComponent } from "./register.component";
 
@@ -311,7 +311,7 @@ describe("Register Component", () => {
     await user.click(submitButton);
 
     const request = await waitFor(() => httpTesting.expectOne(registerRequest));
-    request.flush(registerOkResponse);
+    request.flush(getSessionOkResponse);
 
     expect(
       (await screen.findByTestId("zephyr-success-card-content")).innerHTML,

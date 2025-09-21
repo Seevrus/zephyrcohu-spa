@@ -1,59 +1,81 @@
-<div>
+<div data-testid="register-mail-accept-component">
   <h1>Regisztráció megerősítése</h1>
 
   <div>
     @if (confirmError()) {
-      @switch (true) {
-        @case (["BAD_EMAIL_CODE", "BAD_QUERY_PARAMS", "INVALID_REQUEST_DATA"].includes(
-          confirmError()
-        )) {
-          <p>
-            A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a
-            böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a
-            <a class="zephyr-link" href="mailto:{{ zephyrMailTo }}">{{
+      <div data-testid="confirm-error-message">
+        @switch (true) {
+          @case (
+            [
+              "BAD_EMAIL_CODE",
+              "BAD_QUERY_PARAMS",
+              "INVALID_REQUEST_DATA",
+            ].includes(confirmError())
+          ) {
+            <p>
+              A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a
+              böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a
+              <a class="zephyr-link" href="mailto:{{ zephyrEmail }}">{{
                 zephyrEmail
               }}</a>
-            címre.
-          </p>
-          <p>
-            Regisztrációhoz kérjük
-            <a class="zephyr-link" routerLink="/regisztracio">kattintson ide</a>.
-          </p>
-        }
-        @case (confirmError() === "USER_ALREADY_CONFIRMED") {
-          <p>
-            Ezt a felhasználót már aktiválták. Bármilyen probléma esetén kérjük,
-            írjon nekünk a
-            <a class="zephyr-link" href="mailto:{{ zephyrMailTo }}">{{
+              címre.
+            </p>
+            <p>
+              Regisztrációhoz kérjük
+              <a class="zephyr-link" routerLink="/regisztracio"
+                >kattintson ide</a
+              >.
+            </p>
+          }
+          @case (confirmError() === "USER_ALREADY_CONFIRMED") {
+            <p>
+              Ezt a felhasználót már aktiválták. Bármilyen probléma esetén
+              kérjük, írjon nekünk a
+              <a class="zephyr-link" href="mailto:{{ zephyrEmail }}">{{
                 zephyrEmail
               }}</a>
-            címre.
-          </p>
-          <p>
-            Bejelentkezéshez kérjük
-            <a class="zephyr-link" routerLink="/bejelentkezes">kattintson ide</a>.
-          </p>
-        }
-        @default {
-          <p>
-            Váratlan hiba képett fel az email cím megerősítése során. Kérjük, írjon nekünk a
-            <a class="zephyr-link" href="mailto:{{ zephyrMailTo }}">{{
+              címre.
+            </p>
+            <p>
+              Bejelentkezéshez kérjük
+              <a class="zephyr-link" routerLink="/bejelentkezes"
+                >kattintson ide</a
+              >.
+            </p>
+          }
+          @default {
+            <p>
+              Váratlan hiba képett fel az email cím megerősítése során. Kérjük,
+              írjon nekünk a
+              <a class="zephyr-link" href="mailto:{{ zephyrEmail }}">{{
                 zephyrEmail
               }}</a>
-            címre.
-          </p>
-          <p>
-            Regisztrációhoz kérjük
-            <a class="zephyr-link" routerLink="/regisztracio">kattintson ide</a>.
-          </p>
+              címre.
+            </p>
+            <p>
+              Regisztrációhoz kérjük
+              <a class="zephyr-link" routerLink="/regisztracio"
+                >kattintson ide</a
+              >.
+            </p>
+          }
         }
-      }
+      </div>
     } @else if (confirmedEmail()) {
-      <p>A(z) {{ confirmedEmail() }} e-mail címmel és a hozzá tartozó jelszó segítségével mostantól be tud jelentkezni a
-        honlapunkon.</p>
-      <p>Bejelentkezéshez kérjük <a class="zephyr-link" routerLink="/bejelentkezes">kattintson ide</a>.</p>
+      <div data-testid="confirm-success-message">
+        <p>
+          A(z) {{ confirmedEmail() }} e-mail címmel és a hozzá tartozó jelszó
+          segítségével mostantól be tud jelentkezni a honlapunkon.
+        </p>
+        <p>
+          Bejelentkezéshez kérjük
+          <a class="zephyr-link" routerLink="/bejelentkezes">kattintson ide</a>.
+        </p>
+      </div>
     } @else {
-      <p>Regisztrációs email ellenőrzése folyamatban...</p>
+      <p data-testid="confirm-in-progress">
+        Regisztrációs email ellenőrzése folyamatban...
+      </p>
     }
   </div>
 </div>
