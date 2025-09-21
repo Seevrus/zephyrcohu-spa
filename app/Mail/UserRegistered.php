@@ -11,10 +11,17 @@ use Illuminate\Queue\SerializesModels;
 class UserRegistered extends Mailable {
     use Queueable, SerializesModels;
 
+    public readonly string $email;
+
+    public readonly string $code;
+
     /**
      * Create a new message instance.
      */
-    public function __construct(public string $code) {}
+    public function __construct(string $email, string $code) {
+        $this->email = urlencode($email);
+        $this->code = urlencode($code);
+    }
 
     /**
      * Get the message envelope.

@@ -127,7 +127,7 @@ class UserController extends Controller {
                 'email_code' => $emailCode,
             ]);
 
-            Mail::to($email)->send(new UserRegistered($emailCode));
+            Mail::to($email)->send(new UserRegistered($email, $emailCode));
 
             $newUser->refresh();
 
