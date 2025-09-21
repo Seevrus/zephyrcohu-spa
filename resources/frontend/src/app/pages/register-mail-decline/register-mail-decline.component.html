@@ -1,0 +1,83 @@
+<div data-testid="register-mail-decline-component">
+  <h1>Regisztráció megerősítése</h1>
+
+  <div>
+    @if (revokeError()) {
+      <div data-testid="revoke-error-message">
+        @switch (true) {
+          @case (
+            [
+              "BAD_EMAIL_CODE",
+              "BAD_QUERY_PARAMS",
+              "INVALID_REQUEST_DATA",
+            ].includes(revokeError())
+          ) {
+            <p>
+              A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a
+              böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a
+              <a class="zephyr-link" href="mailto:{{ zephyrEmail }}">{{
+                zephyrEmail
+              }}</a>
+              címre.
+            </p>
+            <p>
+              Regisztrációhoz kérjük
+              <a class="zephyr-link" routerLink="/regisztracio"
+                >kattintson ide</a
+              >.
+            </p>
+          }
+          @case (revokeError() === "USER_ALREADY_CONFIRMED") {
+            <p>
+              A megadott e-mail cím már megerősítésre került a rendszerünkben.
+              Regisztrációja törléséhez kérjük jelentkezzen be, ezek után az
+              "Adatok módosítása" menüpontban lehetséges a regisztráció törlése.
+              Bármilyen probléma esetén kérjük, írjon nekünk a
+              <a class="zephyr-link" href="mailto:{{ zephyrEmail }}">{{
+                zephyrEmail
+              }}</a>
+              címre.
+            </p>
+            <p>
+              Bejelentkezéshez kérjük
+              <a class="zephyr-link" routerLink="/bejelentkezes"
+                >kattintson ide</a
+              >.
+            </p>
+          }
+          @default {
+            <p>
+              Váratlan hiba képett fel a regisztráció elvetése során. Kérjük,
+              írjon nekünk a
+              <a class="zephyr-link" href="mailto:{{ zephyrEmail }}">{{
+                zephyrEmail
+              }}</a>
+              címre.
+            </p>
+            <p>
+              Regisztrációhoz kérjük
+              <a class="zephyr-link" routerLink="/regisztracio"
+                >kattintson ide</a
+              >.
+            </p>
+          }
+        }
+      </div>
+    } @else if (revokedEmail()) {
+      <div data-testid="revoke-success-message">
+        <p>
+          A(z) {{ revokedEmail() }} e-mail címet és a hozzá tartozó minden
+          adatot véglegesen töröltük az adatbázisunkból.
+        </p>
+        <p>
+          Regisztrációhoz kérjük
+          <a class="zephyr-link" routerLink="/regisztracio">kattintson ide</a>.
+        </p>
+      </div>
+    } @else {
+      <p data-testid="revoke-in-progress">
+        Regisztrációs email ellenőrzése folyamatban...
+      </p>
+    }
+  </div>
+</div>

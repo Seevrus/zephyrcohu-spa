@@ -1,10 +1,11 @@
 import { type Routes } from "@angular/router";
 
 export type QueryParamsByPath = {
-  "regisztracio/megerosit": {
+  "regisztracio/elvet": {
     code?: string;
     email?: string;
   };
+  "regisztracio/megerosit": QueryParamsByPath["regisztracio/elvet"];
 };
 
 export const routes: Routes = [
@@ -33,6 +34,16 @@ export const routes: Routes = [
       return RegisterComponent;
     },
     title: "Regisztráció",
+  },
+  {
+    path: "regisztracio/elvet",
+    async loadComponent() {
+      const { RegisterMailDeclineComponent } = await import(
+        "./pages/register-mail-decline/register-mail-decline.component"
+      );
+      return RegisterMailDeclineComponent;
+    },
+    title: "Regisztráció elvetése",
   },
   {
     path: "regisztracio/megerosit",

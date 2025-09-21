@@ -9,23 +9,23 @@ import { UsersQueryService } from "../../services/users.query.service";
 
 @Component({
   host: {
-    class: "app-register-mail-accept",
+    class: "app-register-mail-decline",
   },
   imports: [RouterLink],
-  selector: "app-register-mail-accept",
-  styleUrl: "./register-mail-accept.component.scss",
-  templateUrl: "./register-mail-accept.component.html",
+  selector: "app-register-mail-decline",
+  styleUrl: "./register-mail-decline.component.scss",
+  templateUrl: "./register-mail-decline.component.html",
 })
-export class RegisterMailAcceptComponent implements OnInit {
+export class RegisterMailDeclineComponent implements OnInit {
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
   private readonly usersQueryService = inject(UsersQueryService);
 
-  readonly confirmEmailMutation = injectMutation(() =>
-    this.usersQueryService.registerConfirmEmail(),
+  readonly revokeRegistrationMutation = injectMutation(() =>
+    this.usersQueryService.registerRevoke(),
   );
 
-  readonly confirmedEmail = signal<string>("");
+  readonly revokedEmail = signal<string>("");
   /**
    * BAD_EMAIL_CODE
    * || BAD_QUERY_PARAMS
@@ -33,16 +33,16 @@ export class RegisterMailAcceptComponent implements OnInit {
    * || INVALID_REQUEST_DATA
    * || USER_ALREADY_CONFIRMED
    */
-  readonly confirmError = signal<string>("");
+  readonly revokeError = signal<string>("");
   readonly zephyrEmail = zephyr;
 
   ngOnInit() {
     this.route.queryParams.subscribe(
-      ({ code, email }: QueryParamsByPath["regisztracio/megerosit"]) => {
+      ({ code, email }: QueryParamsByPath["regisztracio/elvet"]) => {
         if (code === undefined || email === undefined) {
-          this.confirmError.set("BAD_QUERY_PARAMS");
+          this.revokeError.set("BAD_QUERY_PARAMS");
         } else {
-          this.confirmEmail(
+          this.revokeRegistration(
             decodeURIComponent(code),
             decodeURIComponent(email),
           );
@@ -51,19 +51,19 @@ export class RegisterMailAcceptComponent implements OnInit {
     );
   }
 
-  private async confirmEmail(code: string, email: string) {
+  private async revokeRegistration(code: string, email: string) {
     try {
-      await this.confirmEmailMutation.mutateAsync({
+      await this.revokeRegistrationMutation.mutateAsync({
         code,
         email,
       });
 
-      this.confirmedEmail.set(email);
+      this.revokedEmail.set(email);
     } catch (error) {
       if (error instanceof ZephyrHttpError) {
-        this.confirmError.set(error.code);
+        this.revokeError.set(error.code);
       } else {
-        this.confirmError.set("INTERNAL_SERVER_ERROR");
+        this.revokeError.set("INTERNAL_SERVER_ERROR");
       }
     }
   }

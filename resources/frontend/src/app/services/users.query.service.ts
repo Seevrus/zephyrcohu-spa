@@ -10,7 +10,7 @@ import { catchError, lastValueFrom, map, of, throwError } from "rxjs";
 import { type ZephyrHttpError } from "../../api/ZephyrHttpError";
 import { environment } from "../../environments/environment";
 import {
-  type ConfirmEmailRequest,
+  type ConfirmOrRevokeEmailRequest,
   type CreateUserRequest,
   type SessionData,
   type SessionResponse,
@@ -25,29 +25,6 @@ import { mutationKeys, queryKeys } from "./queryKeys";
 export class UsersQueryService {
   private readonly http = inject(HttpClient);
   private readonly queryClient = inject(QueryClient);
-
-  confirmEmail() {
-    return mutationOptions<
-      SessionResponse,
-      ZephyrHttpError,
-      ConfirmEmailRequest
-    >({
-      mutationKey: mutationKeys.confirmEmail,
-      mutationFn: (request) =>
-        lastValueFrom(
-          this.http
-            .post<SessionResponse>(
-              `${environment.apiUrl}/users/register/confirm_email`,
-              request,
-            )
-            .pipe(
-              catchError((error: HttpErrorResponse) =>
-                throwError(() => throwHttpError(error)),
-              ),
-            ),
-        ),
-    });
-  }
 
   register() {
     return mutationOptions<UserSession, ZephyrHttpError, CreateUserRequest>({
@@ -73,6 +50,52 @@ export class UsersQueryService {
           queryKey: ["session"],
         });
       },
+    });
+  }
+
+  registerConfirmEmail() {
+    return mutationOptions<
+      SessionResponse,
+      ZephyrHttpError,
+      ConfirmOrRevokeEmailRequest
+    >({
+      mutationKey: mutationKeys.registerConfirmEmail,
+      mutationFn: (request) =>
+        lastValueFrom(
+          this.http
+            .post<SessionResponse>(
+              `${environment.apiUrl}/users/register/confirm_email`,
+              request,
+            )
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
+    });
+  }
+
+  registerRevoke() {
+    return mutationOptions<
+      undefined,
+      ZephyrHttpError,
+      ConfirmOrRevokeEmailRequest
+    >({
+      mutationKey: mutationKeys.registerRevoke,
+      mutationFn: (request) =>
+        lastValueFrom(
+          this.http
+            .post<undefined>(
+              `${environment.apiUrl}/users/register/revoke`,
+              request,
+            )
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
     });
   }
 

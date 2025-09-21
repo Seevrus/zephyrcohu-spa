@@ -1,4 +1,4 @@
-export type ConfirmEmailRequest = {
+export type ConfirmOrRevokeEmailRequest = {
   code: string;
   email: string;
 };

@@ -41,6 +41,13 @@ describe("App Component", () => {
       expect(screen.getByTestId("register-component")).toBeInTheDocument();
     });
 
+    test("renders the decline registration form", async () => {
+      await renderAppComponent("/regisztracio/elvet");
+      expect(
+        screen.getByTestId("register-mail-decline-component"),
+      ).toBeInTheDocument();
+    });
+
     test("renders the accept registration form", async () => {
       await renderAppComponent("/regisztracio/megerosit");
       expect(

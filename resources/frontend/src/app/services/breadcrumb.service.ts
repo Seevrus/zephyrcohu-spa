@@ -15,5 +15,7 @@ export class BreadcrumbService {
     Bejelentkezés: "Bejelentkezés",
     Főoldal: "Főoldal",
     Regisztráció: "Regisztráció",
+    "Regisztráció elvetése": "Regisztráció elvetése",
+    "Regisztráció megerősítése": "Regisztráció megerősítése",
   };
 }

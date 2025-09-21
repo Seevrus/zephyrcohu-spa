@@ -1,0 +1,5 @@
+@use "../../../shared/mixins";
+
+:host(.app-register-mail-decline) {
+  @include mixins.zephyr-main;
+}
