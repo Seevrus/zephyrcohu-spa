@@ -6,6 +6,7 @@ use App\ErrorCode;
 use App\Http\Requests\ConfirmEmailRequest;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\ResendConfirmEmailRequest;
 use App\Http\Resources\ErrorResource;
 use App\Http\Resources\UserResource;
 use App\Mail\UserRegistered;
@@ -134,6 +135,29 @@ class UserController extends Controller {
             return new UserResource($newUser->load('admin'));
         } catch (Throwable $e) {
             abort(500);
+        }
+    }
+
+    public function resendConfirmEmail(ResendConfirmEmailRequest $request) {
+        try {
+            $email = $request->email;
+            $user = User::firstWhere('email', $email);
+
+            $canConfirm = Gate::inspect('resendConfirmationEmail', [User::class, $user]);
+
+            if ($canConfirm->denied()) {
+                return response(
+                    new ErrorResource($canConfirm->status(), ErrorCode::from($canConfirm->message())),
+                    $canConfirm->status()
+                );
+            }
+
+            Mail::to($email)->send(new UserRegistered($email, $user->newUser->email_code));
+
+            return null;
+        } catch (Throwable $e) {
+            //            abort(500);
+            return $e;
         }
     }
 

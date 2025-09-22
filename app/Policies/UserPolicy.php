@@ -93,6 +93,18 @@ class UserPolicy {
         return Response::denyWithStatus(409, ErrorCode::USER_NOT_CONFIRMED->value);
     }
 
+    public function resendConfirmationEmail(?User $sender, ?User $user): Response {
+        if (is_null($user)) {
+            return Response::denyWithStatus(404, ErrorCode::EMAIL_NOT_FOUND->value);
+        }
+
+        if ($user->confirmed) {
+            return Response::denyWithStatus(410, ErrorCode::USER_ALREADY_CONFIRMED->value);
+        }
+
+        return Response::allow();
+    }
+
     public function revokeRegistration(?User $sender, string $email, int $code): Response {
         return $this->confirmEmail($sender, $email, $code);
     }

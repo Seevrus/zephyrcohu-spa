@@ -1,10 +1,10 @@
 Tisztelt Felhasználónk!
 
 Ezt az e-mailt azért küldjük, mert ezzel az e-mail címmel regisztráltak a zephyr.co.hu weboldalon. Amennyiben Ön indította el a regisztrációs folyamatot, kérem kattintson az alábbi hivatkozásra:
-https://zephyr.co.hu/mail/regisztracio/{{ $code }}
+https://zephyr.co.hu/regisztracio/megerosit?email={{ $email }}&code={{ $code }}
 
 Amennyiben Ön nem szeretett volna regisztrálni, az alábbi linkre kattintva tudja törölni a regisztrációját:
-https://zephyr.co.hu/mail/regisztracio_torles/{{ $code }}
+https://zephyr.co.hu/regisztracio/elvet?email={{ $email }}&code={{ $code }}
 
 Amennyiben bármilyen kérdése merülne fel, kérjük vegye fel velünk a kapcsolatot az info@zephyr.co.hu címen.
 
