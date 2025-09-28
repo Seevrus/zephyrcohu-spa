@@ -1,18 +1,17 @@
 import { provideHttpClient, withFetch } from "@angular/common/http";
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from "@angular/common/http/testing";
+import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
-import { render, screen, waitFor } from "@testing-library/angular";
+import { render, screen, waitFor, within } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
 
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createRegisterErrorResponse } from "../../../mocks/users/createRegisterErrorResponse";
 import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
+import postResendConfirmEmailErrorResponse from "../../../mocks/users/postResendConfirmEmailErrorResponse.json";
 import { registerRequest } from "../../../mocks/users/registerRequest";
+import { resendConfirmationEmailRequest } from "../../../mocks/users/resendConfirmationEmailRequest";
 import { RegisterComponent } from "./register.component";
 
 describe("Register Component", () => {
@@ -235,10 +234,22 @@ describe("Register Component", () => {
       });
 
       expect(
-        (await screen.findByTestId("zephyr-error-card-content")).innerHTML,
+        within(await screen.findByTestId("register-error-card")).getByTestId(
+          "zephyr-error-card-content",
+        ).innerHTML,
       ).toEqual(
-        '<p>Ezzel az e-mail címmel korábban már regisztráltak honlapunkon.</p><p>Bejelentkezéshez kérjük <a routerlink="/bejelentkezes" class="zephyr-link on-error" href="/bejelentkezes">kattintson ide</a>.</p><p>Amennyiben elfelejtette a jelszavát, TODO: <a href="index.php?content=pwdrecover" class="zephyr-link on-error">ide kattintva tud új jelszót létrehozni</a>.</p><!--container--><!--container--><!--container--><p>Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre.</p>',
+        '<p>Ezzel az e-mail címmel korábban már regisztráltak honlapunkon.</p><p> Bejelentkezéshez kérjük <a routerlink="/bejelentkezes" class="zephyr-link on-error" href="/bejelentkezes">kattintson ide</a>. </p><p> Amennyiben elfelejtette a jelszavát, TODO: <a href="index.php?content=pwdrecover" class="zephyr-link on-error">ide kattintva tud új jelszót létrehozni</a>. </p><!--container--><!--container--><!--container--><p> Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p>',
       );
+
+      expect(
+        screen.queryByTestId("register-success-card"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("resend-email-error-card"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("resend-email-success-card"),
+      ).not.toBeInTheDocument();
 
       httpTesting.verify();
     });
@@ -263,9 +274,11 @@ describe("Register Component", () => {
       });
 
       expect(
-        (await screen.findByTestId("zephyr-error-card-content")).innerHTML,
+        within(await screen.findByTestId("register-error-card")).getByTestId(
+          "zephyr-error-card-content",
+        ).innerHTML,
       ).toEqual(
-        '<!--container--><p>A(z) abc123@gmail.com email címmel már regisztráltak honlapunkon, azonban még nem került megerősítésre. Kérjük, lépjen be e-mail fiókjába és a kapott levélben található linken erősítse meg a regisztrációját; előtte nem tud belépni honlapunkra.</p><p><span style="font-weight: bold;">Fontos:</span> Amennyiben nem kapott megerősítő e-mailt, ellenőrizze levélfiókjának Spam (levélszemét) mappáját, mert egyes levelezőrendszerek levélszemétnek minősíthetik a honlap rendszeréből küldött üzeneteket!</p><p>Amennyiben szeretné, hogy újra elküldjük a regisztráció megerősítéséhez szükséges e-mailt, TODO: <a href="index.php?content=register&amp;hol=4&amp;mit=<?php echo ($email_kod); ?>" class="zephyr-link on-error">kérjük kattintson az alábbi linkre.</a></p><!--container--><!--container--><p>Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre.</p>',
+        '<!--container--><p> A(z) abc123@gmail.com email címmel már regisztráltak honlapunkon, azonban még nem került megerősítésre. Kérjük, lépjen be e-mail fiókjába és a kapott levélben található linken erősítse meg a regisztrációját; előtte nem tud belépni honlapunkra. </p><p><span style="font-weight: bold;">Fontos:</span> Amennyiben nem kapott megerősítő e-mailt, ellenőrizze levélfiókjának Spam (levélszemét) mappáját, mert egyes levelezőrendszerek levélszemétnek minősíthetik a honlap rendszeréből küldött üzeneteket! </p><p> Amennyiben szeretné, hogy újra elküldjük a regisztráció megerősítéséhez szükséges e-mailt,: <span data-testid="resend-confirmation-email-link" tabindex="{0}" class="zephyr-link on-error">kérjük kattintson ide.</span></p><!--container--><!--container--><p> Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p>',
       );
 
       httpTesting.verify();
@@ -291,12 +304,43 @@ describe("Register Component", () => {
       });
 
       expect(
-        (await screen.findByTestId("zephyr-error-card-content")).innerHTML,
+        within(await screen.findByTestId("register-error-card")).getByTestId(
+          "zephyr-error-card-content",
+        ).innerHTML,
       ).toEqual(
-        '<!--container--><!--container--><p>Váratlan hiba lépett fel a bejelentkezés során.</p><!--container--><p>Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre.</p>',
+        '<!--container--><!--container--><p>Váratlan hiba lépett fel a bejelentkezés során.</p><!--container--><p> Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p>',
       );
 
       httpTesting.verify();
+    });
+
+    test("submit button is disabled until the user modifies something", async () => {
+      const { fixture, httpTesting } = await renderRegisterComponent();
+      await fillForm(fixture);
+
+      const submitButton = screen
+        .getByTestId("submit-button")
+        .querySelector("button")!;
+
+      await user.click(submitButton);
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(registerRequest),
+      );
+
+      request.flush(createRegisterErrorResponse("INTERNAL_SERVER_ERROR"), {
+        status: 500,
+        statusText: "Internal Server Error",
+      });
+
+      expect(
+        await screen.findByTestId("register-error-card"),
+      ).toBeInTheDocument();
+
+      expect(submitButton).toBeDisabled();
+
+      await fillForm(fixture, { email: "abc124@gmail.com" });
+      expect(submitButton).toBeEnabled();
     });
   });
 
@@ -314,18 +358,108 @@ describe("Register Component", () => {
     request.flush(getSessionOkResponse);
 
     expect(
-      (await screen.findByTestId("zephyr-success-card-content")).innerHTML,
+      within(await screen.findByTestId("register-success-card")).getByTestId(
+        "zephyr-success-card-content",
+      ).innerHTML,
     ).toEqual(
-      '<p>Email: abc123@gmail.com</p><p>Regisztrációjának megerősítéséhez egy e-mailt küldtünk a fenti email címre. Kérjük, lépjen be e-mail fiókjába és a kapott levélben található linken erősítse meg a regisztrációját; előtte nem tud belépni honlapunkra.</p><p><span style="font-weight: bold;">Fontos:</span> Amennyiben nem kapott megerősítő e-mailt, ellenőrizze levélfiókjának Spam (levélszemét) mappáját, mert egyes levelezőrendszerek levélszemétnek minősíthetik a honlap rendszeréből küldött üzeneteket!</p><p>Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-success" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre.</p>',
+      '<p>Email: abc123@gmail.com</p><p> Regisztrációjának megerősítéséhez egy e-mailt küldtünk a fenti email címre. Kérjük, lépjen be e-mail fiókjába és a kapott levélben található linken erősítse meg a regisztrációját; előtte nem tud belépni honlapunkra. </p><p><span style="font-weight: bold;">Fontos:</span> Amennyiben nem kapott megerősítő e-mailt, ellenőrizze levélfiókjának Spam (levélszemét) mappáját, mert egyes levelezőrendszerek levélszemétnek minősíthetik a honlap rendszeréből küldött üzeneteket! </p><p> Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p>',
     );
+
+    expect(screen.queryByTestId("register-error-card")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("resend-email-error-card"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("resend-email-success-card"),
+    ).not.toBeInTheDocument();
 
     httpTesting.verify();
   });
+
+  test("should show the correct error message when resending the confirmation email fails", async () => {
+    const { fixture, httpTesting } = await renderRegisterComponent();
+    await fillForm(fixture);
+
+    fixture.componentInstance.registerErrorMessage.set("USER_NOT_CONFIRMED");
+
+    const resendLink = await screen.findByTestId(
+      "resend-confirmation-email-link",
+    );
+
+    await user.click(resendLink);
+
+    const resendConfirmEmailRequest = await waitFor(() =>
+      httpTesting.expectOne(resendConfirmationEmailRequest),
+    );
+
+    resendConfirmEmailRequest.flush(postResendConfirmEmailErrorResponse, {
+      status: 500,
+      statusText: "Internal Server Error",
+    });
+
+    expect(
+      within(await screen.findByTestId("resend-email-error-card")).getByTestId(
+        "zephyr-error-card-content",
+      ).innerHTML,
+    ).toEqual(
+      '<p>Váratlan hiba lépett fel a regisztrációs email újraküldése során.</p><p> Kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p>',
+    );
+
+    expect(
+      await screen.findByTestId("register-error-card"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('"register-success-card"'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("resend-email-success-card"),
+    ).not.toBeInTheDocument();
+  });
+
+  test("should show the correct success message when resending the confirmation email succeeds", async () => {
+    const { fixture, httpTesting } = await renderRegisterComponent();
+    await fillForm(fixture);
+
+    fixture.componentInstance.registerErrorMessage.set("USER_NOT_CONFIRMED");
+
+    const resendLink = await screen.findByTestId(
+      "resend-confirmation-email-link",
+    );
+
+    await user.click(resendLink);
+
+    const resendConfirmEmailRequest = await waitFor(() =>
+      httpTesting.expectOne(resendConfirmationEmailRequest),
+    );
+
+    resendConfirmEmailRequest.flush(null);
+
+    expect(
+      within(
+        await screen.findByTestId("resend-email-success-card"),
+      ).getByTestId("zephyr-success-card-content").innerHTML,
+    ).toEqual(
+      '<p>Email: </p><p> Regisztrációjának megerősítéséhez újból kiküldtük az e-mailt a fenti email címre. Kérjük, lépjen be e-mail fiókjába és a kapott levélben található linken erősítse meg a regisztrációját; előtte nem tud belépni honlapunkra. </p><p><span style="font-weight: bold;">Fontos:</span> Amennyiben nem kapott megerősítő e-mailt, ellenőrizze levélfiókjának Spam (levélszemét) mappáját, mert egyes levelezőrendszerek levélszemétnek minősíthetik a honlap rendszeréből küldött üzeneteket! </p><p> Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p>',
+    );
+
+    expect(
+      await screen.findByTestId("register-error-card"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('"register-success-card"'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("resend-email-error-card"),
+    ).not.toBeInTheDocument();
+  });
 });
 
-async function fillForm(fixture: ComponentFixture<RegisterComponent>) {
+async function fillForm(
+  fixture: ComponentFixture<RegisterComponent>,
+  overrides: Partial<{ email: string }> = {},
+) {
   fixture.componentInstance.registerForm.setValue({
-    email: "abc123@gmail.com",
+    email: overrides.email ?? "abc123@gmail.com",
     passwords: {
       password: "12345678",
       passwordAgain: "12345678",

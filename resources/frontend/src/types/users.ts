@@ -10,6 +10,10 @@ export type CreateUserRequest = {
   newsletter: boolean;
 };
 
+export type ResendRegistrationEmailRequest = {
+  email: string;
+};
+
 export type SessionResponse<D extends SessionData | null = SessionData> = {
   data: D;
 };

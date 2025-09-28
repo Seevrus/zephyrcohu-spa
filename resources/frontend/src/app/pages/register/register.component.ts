@@ -1,5 +1,11 @@
 import { NgClass } from "@angular/common";
-import { Component, inject, type OnDestroy, type OnInit } from "@angular/core";
+import {
+  Component,
+  inject,
+  type OnDestroy,
+  type OnInit,
+  signal,
+} from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
 import { MatCheckbox } from "@angular/material/checkbox";
@@ -25,14 +31,14 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   imports: [
     ButtonLoadableComponent,
     ErrorCardComponent,
-    MatCheckbox,
     MatButton,
+    MatCheckbox,
     MatFormField,
     MatInputModule,
     NgClass,
     ReactiveFormsModule,
-    SuccessCardComponent,
     RouterLink,
+    SuccessCardComponent,
   ],
   selector: "app-register",
   styleUrl: "./register.component.scss",
@@ -42,22 +48,36 @@ export class RegisterComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly usersQueryService = inject(UsersQueryService);
 
-  isPasswordVisible = false;
-  private passwordChangedSubscription: Subscription | undefined;
-
   private readonly allowedPasswordCharacters =
     "a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-";
+
+  readonly isPasswordVisible = signal(false);
+  private passwordChangedSubscription: Subscription | undefined;
 
   private readonly passwordPattern = new RegExp(
     `([${this.allowedPasswordCharacters}]){8,}`,
   );
 
-  passwordStrength = "";
-  registeredEmail = "";
-  registerErrorMessage = "";
+  readonly passwordStrength = signal<string>("");
+  readonly registeredEmail = signal<string>("");
+  readonly registerErrorMessage = signal<string>("");
 
-  readonly registerMutation = injectMutation(() =>
+  /**
+   * | EMAIL_NOT_FOUND
+   * | INTERNAL_SERVER_ERROR
+   * | USER_ALREADY_CONFIRMED
+   *
+   * But we will be a bit optimistic here. Given how the action is enabled, only unexpected errors will occur.
+   */
+  readonly resendConfirmationEmailErrorMessage = signal<string>("");
+  readonly resentEmail = signal<string>("");
+
+  private readonly registerMutation = injectMutation(() =>
     this.usersQueryService.register(),
+  );
+
+  private readonly resendRegistrationEmailMutation = injectMutation(() =>
+    this.usersQueryService.resendRegistrationEmail(),
   );
 
   readonly zephyrEmail = zephyr;
@@ -105,7 +125,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   checkPasswordStrength() {
     if (!this.password?.valid) {
-      this.passwordStrength = "";
+      this.passwordStrength.set("");
       return;
     }
 
@@ -118,7 +138,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     );
 
     const feedbackByStrength = ["nagyon gyenge", "gyenge", "közepes", "erős"];
-    this.passwordStrength = feedbackByStrength[score];
+    this.passwordStrength.set(feedbackByStrength[score]);
   }
 
   getPasswordStrengthClass(strength: string) {
@@ -137,8 +157,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
   }
 
-  async onSubmit() {
+  async onRegister() {
     try {
+      this.registeredEmail.set("");
+      this.registerErrorMessage.set("");
+      this.resendConfirmationEmailErrorMessage.set("");
+      this.resentEmail.set("");
+
+      this.registerForm.markAsPristine();
+
       const email = this.email?.value ?? "";
       const password = this.password?.value ?? "";
       const newsletter = this.registerForm.get("newsletter")?.value ?? false;
@@ -151,18 +178,36 @@ export class RegisterComponent implements OnInit, OnDestroy {
         cookiesAccepted,
       });
 
-      this.registeredEmail = email;
+      this.registeredEmail.set(email);
       this.registerForm.reset();
     } catch (error) {
       if (error instanceof ZephyrHttpError) {
-        this.registerErrorMessage = error.code;
+        this.registerErrorMessage.set(error.code);
       } else {
-        this.registerErrorMessage = "Ismeretlen hiba";
+        this.registerErrorMessage.set("INTERNAL_SERVER_ERROR");
+      }
+    }
+  }
+
+  async onResendConfirmationEmail() {
+    try {
+      this.registeredEmail.set("");
+      this.resendConfirmationEmailErrorMessage.set("");
+      this.resentEmail.set("");
+
+      const email = this.email?.value ?? "";
+      await this.resendRegistrationEmailMutation.mutateAsync({ email });
+      this.resentEmail.set(email);
+    } catch (error) {
+      if (error instanceof ZephyrHttpError) {
+        this.resendConfirmationEmailErrorMessage.set(error.code);
+      } else {
+        this.resendConfirmationEmailErrorMessage.set("INTERNAL_SERVER_ERROR");
       }
     }
   }
 
   togglePassword() {
-    this.isPasswordVisible = !this.isPasswordVisible;
+    this.isPasswordVisible.set(!this.isPasswordVisible());
   }
 }

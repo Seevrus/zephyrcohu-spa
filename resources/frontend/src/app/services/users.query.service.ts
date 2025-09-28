@@ -12,6 +12,7 @@ import { environment } from "../../environments/environment";
 import {
   type ConfirmOrRevokeEmailRequest,
   type CreateUserRequest,
+  type ResendRegistrationEmailRequest,
   type SessionData,
   type SessionResponse,
   type UserSession,
@@ -88,6 +89,29 @@ export class UsersQueryService {
           this.http
             .post<undefined>(
               `${environment.apiUrl}/users/register/revoke`,
+              request,
+            )
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
+    });
+  }
+
+  resendRegistrationEmail() {
+    return mutationOptions<
+      undefined,
+      ZephyrHttpError,
+      ResendRegistrationEmailRequest
+    >({
+      mutationKey: mutationKeys.registerRevoke,
+      mutationFn: (request) =>
+        lastValueFrom(
+          this.http
+            .post<undefined>(
+              `${environment.apiUrl}/users/register/resend_confirm_email`,
               request,
             )
             .pipe(

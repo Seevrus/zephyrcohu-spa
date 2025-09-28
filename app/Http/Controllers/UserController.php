@@ -156,8 +156,7 @@ class UserController extends Controller {
 
             return null;
         } catch (Throwable $e) {
-            //            abort(500);
-            return $e;
+            abort(500);
         }
     }
 
