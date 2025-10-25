@@ -135,7 +135,7 @@ describe("Register Email, Accept Registration", () => {
     expect(
       (await screen.findByTestId("confirm-success-message")).innerHTML,
     ).toEqual(
-      '<p>A(z) abc@example.com e-mail címmel és a hozzá tartozó jelszó segítségével mostantól be tud jelentkezni a honlapunkon.</p><p>Bejelentkezéshez kérjük <a routerlink="/bejelentkezes" class="zephyr-link" href="/bejelentkezes">kattintson ide</a>.</p>',
+      '<p> A(z) abc@example.com e-mail címmel és a hozzá tartozó jelszó segítségével mostantól be tud jelentkezni a honlapunkon. </p><p> Bejelentkezéshez kérjük <a routerlink="/bejelentkezes" class="zephyr-link" href="/bejelentkezes">kattintson ide</a>. </p>',
     );
 
     httpTesting.verify();
