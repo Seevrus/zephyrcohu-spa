@@ -14,6 +14,10 @@ class UserNewPassword extends Model {
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'issued_at', 'password_code', 'user_id',
+    ];
+
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }

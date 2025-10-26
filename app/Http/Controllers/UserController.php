@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\ErrorCode;
 use App\Http\Requests\ConfirmEmailRequest;
 use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\ForgottenPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ResendConfirmEmailRequest;
 use App\Http\Resources\ErrorResource;
 use App\Http\Resources\UserResource;
+use App\Mail\ForgottenPassword;
 use App\Mail\UserRegistered;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -133,6 +136,35 @@ class UserController extends Controller {
             $newUser->refresh();
 
             return new UserResource($newUser->load('admin'));
+        } catch (Throwable $e) {
+            abort(500);
+        }
+    }
+
+    public function requestNewPassword(ForgottenPasswordRequest $request) {
+        try {
+            $email = $request->email;
+            $user = User::with('admin')->firstWhere('email', $email);
+
+            $canRequestPasswordChange = Gate::inspect('requestNewPassword', [User::class, $user]);
+
+            if ($canRequestPasswordChange->denied()) {
+                return response(
+                    new ErrorResource($canRequestPasswordChange->status(), ErrorCode::from($canRequestPasswordChange->message())),
+                    $canRequestPasswordChange->status()
+                );
+            }
+
+            $passwordCode = $this->generate_code();
+
+            $user->newPassword()->upsert([
+                'issued_at' => Carbon::now(),
+                'password_code' => $passwordCode,
+            ], ['user_id'], ['issued_at', 'password_code']);
+
+            Mail::to($email)->send(new ForgottenPassword($email, $passwordCode));
+
+            return response(null, 201);
         } catch (Throwable $e) {
             abort(500);
         }

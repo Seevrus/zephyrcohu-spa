@@ -7,7 +7,7 @@
         <p>Ezt a levelet azért küldjük, mert ezzel az e-mail címmel regisztráltak a <a href="https://zephyr.co.hu"
                                                                                        style="color: rgb(51, 51, 51); text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); background-color: rgba(245, 245, 245, 1);">zephyr.co.hu</a>
             weboldalon.</p>
-        <p>Amennyiben Ön indította el a regisztrációs folyamatot, kérem <a
+        <p>Amennyiben Ön indította el a regisztrációs folyamatot, kérjük <a
                     href="https://zephyr.co.hu/regisztracio/megerosit?email={{ $email }}&code={{ $code }}"
                     style="color: rgb(51, 51, 51); text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); background-color: rgba(245, 245, 245, 1);">kattintson
                 ide</a> <strong>a regisztráció véglegesítéséhez</strong>.</p>

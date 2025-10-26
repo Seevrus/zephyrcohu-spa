@@ -1,6 +1,6 @@
 Tisztelt Felhasználónk!
 
-Ezt az e-mailt azért küldjük, mert ezzel az e-mail címmel regisztráltak a zephyr.co.hu weboldalon. Amennyiben Ön indította el a regisztrációs folyamatot, kérem kattintson az alábbi hivatkozásra:
+Ezt az e-mailt azért küldjük, mert ezzel az e-mail címmel regisztráltak a zephyr.co.hu weboldalon. Amennyiben Ön indította el a regisztrációs folyamatot, kérjük kattintson az alábbi hivatkozásra:
 https://zephyr.co.hu/regisztracio/megerosit?email={{ $email }}&code={{ $code }}
 
 Amennyiben Ön nem szeretett volna regisztrálni, az alábbi linkre kattintva tudja törölni a regisztrációját:
