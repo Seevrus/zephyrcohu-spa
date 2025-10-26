@@ -12,8 +12,8 @@ import { provideRouter, TitleStrategy } from "@angular/router";
 import {
   provideTanStackQuery,
   QueryClient,
-  withDevtools,
 } from "@tanstack/angular-query-experimental";
+import { withDevtools } from "@tanstack/angular-query-experimental/devtools";
 
 import { routes } from "./app.routes";
 import { AppTitleStrategy } from "./app.title.strategy";

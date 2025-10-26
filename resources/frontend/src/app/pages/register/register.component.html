@@ -1,131 +1,31 @@
 <div class="register-component" data-testid="register-component">
   <h1>Regisztráció</h1>
   @if (registerErrorMessage()) {
-    <app-error-card
-      data-testid="register-error-card"
-      title="Hiba a regisztráció során"
-    >
-      @switch (registerErrorMessage()) {
-        @case ("USER_EXISTS") {
-          <p>Ezzel az e-mail címmel korábban már regisztráltak honlapunkon.</p>
-          <p>
-            Bejelentkezéshez kérjük
-            <a class="zephyr-link on-error" routerLink="/bejelentkezes"
-              >kattintson ide</a
-            >.
-          </p>
-          <p>
-            Amennyiben elfelejtette a jelszavát, TODO:
-            <a class="zephyr-link on-error" href="index.php?content=pwdrecover"
-              >ide kattintva tud új jelszót létrehozni</a
-            >.
-          </p>
-        }
-        @case ("USER_NOT_CONFIRMED") {
-          <p>
-            A(z) {{ email?.value }} email címmel már regisztráltak honlapunkon,
-            azonban még nem került megerősítésre. Kérjük, lépjen be e-mail
-            fiókjába és a kapott levélben található linken erősítse meg a
-            regisztrációját; előtte nem tud belépni honlapunkra.
-          </p>
-          <p>
-            <span style="font-weight: bold">Fontos:</span> Amennyiben nem kapott
-            megerősítő e-mailt, ellenőrizze levélfiókjának Spam (levélszemét)
-            mappáját, mert egyes levelezőrendszerek levélszemétnek minősíthetik
-            a honlap rendszeréből küldött üzeneteket!
-          </p>
-          <p>
-            Amennyiben szeretné, hogy újra elküldjük a regisztráció
-            megerősítéséhez szükséges e-mailt,:
-            <span
-              class="zephyr-link on-error"
-              data-testid="resend-confirmation-email-link"
-              (click)="onResendConfirmationEmail()"
-              (keyup)="onResendConfirmationEmail()"
-              tabindex="{0}"
-              >kérjük kattintson ide.</span
-            >
-          </p>
-        }
-        @default {
-          <p>Váratlan hiba lépett fel a bejelentkezés során.</p>
-        }
+    @switch (registerErrorMessage()) {
+      @case ("USER_EXISTS") {
+        <app-register-already-exists></app-register-already-exists>
       }
-      <p>
-        Bármilyen probléma esetén kérjük, írjon nekünk a
-        <a class="zephyr-link on-error" href="mailto:{{ zephyrEmail }}">{{
-          zephyrEmail
-        }}</a>
-        címre.
-      </p>
-    </app-error-card>
+      @case ("USER_NOT_CONFIRMED") {
+        <app-register-exists-not-confirmed
+          email="{{ email?.value }}"
+          (resendConfirmationEmail)="onResendConfirmationEmail()"
+        ></app-register-exists-not-confirmed>
+      }
+      @default {
+        <app-register-unexpected-error></app-register-unexpected-error>
+      }
+    }
   } @else if (registeredEmail()) {
-    <app-success-card
-      data-testid="register-success-card"
-      title="Sikeres regisztráció"
-    >
-      <p>Email: {{ registeredEmail() }}</p>
-      <p>
-        Regisztrációjának megerősítéséhez egy e-mailt küldtünk a fenti email
-        címre. Kérjük, lépjen be e-mail fiókjába és a kapott levélben található
-        linken erősítse meg a regisztrációját; előtte nem tud belépni
-        honlapunkra.
-      </p>
-      <p>
-        <span style="font-weight: bold">Fontos:</span> Amennyiben nem kapott
-        megerősítő e-mailt, ellenőrizze levélfiókjának Spam (levélszemét)
-        mappáját, mert egyes levelezőrendszerek levélszemétnek minősíthetik a
-        honlap rendszeréből küldött üzeneteket!
-      </p>
-      <p>
-        Bármilyen probléma esetén kérjük, írjon nekünk a
-        <a class="zephyr-link" href="mailto:{{ zephyrEmail }}">{{
-          zephyrEmail
-        }}</a>
-        címre.
-      </p>
-    </app-success-card>
+    <app-register-success
+      registeredEmail="{{ registeredEmail() }}"
+    ></app-register-success>
   }
   @if (resendConfirmationEmailErrorMessage()) {
-    <app-error-card
-      data-testid="resend-email-error-card"
-      title="Hiba az email újraküldése során"
-    >
-      <p>Váratlan hiba lépett fel a regisztrációs email újraküldése során.</p>
-      <p>
-        Kérjük, írjon nekünk a
-        <a class="zephyr-link on-error" href="mailto:{{ zephyrEmail }}">{{
-          zephyrEmail
-        }}</a>
-        címre.
-      </p>
-    </app-error-card>
+    <app-register-resend-email-error></app-register-resend-email-error>
   } @else if (resentEmail()) {
-    <app-success-card
-      data-testid="resend-email-success-card"
-      title="Megerősítést kérő e-mail újbóli kiküldése megtörtént"
-    >
-      <p>Email: {{ registeredEmail() }}</p>
-      <p>
-        Regisztrációjának megerősítéséhez újból kiküldtük az e-mailt a fenti
-        email címre. Kérjük, lépjen be e-mail fiókjába és a kapott levélben
-        található linken erősítse meg a regisztrációját; előtte nem tud belépni
-        honlapunkra.
-      </p>
-      <p>
-        <span style="font-weight: bold">Fontos:</span> Amennyiben nem kapott
-        megerősítő e-mailt, ellenőrizze levélfiókjának Spam (levélszemét)
-        mappáját, mert egyes levelezőrendszerek levélszemétnek minősíthetik a
-        honlap rendszeréből küldött üzeneteket!
-      </p>
-      <p>
-        Bármilyen probléma esetén kérjük, írjon nekünk a
-        <a class="zephyr-link" href="mailto:{{ zephyrEmail }}">{{
-          zephyrEmail
-        }}</a>
-        címre.
-      </p>
-    </app-success-card>
+    <app-register-resend-email-success
+      resentEmail="{{ resentEmail() }}}"
+    ></app-register-resend-email-success>
   }
   <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
     <div class="form-elements-container">

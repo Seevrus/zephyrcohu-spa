@@ -11,7 +11,6 @@ import { MatButton } from "@angular/material/button";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
-import { RouterLink } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
 import { passwordStrength } from "check-password-strength";
 import { type Subscription } from "rxjs";
@@ -19,8 +18,12 @@ import { type Subscription } from "rxjs";
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { zephyr } from "../../../constants/email";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
-import { ErrorCardComponent } from "../../components/error-card/error-card.component";
-import { SuccessCardComponent } from "../../components/success-card/success-card.component";
+import { RegisterAlreadyExistsComponent } from "../../components/form-alerts/register-already-exists/register-already-exists.component";
+import { RegisterExistsNotConfirmedComponent } from "../../components/form-alerts/register-exists-not-confirmed/register-exists-not-confirmed.component";
+import { RegisterResendEmailErrorComponent } from "../../components/form-alerts/register-resend-email-error/register-resend-email-error.component";
+import { RegisterResendEmailSuccessComponent } from "../../components/form-alerts/register-resend-email-success/register-resend-email-success.component";
+import { RegisterSuccessComponent } from "../../components/form-alerts/register-success/register-success.component";
+import { RegisterUnexpectedErrorComponent } from "../../components/form-alerts/register-unexpected-error/register-unexpected-error.component";
 import { UsersQueryService } from "../../services/users.query.service";
 import { passwordMatchValidator } from "../../validators/password-match.validator";
 
@@ -30,15 +33,18 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   },
   imports: [
     ButtonLoadableComponent,
-    ErrorCardComponent,
     MatButton,
     MatCheckbox,
     MatFormField,
     MatInputModule,
     NgClass,
     ReactiveFormsModule,
-    RouterLink,
-    SuccessCardComponent,
+    RegisterAlreadyExistsComponent,
+    RegisterExistsNotConfirmedComponent,
+    RegisterResendEmailErrorComponent,
+    RegisterResendEmailSuccessComponent,
+    RegisterSuccessComponent,
+    RegisterUnexpectedErrorComponent,
   ],
   selector: "app-register",
   styleUrl: "./register.component.scss",
@@ -77,7 +83,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   );
 
   private readonly resendRegistrationEmailMutation = injectMutation(() =>
-    this.usersQueryService.resendRegistrationEmail(),
+    this.usersQueryService.resendRegistrationConfirmEmail(),
   );
 
   readonly zephyrEmail = zephyr;
@@ -192,6 +198,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   async onResendConfirmationEmail() {
     try {
       this.registeredEmail.set("");
+      this.registerErrorMessage.set("");
       this.resendConfirmationEmailErrorMessage.set("");
       this.resentEmail.set("");
 
