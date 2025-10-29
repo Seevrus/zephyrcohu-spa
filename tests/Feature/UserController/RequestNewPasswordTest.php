@@ -33,25 +33,23 @@ describe('Request new password controller', function () {
     });
 
     test("should fail if the user doesn't exist", function () {
+        Mail::fake();
         $response = $this->postJson('/api/users/profile/request_new_password', ['email' => 'user_not_existing@example.com']);
 
         $this->assertDatabaseCount('users_new_passwords', 1);
 
-        $response->assertStatus(404)->assertExactJson([
-            'status' => 404,
-            'code' => 'EMAIL_NOT_FOUND',
-        ]);
+        $response->assertStatus(201);
+        Mail::assertNothingSent();
     });
 
     test('should fail for security reasons if the user is an admin', function () {
+        Mail::fake();
         $response = $this->postJson('/api/users/profile/request_new_password', ['email' => 'user004@example.com']);
 
         $this->assertDatabaseCount('users_new_passwords', 1);
 
-        $response->assertStatus(400)->assertExactJson([
-            'status' => 400,
-            'code' => 'OPERATION_NOT_ALLOWED',
-        ]);
+        $response->assertStatus(201);
+        Mail::assertNothingSent();
     });
 
     test('inserts new password code for regular users', function () {

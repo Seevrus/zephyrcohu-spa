@@ -146,23 +146,16 @@ class UserController extends Controller {
             $email = $request->email;
             $user = User::with('admin')->firstWhere('email', $email);
 
-            $canRequestPasswordChange = Gate::inspect('requestNewPassword', [User::class, $user]);
+            if ($user && ! $user->admin) {
+                $passwordCode = $this->generate_code();
 
-            if ($canRequestPasswordChange->denied()) {
-                return response(
-                    new ErrorResource($canRequestPasswordChange->status(), ErrorCode::from($canRequestPasswordChange->message())),
-                    $canRequestPasswordChange->status()
-                );
+                $user->newPassword()->upsert([
+                    'issued_at' => Carbon::now(),
+                    'password_code' => $passwordCode,
+                ], ['user_id'], ['issued_at', 'password_code']);
+
+                Mail::to($email)->send(new ForgottenPassword($email, $passwordCode));
             }
-
-            $passwordCode = $this->generate_code();
-
-            $user->newPassword()->upsert([
-                'issued_at' => Carbon::now(),
-                'password_code' => $passwordCode,
-            ], ['user_id'], ['issued_at', 'password_code']);
-
-            Mail::to($email)->send(new ForgottenPassword($email, $passwordCode));
 
             return response(null, 201);
         } catch (Throwable $e) {

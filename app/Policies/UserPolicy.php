@@ -93,18 +93,6 @@ class UserPolicy {
         return Response::denyWithStatus(409, ErrorCode::USER_NOT_CONFIRMED->value);
     }
 
-    public function requestNewPassword(?User $sender, ?User $user): Response {
-        if (is_null($user)) {
-            return Response::denyWithStatus(404, ErrorCode::EMAIL_NOT_FOUND->value);
-        }
-
-        if ($user->admin) {
-            return Response::denyWithStatus(400, ErrorCode::OPERATION_NOT_ALLOWED->value);
-        }
-
-        return Response::allow();
-    }
-
     public function resendConfirmationEmail(?User $sender, ?User $user): Response {
         if (is_null($user)) {
             return Response::denyWithStatus(404, ErrorCode::EMAIL_NOT_FOUND->value);
