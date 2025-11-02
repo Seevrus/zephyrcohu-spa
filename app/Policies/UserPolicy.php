@@ -106,13 +106,18 @@ class UserPolicy {
     }
 
     public function resetPassword(?User $sender, ?User $user, int $code): Response {
-        if (is_null($user) || $user->newPassword?->password_code != $code) {
-            return Response::denyWithStatus(404, ErrorCode::BAD_CREDENTIALS->value);
+        if (is_null($user) || ! $user->newPassword?->password_code) {
+            return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
+        }
+
+        $isCodeCorrect = Hash::check($code, $user->newPassword->password_code);
+        if (! $isCodeCorrect) {
+            return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
         }
 
         $expired = $user->newPassword->issued_at->lt(Carbon::now()->subMinutes(30));
         if ($expired) {
-            return Response::denyWithStatus(404, ErrorCode::CODE_EXPIRED->value);
+            return Response::denyWithStatus(410, ErrorCode::CODE_EXPIRED->value);
         }
 
         return Response::allow();

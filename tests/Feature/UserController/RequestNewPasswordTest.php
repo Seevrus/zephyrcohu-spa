@@ -150,7 +150,7 @@ function resetRequestNewPasswordTestData(): void {
     DB::table('users_new_passwords')->insert(
         [
             'user_id' => 3,
-            'password_code' => 123456789,
+            'password_code' => Hash::make(123456789),
         ]
     );
 }

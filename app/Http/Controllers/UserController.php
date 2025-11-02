@@ -152,7 +152,7 @@ class UserController extends Controller {
 
                 $user->newPassword()->upsert([
                     'issued_at' => Carbon::now(),
-                    'password_code' => $passwordCode,
+                    'password_code' => Hash::make($passwordCode),
                 ], ['user_id'], ['issued_at', 'password_code']);
 
                 Mail::to($email)->send(new ForgottenPassword($email, $passwordCode));
