@@ -251,7 +251,7 @@ describe("Register Component", () => {
       ).not.toBeInTheDocument();
       expect(screen.queryByTestId("register-success")).not.toBeInTheDocument();
       expect(
-        screen.queryByTestId("register-unexpected-error"),
+        screen.queryByTestId("form-unexpected-error"),
       ).not.toBeInTheDocument();
 
       httpTesting.verify();
@@ -289,7 +289,7 @@ describe("Register Component", () => {
       ).not.toBeInTheDocument();
       expect(screen.queryByTestId("register-success")).not.toBeInTheDocument();
       expect(
-        screen.queryByTestId("register-unexpected-error"),
+        screen.queryByTestId("form-unexpected-error"),
       ).not.toBeInTheDocument();
 
       httpTesting.verify();
@@ -315,7 +315,7 @@ describe("Register Component", () => {
       });
 
       expect(
-        await screen.findByTestId("register-unexpected-error"),
+        await screen.findByTestId("form-unexpected-error"),
       ).toBeInTheDocument();
 
       expect(screen.queryByTestId("register-exists")).not.toBeInTheDocument();
@@ -353,7 +353,7 @@ describe("Register Component", () => {
       });
 
       expect(
-        await screen.findByTestId("register-unexpected-error"),
+        await screen.findByTestId("form-unexpected-error"),
       ).toBeInTheDocument();
 
       expect(submitButton).toBeDisabled();
@@ -391,7 +391,7 @@ describe("Register Component", () => {
       screen.queryByTestId("register-resend-email-success"),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByTestId("register-unexpected-error"),
+      screen.queryByTestId("form-unexpected-error"),
     ).not.toBeInTheDocument();
 
     httpTesting.verify();
@@ -433,7 +433,7 @@ describe("Register Component", () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByTestId("register-success")).not.toBeInTheDocument();
     expect(
-      screen.queryByTestId("register-unexpected-error"),
+      screen.queryByTestId("form-unexpected-error"),
     ).not.toBeInTheDocument();
   });
 
@@ -470,7 +470,7 @@ describe("Register Component", () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByTestId("register-success")).not.toBeInTheDocument();
     expect(
-      screen.queryByTestId("register-unexpected-error"),
+      screen.queryByTestId("form-unexpected-error"),
     ).not.toBeInTheDocument();
   });
 });

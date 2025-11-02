@@ -4,10 +4,10 @@ import { zephyr } from "../../../../constants/email";
 import { ErrorCardComponent } from "../../error-card/error-card.component";
 
 @Component({
-  selector: "app-register-unexpected-error",
+  selector: "app-form-unexpected-error",
   imports: [ErrorCardComponent],
-  templateUrl: "./register-unexpected-error.component.html",
+  templateUrl: "./form-unexpected-error.component.html",
 })
-export class RegisterUnexpectedErrorComponent {
+export class FormUnexpectedErrorComponent {
   protected readonly zephyrEmail = zephyr;
 }

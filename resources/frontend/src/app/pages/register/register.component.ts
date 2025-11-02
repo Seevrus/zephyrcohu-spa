@@ -18,12 +18,12 @@ import { type Subscription } from "rxjs";
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { zephyr } from "../../../constants/email";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
+import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { RegisterAlreadyExistsComponent } from "../../components/form-alerts/register-already-exists/register-already-exists.component";
 import { RegisterExistsNotConfirmedComponent } from "../../components/form-alerts/register-exists-not-confirmed/register-exists-not-confirmed.component";
 import { RegisterResendEmailErrorComponent } from "../../components/form-alerts/register-resend-email-error/register-resend-email-error.component";
 import { RegisterResendEmailSuccessComponent } from "../../components/form-alerts/register-resend-email-success/register-resend-email-success.component";
 import { RegisterSuccessComponent } from "../../components/form-alerts/register-success/register-success.component";
-import { RegisterUnexpectedErrorComponent } from "../../components/form-alerts/register-unexpected-error/register-unexpected-error.component";
 import { UsersQueryService } from "../../services/users.query.service";
 import { passwordMatchValidator } from "../../validators/password-match.validator";
 
@@ -33,6 +33,7 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   },
   imports: [
     ButtonLoadableComponent,
+    FormUnexpectedErrorComponent,
     MatButton,
     MatCheckbox,
     MatFormField,
@@ -44,7 +45,6 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
     RegisterResendEmailErrorComponent,
     RegisterResendEmailSuccessComponent,
     RegisterSuccessComponent,
-    RegisterUnexpectedErrorComponent,
   ],
   selector: "app-register",
   styleUrl: "./register.component.scss",
