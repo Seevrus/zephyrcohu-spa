@@ -10,11 +10,11 @@ import { ErrorCardComponent } from "../../error-card/error-card.component";
 })
 export class RegisterExistsNotConfirmedComponent {
   readonly email = input.required<string>();
-  readonly resendConfirmationEmail = output<Promise<void>>();
+  readonly resendConfirmationEmail = output<void>();
 
   protected readonly zephyrEmail = zephyr;
 
   onResendConfirmationEmail() {
-    this.resendConfirmationEmail.emit();
+    this.resendConfirmationEmail.emit(void 0);
   }
 }

@@ -35,6 +35,11 @@ describe("App Component", () => {
     expect(screen.getByTestId("login-component")).toBeInTheDocument();
   });
 
+  test("renders the Forgot Password Component", async () => {
+    await renderAppComponent("/elfelejtett_jelszo");
+    expect(screen.getByTestId("forgot-password-component")).toBeInTheDocument();
+  });
+
   describe("registration", () => {
     test("renders the registration form", async () => {
       await renderAppComponent("/regisztracio");

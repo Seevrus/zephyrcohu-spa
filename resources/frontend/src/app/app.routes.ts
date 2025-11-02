@@ -26,6 +26,16 @@ export const routes: Routes = [
     title: "Bejelentkezés",
   },
   {
+    path: "elfelejtett_jelszo",
+    async loadComponent() {
+      const { ForgotPasswordComponent } = await import(
+        "./pages/forgot-password/forgot-password.component"
+      );
+      return ForgotPasswordComponent;
+    },
+    title: "Elfelejtett jelszó",
+  },
+  {
     path: "regisztracio",
     async loadComponent() {
       const { RegisterComponent } = await import(

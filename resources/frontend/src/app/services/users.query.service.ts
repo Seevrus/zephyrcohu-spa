@@ -100,13 +100,13 @@ export class UsersQueryService {
     });
   }
 
-  resendRegistrationEmail() {
+  resendRegistrationConfirmEmail() {
     return mutationOptions<
       undefined,
       ZephyrHttpError,
       ResendRegistrationEmailRequest
     >({
-      mutationKey: mutationKeys.registerRevoke,
+      mutationKey: mutationKeys.registerResendConfirmationEmail,
       mutationFn: (request) =>
         lastValueFrom(
           this.http

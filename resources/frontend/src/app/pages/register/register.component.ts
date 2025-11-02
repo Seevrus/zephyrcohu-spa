@@ -78,7 +78,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   readonly resendConfirmationEmailErrorMessage = signal<string>("");
   readonly resentEmail = signal<string>("");
 
-  private readonly registerMutation = injectMutation(() =>
+  protected readonly registerMutation = injectMutation(() =>
     this.usersQueryService.register(),
   );
 
