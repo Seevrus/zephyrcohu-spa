@@ -105,6 +105,19 @@ class UserPolicy {
         return Response::allow();
     }
 
+    public function resetPassword(?User $sender, ?User $user, int $code): Response {
+        if (is_null($user) || $user->newPassword?->password_code != $code) {
+            return Response::denyWithStatus(404, ErrorCode::BAD_CREDENTIALS->value);
+        }
+
+        $expired = $user->newPassword->issued_at->lt(Carbon::now()->subMinutes(30));
+        if ($expired) {
+            return Response::denyWithStatus(404, ErrorCode::CODE_EXPIRED->value);
+        }
+
+        return Response::allow();
+    }
+
     public function revokeRegistration(?User $sender, string $email, int $code): Response {
         return $this->confirmEmail($sender, $email, $code);
     }

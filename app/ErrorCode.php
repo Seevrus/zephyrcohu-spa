@@ -5,6 +5,7 @@ namespace App;
 enum ErrorCode: string {
     case BAD_CREDENTIALS = 'BAD_CREDENTIALS';
     case BAD_EMAIL_CODE = 'BAD_EMAIL_CODE';
+    case CODE_EXPIRED = 'CODE_EXPIRED';
     case EMAIL_NOT_FOUND = 'EMAIL_NOT_FOUND';
     case GENERIC_FORBIDDEN = 'GENERIC_FORBIDDEN';
     case GENERIC_LOCKED = 'GENERIC_LOCKED';

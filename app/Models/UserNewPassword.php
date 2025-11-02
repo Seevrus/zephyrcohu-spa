@@ -18,6 +18,12 @@ class UserNewPassword extends Model {
         'issued_at', 'password_code', 'user_id',
     ];
 
+    protected function casts(): array {
+        return [
+            'issued_at' => 'datetime',
+        ];
+    }
+
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }

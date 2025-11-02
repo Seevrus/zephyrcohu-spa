@@ -8,6 +8,7 @@ use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\ForgottenPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ResendConfirmEmailRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Resources\ErrorResource;
 use App\Http\Resources\UserResource;
 use App\Mail\ForgottenPassword;
@@ -180,6 +181,33 @@ class UserController extends Controller {
             Mail::to($email)->send(new UserRegistered($email, $user->newUser->email_code));
 
             return null;
+        } catch (Throwable $e) {
+            abort(500);
+        }
+    }
+
+    public function resetPassword(ResetPasswordRequest $request) {
+        try {
+            $email = $request->email;
+            $emailCode = (int) $request->code;
+            $newPassword = $request->password;
+
+            $user = User::with('newPassword')->firstWhere('email', $email);
+
+            $canResetPassword = Gate::inspect('resetPassword', [User::class, $user, $emailCode]);
+
+            if ($canResetPassword->denied()) {
+                return response(
+                    new ErrorResource($canResetPassword->status(), ErrorCode::from($canResetPassword->message())),
+                    $canResetPassword->status()
+                );
+            }
+
+            $user->password = Hash::make($newPassword);
+            $user->newPassword()->delete();
+            $user->save();
+
+            return new UserResource($user);
         } catch (Throwable $e) {
             abort(500);
         }
