@@ -12,6 +12,7 @@ import { environment } from "../../environments/environment";
 import {
   type ConfirmOrRevokeEmailRequest,
   type CreateUserRequest,
+  type RequestNewPasswordRequest,
   type ResendRegistrationEmailRequest,
   type SessionData,
   type SessionResponse,
@@ -89,6 +90,29 @@ export class UsersQueryService {
           this.http
             .post<undefined>(
               `${environment.apiUrl}/users/register/revoke`,
+              request,
+            )
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
+    });
+  }
+
+  requestNewPassword() {
+    return mutationOptions<
+      undefined,
+      ZephyrHttpError,
+      RequestNewPasswordRequest
+    >({
+      mutationKey: mutationKeys.requestNewPassword,
+      mutationFn: (request) =>
+        lastValueFrom(
+          this.http
+            .post<undefined>(
+              `${environment.apiUrl}/users/profile/request_new_password`,
               request,
             )
             .pipe(
