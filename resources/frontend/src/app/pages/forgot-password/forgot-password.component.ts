@@ -6,6 +6,8 @@ import { injectMutation } from "@tanstack/angular-query-experimental";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
+import { ForgotPasswordEmailSentComponent } from "../../components/form-alerts/forgot-password-email-sent/forgot-password-email-sent.component";
+import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { UsersQueryService } from "../../services/users.query.service";
 
 @Component({
@@ -20,6 +22,8 @@ import { UsersQueryService } from "../../services/users.query.service";
     MatInput,
     MatLabel,
     ButtonLoadableComponent,
+    FormUnexpectedErrorComponent,
+    ForgotPasswordEmailSentComponent,
   ],
   templateUrl: "./forgot-password.component.html",
   styleUrl: "./forgot-password.component.scss",
@@ -32,6 +36,7 @@ export class ForgotPasswordComponent {
    * INTERNAL_SERVER_ERROR
    */
   protected readonly requestPasswordResetErrorMessage = signal("");
+  protected readonly targetEmail = signal("");
 
   protected readonly forgotPasswordForm = this.formBuilder.group({
     email: ["", [Validators.required, Validators.email]],
@@ -44,11 +49,14 @@ export class ForgotPasswordComponent {
   protected async onRequestPasswordReset() {
     try {
       this.requestPasswordResetErrorMessage.set("");
+      this.targetEmail.set("");
       this.forgotPasswordForm.markAsPristine();
 
       const email = this.email?.value ?? "";
 
       await this.requestNewPasswordMutation.mutateAsync({ email });
+
+      this.targetEmail.set(email);
     } catch (error) {
       if (error instanceof ZephyrHttpError) {
         this.requestPasswordResetErrorMessage.set(error.code);
