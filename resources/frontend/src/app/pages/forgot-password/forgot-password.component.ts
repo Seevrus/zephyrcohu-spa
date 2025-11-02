@@ -38,7 +38,7 @@ export class ForgotPasswordComponent {
   protected readonly requestPasswordResetErrorMessage = signal("");
   protected readonly targetEmail = signal("");
 
-  protected readonly forgotPasswordForm = this.formBuilder.group({
+  readonly forgotPasswordForm = this.formBuilder.group({
     email: ["", [Validators.required, Validators.email]],
   });
 

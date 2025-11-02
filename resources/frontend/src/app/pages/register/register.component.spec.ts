@@ -160,10 +160,6 @@ describe("Register Component", () => {
       await user.clear(passwordInput);
       await user.tab();
 
-      expect(container.querySelector("mat-error")?.textContent).toEqual(
-        "Kötelező mező",
-      );
-
       expect(container.querySelector("mat-error")).toHaveTextContent(
         "Kötelező mező",
       );
