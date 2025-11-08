@@ -9,7 +9,7 @@ describe("Register - User already exists Component", () => {
     expect(
       (await screen.findByTestId("zephyr-error-card-content")).innerHTML,
     ).toEqual(
-      `<p>Ezzel az e-mail címmel korábban már regisztráltak honlapunkon.</p><p> Bejelentkezéshez kérjük <a routerlink="/bejelentkezes" class="zephyr-link on-error" href="/bejelentkezes">kattintson ide</a>. </p><p> Amennyiben elfelejtette a jelszavát, <a href="/elfelejtett_jelszo" class="zephyr-link on-error">ide kattintva tud új jelszót létrehozni</a>. </p><p> Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p>`,
+      `<p>Ezzel az e-mail címmel korábban már regisztráltak honlapunkon.</p><p> Bejelentkezéshez kérjük <a routerlink="/bejelentkezes" class="zephyr-link on-error" href="/bejelentkezes">kattintson ide</a>. </p><p> Amennyiben elfelejtette a jelszavát, <a href="/profil/elfelejtett_jelszo" class="zephyr-link on-error">ide kattintva tud új jelszót létrehozni</a>. </p><p> Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p>`,
     );
   });
 });

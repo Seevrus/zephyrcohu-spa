@@ -36,8 +36,13 @@ describe("App Component", () => {
   });
 
   test("renders the Forgot Password Component", async () => {
-    await renderAppComponent("/elfelejtett_jelszo");
+    await renderAppComponent("/profil/elfelejtett_jelszo");
     expect(screen.getByTestId("forgot-password-component")).toBeInTheDocument();
+  });
+
+  test("renders the Reset Password Component", async () => {
+    await renderAppComponent("/profil/jelszo_helyreallit");
+    expect(screen.getByTestId("reset-password-component")).toBeInTheDocument();
   });
 
   describe("registration", () => {

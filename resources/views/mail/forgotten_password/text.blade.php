@@ -1,7 +1,7 @@
 Tisztelt Felhasználónk!
 
 Ezt a levelet azért küldjük, mert honlapunkon jelezte, hogy elfelejtette jelszavát. Új jelszó létrehozásához kérjük kattintson az alábbi hivatkozásra:
-https://zephyr.co.hu/profil/elfelejtett_jelszo?email={{ $email }}&code={{ $code }}
+https://zephyr.co.hu/profil/jelszo_helyreallit?email={{ $email }}&code={{ $code }}
 
 Fontos: a link egy napig használható fel, később újat kell igényelnie.
 Amennyiben nem Ön kérte jelszavának helyreállítását, kérjük tekintse ezt a levelet tárgytalannak.
