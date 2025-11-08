@@ -1,3 +1,5 @@
+export const allowedPasswordCharacters = "a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-";
+
 export const zephyr =
   "z" +
   "e" +

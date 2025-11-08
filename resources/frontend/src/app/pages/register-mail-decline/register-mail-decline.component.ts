@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
-import { zephyr } from "../../../constants/email";
+import { zephyr } from "../../../constants/forms";
 import { type QueryParamsByPath } from "../../app.routes";
 import { UsersQueryService } from "../../services/users.query.service";
 

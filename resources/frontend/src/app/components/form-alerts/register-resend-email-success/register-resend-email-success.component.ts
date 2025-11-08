@@ -1,6 +1,6 @@
 import { Component, input } from "@angular/core";
 
-import { zephyr } from "../../../../constants/email";
+import { zephyr } from "../../../../constants/forms";
 import { SuccessCardComponent } from "../../success-card/success-card.component";
 
 @Component({

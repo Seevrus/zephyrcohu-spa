@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { RouterLink } from "@angular/router";
 
-import { zephyr } from "../../../../constants/email";
+import { zephyr } from "../../../../constants/forms";
 import { ErrorCardComponent } from "../../error-card/error-card.component";
 
 @Component({

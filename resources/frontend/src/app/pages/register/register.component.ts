@@ -16,7 +16,7 @@ import { passwordStrength } from "check-password-strength";
 import { type Subscription } from "rxjs";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
-import { zephyr } from "../../../constants/email";
+import { allowedPasswordCharacters, zephyr } from "../../../constants/forms";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { RegisterAlreadyExistsComponent } from "../../components/form-alerts/register-already-exists/register-already-exists.component";
@@ -54,14 +54,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly usersQueryService = inject(UsersQueryService);
 
-  private readonly allowedPasswordCharacters =
-    "a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-";
-
   readonly isPasswordVisible = signal(false);
   private passwordChangedSubscription: Subscription | undefined;
 
   private readonly passwordPattern = new RegExp(
-    `([${this.allowedPasswordCharacters}]){8,}`,
+    `([${allowedPasswordCharacters}]){8,}`,
   );
 
   readonly passwordStrength = signal<string>("");
@@ -140,7 +137,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     const { id: score } = passwordStrength(
       password,
       undefined,
-      this.allowedPasswordCharacters,
+      allowedPasswordCharacters,
     );
 
     const feedbackByStrength = ["nagyon gyenge", "gyenge", "közepes", "erős"];
