@@ -112,6 +112,8 @@ class UserPolicy {
 
         $isCodeCorrect = Hash::check($code, $user->newPassword->password_code);
         if (! $isCodeCorrect) {
+            $user->newPassword()->delete();
+
             return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
         }
 

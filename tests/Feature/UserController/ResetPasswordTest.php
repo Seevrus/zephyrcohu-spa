@@ -84,11 +84,11 @@ describe('Reset Password Controller', function () {
         ]);
     });
 
-    test('fails if the code does not match', function () {
-        $request = [...$this->okRequest, 'code' => 007];
+    test('fails if the code does not match and deletes the code', function () {
+        $request = [...$this->okRequest, 'code' => 'bad_code'];
         $response = $this->postJson('/api/users/profile/reset_password', $request);
 
-        $this->assertDatabaseCount('users_new_passwords', 2);
+        $this->assertDatabaseCount('users_new_passwords', 1);
 
         $response->assertStatus(400)->assertExactJson([
             'status' => 400,
