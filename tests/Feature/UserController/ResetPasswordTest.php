@@ -108,11 +108,13 @@ describe('Reset Password Controller', function () {
         ]);
     });
 
-    test('resets the password', function () {
-        Hash::expects('check')->andReturn(true);
+    test('resets the password and logs in the user', function () {
+        Hash::expects('check')->andReturn(true)->twice();
         Hash::expects('make')->with('abc123456')->andReturn('hashed');
+        Hash::expects('needsRehash')->andReturn(false);
 
-        $response = $this->postJson('/api/users/profile/reset_password', $this->okRequest);
+        $response = $this->withHeaders(['Origin' => 'http://127.0.0.1:4200'])
+            ->postJson('/api/users/profile/reset_password', $this->okRequest);
 
         $this->assertDatabaseMissing('users_new_passwords', [
             'user_id' => 3,

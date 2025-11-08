@@ -208,7 +208,17 @@ class UserController extends Controller {
             $user->newPassword()->delete();
             $user->save();
 
-            return new UserResource($user);
+            if (Auth::attempt(['email' => $email, 'password' => $newPassword])) {
+                $request->session()->regenerate();
+                $user = Auth::user();
+
+                return new UserResource($user->load('admin'));
+            }
+
+            // don't think this is possible, but let's return something anyway
+            return response(
+                new ErrorResource(401, ErrorCode::BAD_CREDENTIALS)
+            );
         } catch (Throwable $e) {
             abort(500);
         }
