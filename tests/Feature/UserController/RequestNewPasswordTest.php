@@ -143,14 +143,14 @@ function resetRequestNewPasswordTestData(): void {
     DB::table('users_new')->insert(
         [
             'user_id' => 2,
-            'email_code' => 123456789,
+            'email_code' => 'some-random-code',
         ]
     );
 
     DB::table('users_new_passwords')->insert(
         [
             'user_id' => 3,
-            'password_code' => Hash::make(123456789),
+            'password_code' => Hash::make('some-random-code'),
         ]
     );
 }

@@ -7,7 +7,7 @@ describe('Revoke Registration Request', function () {
     beforeEach(function () {
         $this->okRequest = [
             'email' => 'user004@example.com',
-            'code' => 123456789,
+            'code' => 'some-random-code',
         ];
     });
 
@@ -39,7 +39,7 @@ describe('Revoke Registration Controller', function () {
     beforeEach(function () {
         $this->okRequest = [
             'email' => 'user004@example.com',
-            'code' => 123456789,
+            'code' => 'some-random-code',
         ];
 
         resetRevokeRegistrationTestData();
@@ -130,7 +130,7 @@ function resetRevokeRegistrationTestData(): void {
     DB::table('users_new')->insert(
         [
             'user_id' => 4,
-            'email_code' => 123456789,
+            'email_code' => 'some-random-code',
         ]
     );
 
@@ -138,7 +138,7 @@ function resetRevokeRegistrationTestData(): void {
         [
             'user_id' => 2,
             'new_email' => 'user002_new_email@example.com',
-            'email_code' => 1234567892,
+            'email_code' => 'another-random-code',
         ]
     );
 }

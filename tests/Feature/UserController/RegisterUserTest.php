@@ -1,7 +1,6 @@
 <?php
 
 use App\Mail\UserRegistered;
-use App\Models\UserNew;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -139,6 +138,7 @@ describe('Register User Controller', function () {
 
     test('Creates the new user', function () {
         Mail::fake();
+        Str::createRandomStringsUsing(fn () => 'fake-random-string');
 
         $request = [...$this->okRequest, 'email' => 'user005@example.com'];
         $response = $this->postJson('/api/users/register', $request);
@@ -152,8 +152,10 @@ describe('Register User Controller', function () {
             'last_active' => null,
         ]);
 
-        $newUser = UserNew::firstWhere('user_id', 4);
-        $this->assertMatchesRegularExpression('/^\d{9}$/', $newUser->email_code);
+        $this->assertDatabaseHas('users_new', [
+            'user_id' => 5,
+            'email_code' => 'fake-random-string',
+        ]);
 
         Mail::assertSent(UserRegistered::class, function ($mail) {
             return $mail->hasTo('user005@example.com');
@@ -219,7 +221,7 @@ function resetRegisterUserTestData(): void {
     DB::table('users_new')->insert(
         [
             'user_id' => 4,
-            'email_code' => 123456789,
+            'email_code' => 'some-random-code',
         ]
     );
 
@@ -227,7 +229,7 @@ function resetRegisterUserTestData(): void {
         [
             'user_id' => 2,
             'new_email' => 'user002_new_email@example.com',
-            'email_code' => 1234567892,
+            'email_code' => 'some-random-code',
         ]
     );
 }

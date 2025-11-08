@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserPolicy {
-    public function confirmEmail(?User $sender, string $email, int $code): Response {
+    public function confirmEmail(?User $sender, string $email, string $code): Response {
         $user = DB::table('users')
             ->select('users.confirmed', 'users_new.email_code')
             ->leftJoin('users_new', 'users.id', '=', 'users_new.user_id')
@@ -105,7 +105,7 @@ class UserPolicy {
         return Response::allow();
     }
 
-    public function resetPassword(?User $sender, ?User $user, int $code): Response {
+    public function resetPassword(?User $sender, ?User $user, string $code): Response {
         if (is_null($user) || ! $user->newPassword?->password_code) {
             return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
         }
@@ -123,7 +123,7 @@ class UserPolicy {
         return Response::allow();
     }
 
-    public function revokeRegistration(?User $sender, string $email, int $code): Response {
+    public function revokeRegistration(?User $sender, string $email, string $code): Response {
         return $this->confirmEmail($sender, $email, $code);
     }
 }

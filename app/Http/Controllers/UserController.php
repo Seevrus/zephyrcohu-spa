@@ -22,18 +22,19 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use RuntimeException;
+use Str;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Throwable;
 
 class UserController extends Controller {
     private function generate_code() {
-        return rand(pow(10, 8), pow(10, 9) - 1);
+        return Str::random(64);
     }
 
     public function confirmEmail(ConfirmEmailRequest $request) {
         try {
             $email = $request->email;
-            $emailCode = (int) $request->code;
+            $emailCode = $request->code;
 
             $canConfirm = Gate::inspect('confirmEmail', [User::class, $email, $emailCode]);
 
@@ -189,7 +190,7 @@ class UserController extends Controller {
     public function resetPassword(ResetPasswordRequest $request) {
         try {
             $email = $request->email;
-            $emailCode = (int) $request->code;
+            $emailCode = $request->code;
             $newPassword = $request->password;
 
             $user = User::with('newPassword')->firstWhere('email', $email);
@@ -216,7 +217,7 @@ class UserController extends Controller {
     public function revokeRegistration(ConfirmEmailRequest $request) {
         try {
             $email = $request->email;
-            $emailCode = (int) $request->code;
+            $emailCode = $request->code;
 
             $canRevoke = Gate::inspect('revokeRegistration', [User::class, $email, $emailCode]);
 

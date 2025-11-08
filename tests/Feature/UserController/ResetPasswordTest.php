@@ -8,7 +8,7 @@ describe('Reset Password Request', function () {
         $this->okRequest = [
             'email' => 'user003@example.com',
             'password' => 'abc123456',
-            'code' => 123456789,
+            'code' => 'some-random-code',
         ];
     });
 
@@ -54,7 +54,7 @@ describe('Reset Password Controller', function () {
         $this->okRequest = [
             'email' => 'user003@example.com',
             'password' => 'abc123456',
-            'code' => 123456789,
+            'code' => 'some-random-code',
         ];
 
         resetResetPasswordTestData();
@@ -168,12 +168,12 @@ function resetResetPasswordTestData(): void {
     DB::table('users_new_passwords')->insert([
         [
             'user_id' => 2,
-            'password_code' => Hash::make(123456789),
+            'password_code' => Hash::make('some-random-code'),
             'issued_at' => Carbon::now()->subHours(2),
         ],
         [
             'user_id' => 3,
-            'password_code' => Hash::make(123456789),
+            'password_code' => Hash::make('some-random-code'),
             'issued_at' => Carbon::now(),
         ],
     ]);
