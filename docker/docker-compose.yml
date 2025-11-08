@@ -5,6 +5,7 @@ services:
     image: mariadb:latest
     environment:
       MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      TZ: 'Europe/Budapest'
     volumes:
       - mysqldata:/var/lib/mysql
       - ./migrations:/docker-entrypoint-initdb.d

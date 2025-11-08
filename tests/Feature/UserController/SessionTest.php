@@ -36,7 +36,7 @@ describe('Session', function () {
                 'id' => 1,
                 'isAdmin' => false,
                 'newsletter' => false,
-                'passwordSetAt' => '2025-01-11T07:31:09.000000Z',
+                'passwordSetAt' => '2025-01-11T06:31:09.000000Z',
             ],
         ]);
     });
