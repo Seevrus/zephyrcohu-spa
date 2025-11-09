@@ -38,71 +38,7 @@
           <mat-error>Email cím formátuma nem megfelelő</mat-error>
         }
       </mat-form-field>
-      <div formGroupName="passwords" class="password-container">
-        <mat-form-field data-testid="password">
-          <mat-label>Jelszó</mat-label>
-          <input
-            matInput
-            [type]="isPasswordVisible() ? 'text' : 'password'"
-            formControlName="password"
-          />
-          @if (password?.hasError("required")) {
-            <mat-error>Kötelező mező</mat-error>
-          } @else if (password?.hasError("pattern")) {
-            <mat-error>Jelszó formátuma nem megfelelő</mat-error>
-          }
-        </mat-form-field>
-        <mat-form-field data-testid="password-again">
-          <mat-label>Jelszó újra</mat-label>
-          <input
-            matInput
-            [type]="isPasswordVisible() ? 'text' : 'password'"
-            formControlName="passwordAgain"
-          />
-        </mat-form-field>
-        @if (passwords?.hasError("passwordsDontMatch")) {
-          <p class="custom-error">A beírt jelszavak nem egyeznek meg</p>
-        }
-        <div>
-          <p data-testid="password-characters">
-            A jelszó minimális hossza 8 karakter. Engedélyezett karakterek:
-            magyar ABC kis- és nagybetűi, számok, illetve az alábbi speciális
-            karakterek: . _ + # % &#64; -
-          </p>
-          @if (passwordStrength()) {
-            <p data-testid="password-strength">
-              A jelszó erőssége:
-              <span
-                [ngClass]="[
-                  'strength',
-                  getPasswordStrengthClass(passwordStrength()),
-                ]"
-              >
-                {{ passwordStrength() }}
-              </span>
-            </p>
-          }
-          <p data-testid="password-generate-help">
-            Erős jelszavak generálása pofonegyszerűen -
-            <a
-              class="zephyr-link"
-              href="https://hvg.hu/tudomany/20171117_eros_jelszo_letrehozasa_generator_nehezen_kitalalhato_jelszavak_nehezen_feltorheto_jelszo_biztonsagos_milyen_jelszot_valasszak"
-              target="_blank"
-              >segédlet az alábbi oldalon</a
-            >.
-          </p>
-        </div>
-        <button
-          mat-button
-          data-testid="toggle-password"
-          type="button"
-          (click)="togglePassword()"
-        >
-          {{
-            isPasswordVisible() ? "Jelszó elrejtése" : "Jelszó megjelenítése"
-          }}
-        </button>
-      </div>
+      <app-password-repeat [formGroupName]="'passwords'"></app-password-repeat>
       <mat-checkbox formControlName="newsletter">
         Szeretnék hírlevelet kapni a fontosabb újdonságokról.
       </mat-checkbox>

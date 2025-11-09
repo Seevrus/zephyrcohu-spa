@@ -24,39 +24,6 @@
           );
         }
       }
-
-      .form-elements-container {
-        .password-container {
-          .strength {
-            font-weight: 600;
-
-            &.very-weak {
-              color: var(--mat-sys-error);
-            }
-
-            &.weak {
-              color: orange;
-            }
-
-            &.strong {
-              color: yellowgreen;
-            }
-
-            &.very-strong {
-              color: darkgreen;
-            }
-          }
-        }
-
-        .custom-error {
-          color: var(--mat-form-field-error-text-color, var(--mat-sys-error));
-          font-size: var(
-            --mat-form-field-subscript-text-size,
-            var(--mat-sys-body-small-size)
-          );
-          margin: -1.5rem 0 0 1rem;
-        }
-      }
     }
 
     .form-help,

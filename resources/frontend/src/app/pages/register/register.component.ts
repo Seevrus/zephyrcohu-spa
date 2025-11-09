@@ -1,19 +1,9 @@
-import { NgClass } from "@angular/common";
-import {
-  Component,
-  inject,
-  type OnDestroy,
-  type OnInit,
-  signal,
-} from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { MatButton } from "@angular/material/button";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { injectMutation } from "@tanstack/angular-query-experimental";
-import { passwordStrength } from "check-password-strength";
-import { type Subscription } from "rxjs";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { allowedPasswordCharacters, zephyr } from "../../../constants/forms";
@@ -24,6 +14,7 @@ import { RegisterExistsNotConfirmedComponent } from "../../components/form-alert
 import { RegisterResendEmailErrorComponent } from "../../components/form-alerts/register-resend-email-error/register-resend-email-error.component";
 import { RegisterResendEmailSuccessComponent } from "../../components/form-alerts/register-resend-email-success/register-resend-email-success.component";
 import { RegisterSuccessComponent } from "../../components/form-alerts/register-success/register-success.component";
+import { PasswordRepeatComponent } from "../../components/password-repeat/password-repeat.component";
 import { UsersQueryService } from "../../services/users.query.service";
 import { passwordMatchValidator } from "../../validators/password-match.validator";
 
@@ -34,11 +25,10 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   imports: [
     ButtonLoadableComponent,
     FormUnexpectedErrorComponent,
-    MatButton,
     MatCheckbox,
     MatFormField,
     MatInputModule,
-    NgClass,
+    PasswordRepeatComponent,
     ReactiveFormsModule,
     RegisterAlreadyExistsComponent,
     RegisterExistsNotConfirmedComponent,
@@ -50,18 +40,14 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   styleUrl: "./register.component.scss",
   templateUrl: "./register.component.html",
 })
-export class RegisterComponent implements OnInit, OnDestroy {
+export class RegisterComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly usersQueryService = inject(UsersQueryService);
-
-  readonly isPasswordVisible = signal(false);
-  private passwordChangedSubscription: Subscription | undefined;
 
   private readonly passwordPattern = new RegExp(
     `([${allowedPasswordCharacters}]){8,}`,
   );
 
-  readonly passwordStrength = signal<string>("");
   readonly registeredEmail = signal<string>("");
   readonly registerErrorMessage = signal<string>("");
 
@@ -84,16 +70,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
   );
 
   readonly zephyrEmail = zephyr;
-
-  ngOnInit(): void {
-    this.passwordChangedSubscription = this.password?.valueChanges.subscribe(
-      (password) => password && this.checkPasswordStrength(),
-    );
-  }
-
-  ngOnDestroy() {
-    this.passwordChangedSubscription?.unsubscribe();
-  }
 
   readonly registerForm = this.formBuilder.group({
     email: ["", [Validators.required, Validators.email]],
@@ -120,44 +96,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   get password() {
     return this.registerForm.get("passwords.password");
-  }
-
-  get passwords() {
-    return this.registerForm.get("passwords");
-  }
-
-  checkPasswordStrength() {
-    if (!this.password?.valid) {
-      this.passwordStrength.set("");
-      return;
-    }
-
-    const password = this.password?.value ?? "";
-
-    const { id: score } = passwordStrength(
-      password,
-      undefined,
-      allowedPasswordCharacters,
-    );
-
-    const feedbackByStrength = ["nagyon gyenge", "gyenge", "közepes", "erős"];
-    this.passwordStrength.set(feedbackByStrength[score]);
-  }
-
-  getPasswordStrengthClass(strength: string) {
-    switch (strength.toLowerCase()) {
-      case "nagyon gyenge":
-        return "very-weak";
-      case "gyenge":
-        return "weak";
-      case "erős":
-        return "strong";
-      case "nagyon erős":
-        return "very-strong";
-      case "közepes":
-      default:
-        return "fair";
-    }
   }
 
   async onRegister() {
@@ -209,9 +147,5 @@ export class RegisterComponent implements OnInit, OnDestroy {
         this.resendConfirmationEmailErrorMessage.set("INTERNAL_SERVER_ERROR");
       }
     }
-  }
-
-  togglePassword() {
-    this.isPasswordVisible.set(!this.isPasswordVisible());
   }
 }

@@ -10,12 +10,6 @@
     margin: 0 auto 1rem auto;
     max-width: 500px;
 
-    .password-container {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
     app-button-loadable {
       margin: 0 auto;
       width: 200px;

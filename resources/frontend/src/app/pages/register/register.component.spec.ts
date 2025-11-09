@@ -28,61 +28,7 @@ describe("Register Component", () => {
       expect(emailField.querySelector("label")).toHaveTextContent("Email cím");
       expect(emailField.querySelector("input")?.type).toEqual("text");
 
-      const passwordField = screen.getByTestId("password");
-      expect(passwordField.querySelector("label")).toHaveTextContent("Jelszó");
-      expect(passwordField.querySelector("input")?.type).toEqual("password");
-
-      const passwordAgainField = screen.getByTestId("password-again");
-      expect(passwordAgainField.querySelector("label")).toHaveTextContent(
-        "Jelszó újra",
-      );
-      expect(passwordAgainField.querySelector("input")?.type).toEqual(
-        "password",
-      );
-    });
-
-    test("password helpers", async () => {
-      await renderRegisterComponent();
-
-      const passwordCharacters = screen.getByTestId("password-characters");
-      expect(passwordCharacters).toHaveTextContent(
-        "A jelszó minimális hossza 8 karakter. Engedélyezett karakterek: magyar ABC kis- és nagybetűi, számok, illetve az alábbi speciális karakterek: . _ + # % @ -",
-      );
-
-      const passwordStrength = screen.queryByTestId("password-strength");
-      expect(passwordStrength).toBeNull();
-
-      const passwordGenerateHelp = screen.getByTestId("password-generate-help");
-      expect(passwordGenerateHelp).toHaveTextContent(
-        "Erős jelszavak generálása pofonegyszerűen - segédlet az alábbi oldalon.",
-      );
-
-      const helpLink =
-        passwordGenerateHelp?.querySelector<HTMLAnchorElement>("a");
-      expect(helpLink?.href).toEqual(
-        "https://hvg.hu/tudomany/20171117_eros_jelszo_letrehozasa_generator_nehezen_kitalalhato_jelszavak_nehezen_feltorheto_jelszo_biztonsagos_milyen_jelszot_valasszak",
-      );
-      expect(helpLink?.target).toBe("_blank");
-    });
-
-    test("toggle password button changes the type of the password inputs", async () => {
-      await renderRegisterComponent();
-
-      const togglePassword = screen.getByTestId("toggle-password");
-
-      await user.click(togglePassword);
-
-      const passwordInput = screen
-        .getByTestId("password")
-        .querySelector("input")!;
-
-      expect(passwordInput.type).toBe("text");
-
-      const passwordAgainInput = screen
-        .getByTestId("password-again")
-        .querySelector("input")!;
-
-      expect(passwordAgainInput.type).toBe("text");
+      expect(screen.getByTestId("passwords-container")).toBeInTheDocument();
     });
 
     test("checkboxes are displayed correctly", async () => {
@@ -183,18 +129,6 @@ describe("Register Component", () => {
       expect(container.querySelector(".custom-error")).toHaveTextContent(
         "A beírt jelszavak nem egyeznek meg",
       );
-    });
-
-    test("if the password is valid, its strength is shown", async () => {
-      await renderRegisterComponent();
-
-      const passwordInput = screen
-        .getByTestId("password")
-        .querySelector("input")!;
-      await user.type(passwordInput, "weakpass");
-
-      const passwordStrength = screen.getByTestId("password-strength");
-      expect(passwordStrength).toHaveTextContent("A jelszó erőssége: gyenge");
     });
 
     test("can submit if the form is valid", async () => {
