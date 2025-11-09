@@ -1,3 +1,4 @@
+// eslint-disable-next-line sonarjs/no-hardcoded-passwords
 export const allowedPasswordCharacters = "a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-";
 
 export const zephyr =

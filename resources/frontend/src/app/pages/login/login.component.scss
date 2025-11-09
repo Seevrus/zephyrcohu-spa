@@ -1,4 +1,4 @@
-@use "../login/shared.register";
+@use "shared-register";
 @use "../../../shared/mixins";
 @use "../../../shared/variables";
 
@@ -6,7 +6,7 @@
   @include mixins.zephyr-main;
 
   .login-component {
-    @include shared.form-layout;
+    @include shared-register.form-layout;
 
     @media (min-width: variables.$tablet-width) {
       .forgot-password {
