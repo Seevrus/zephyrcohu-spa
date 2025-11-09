@@ -1,0 +1,324 @@
+import { provideHttpClient, withFetch } from "@angular/common/http";
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from "@angular/common/http/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { type ComponentFixture, TestBed } from "@angular/core/testing";
+import { provideRouter, Router } from "@angular/router";
+import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
+import { render, screen, waitFor } from "@testing-library/angular";
+import userEvent from "@testing-library/user-event";
+
+import { testQueryClient } from "../../../mocks/testQueryClient";
+import { createResetPasswordErrorResponse } from "../../../mocks/users/createResetPasswordErrorResponse";
+import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
+import { resetPasswordRequest } from "../../../mocks/users/resetPasswordRequest";
+import { routes } from "../../app.routes";
+import { ResetPasswordComponent } from "./reset-password.component";
+
+describe("Reset Password Component", () => {
+  const user = userEvent.setup();
+
+  describe("should render the form correctly", () => {
+    test("displays an error message if the query parameters are not present", async () => {
+      await renderResetPasswordComponent(undefined, undefined);
+
+      expect(screen.getByTestId("email-link-error")).toBeInTheDocument();
+
+      expect(
+        screen.queryByTestId("reset-password-form"),
+      ).not.toBeInTheDocument();
+    });
+
+    test("displays the email correctly from the query parameters", async () => {
+      await renderResetPasswordComponent("test@test.com", "some-test-code");
+
+      expect(screen.getByText("test@test.com")).toBeInTheDocument();
+    });
+
+    test("password fields", async () => {
+      await renderResetPasswordComponent("test@test.com", "some-test-code");
+
+      expect(screen.getByTestId("passwords-container")).toBeInTheDocument();
+    });
+  });
+
+  describe("should validate the form correctly", () => {
+    test("validates password correctly", async () => {
+      const { container } = await renderResetPasswordComponent(
+        "test@test.com",
+        "some-test-code",
+      );
+
+      const passwordInput = screen
+        .getByTestId("password")
+        .querySelector("input")!;
+
+      await user.type(passwordInput, "12");
+      await user.tab();
+
+      expect(container.querySelector("mat-error")).toHaveTextContent(
+        "Jelszó formátuma nem megfelelő",
+      );
+
+      await user.clear(passwordInput);
+      await user.tab();
+
+      expect(container.querySelector("mat-error")).toHaveTextContent(
+        "Kötelező mező",
+      );
+    });
+
+    test("shows an error if passwords don't match", async () => {
+      const { container } = await renderResetPasswordComponent(
+        "test@test.com",
+        "some-test-code",
+      );
+
+      const passwordInput = screen
+        .getByTestId("password")
+        .querySelector("input")!;
+
+      const passwordAgainInput = screen
+        .getByTestId("password-again")
+        .querySelector("input")!;
+
+      await user.type(passwordInput, "weakpass");
+      await user.type(passwordAgainInput, "strongpass");
+      await user.tab();
+
+      expect(container.querySelector(".custom-error")).toHaveTextContent(
+        "A beírt jelszavak nem egyeznek meg",
+      );
+    });
+
+    test("can submit if the form is valid", async () => {
+      const { fixture } = await renderResetPasswordComponent(
+        "test@test.com",
+        "some-test-code",
+      );
+
+      const submitButton = screen
+        .getByTestId("submit-button")
+        .querySelector("button");
+
+      expect(submitButton).toBeDisabled();
+
+      await fillForm(fixture);
+
+      expect(submitButton).toBeEnabled();
+    });
+  });
+
+  describe("should show the correct API error messages", () => {
+    test("if the email code is not correct", async () => {
+      const { fixture, httpTesting } = await renderResetPasswordComponent(
+        "test@test.com",
+        "some-test-code",
+      );
+      await fillForm(fixture);
+
+      const submitButton = screen
+        .getByTestId("submit-button")
+        .querySelector("button")!;
+
+      await user.click(submitButton);
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(resetPasswordRequest),
+      );
+
+      request.flush(createResetPasswordErrorResponse("BAD_CREDENTIALS"), {
+        status: 400,
+        statusText: "Bad Request",
+      });
+
+      expect(
+        await screen.findByTestId("bad-credentials-error"),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.queryByTestId("email-code-expired-error"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("form-unexpected-error"),
+      ).not.toBeInTheDocument();
+    });
+
+    test("if the email code is expired", async () => {
+      const { fixture, httpTesting } = await renderResetPasswordComponent(
+        "test@test.com",
+        "some-test-code",
+      );
+      await fillForm(fixture);
+
+      const submitButton = screen
+        .getByTestId("submit-button")
+        .querySelector("button")!;
+
+      await user.click(submitButton);
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(resetPasswordRequest),
+      );
+
+      request.flush(createResetPasswordErrorResponse("CODE_EXPIRED"), {
+        status: 410,
+        statusText: "Gone",
+      });
+
+      expect(
+        await screen.findByTestId("email-code-expired-error"),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.queryByTestId("bad-credentials-error"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("form-unexpected-error"),
+      ).not.toBeInTheDocument();
+    });
+
+    test("in the case of an unknown error", async () => {
+      const { fixture, httpTesting } = await renderResetPasswordComponent(
+        "test@test.com",
+        "some-test-code",
+      );
+      await fillForm(fixture);
+
+      const submitButton = screen
+        .getByTestId("submit-button")
+        .querySelector("button")!;
+
+      await user.click(submitButton);
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(resetPasswordRequest),
+      );
+
+      request.flush(createResetPasswordErrorResponse("INTERNAL_SERVER_ERROR"), {
+        status: 500,
+        statusText: "Internal Server Error",
+      });
+
+      expect(
+        await screen.findByTestId("form-unexpected-error"),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.queryByTestId("bad-credentials-error"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("email-code-expired-error"),
+      ).not.toBeInTheDocument();
+    });
+
+    test("submit button is disabled until the user modifies something", async () => {
+      const { fixture, httpTesting } = await renderResetPasswordComponent(
+        "test@test.com",
+        "some-test-code",
+      );
+      await fillForm(fixture);
+
+      const submitButton = screen
+        .getByTestId("submit-button")
+        .querySelector("button")!;
+
+      await user.click(submitButton);
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(resetPasswordRequest),
+      );
+
+      request.flush(createResetPasswordErrorResponse("INTERNAL_SERVER_ERROR"), {
+        status: 500,
+        statusText: "Internal Server Error",
+      });
+
+      expect(
+        await screen.findByTestId("form-unexpected-error"),
+      ).toBeInTheDocument();
+
+      expect(submitButton).toBeDisabled();
+
+      await fillForm(fixture, "awesomeNewPassword");
+      expect(submitButton).toBeEnabled();
+    });
+  });
+
+  test("should redirect to the landing page if the email code is correct", async () => {
+    const { fixture, httpTesting } = await renderResetPasswordComponent(
+      "test@test.com",
+      "some-test-code",
+    );
+
+    const router = TestBed.inject(Router);
+    const navigateSpy = jest.spyOn(router, "navigate");
+
+    await fillForm(fixture);
+
+    const submitButton = screen
+      .getByTestId("submit-button")
+      .querySelector("button")!;
+
+    await user.click(submitButton);
+
+    const request = await waitFor(() =>
+      httpTesting.expectOne(resetPasswordRequest),
+    );
+    request.flush(getSessionOkResponse);
+
+    await waitFor(() => {
+      expect(navigateSpy).toHaveBeenCalledWith(["/"]);
+    });
+
+    navigateSpy.mockRestore();
+  });
+});
+
+async function fillForm(
+  fixture: ComponentFixture<ResetPasswordComponent>,
+  password = "12345678",
+) {
+  fixture.componentInstance.resetPasswordForm.patchValue({
+    passwords: {
+      password,
+      passwordAgain: password,
+    },
+  });
+  fixture.componentInstance.resetPasswordForm.markAsDirty();
+
+  await fixture.whenStable();
+}
+
+async function renderResetPasswordComponent(
+  email: string | undefined,
+  code: string | undefined,
+) {
+  const queryParams = new URLSearchParams();
+  if (email) {
+    queryParams.append("email", email);
+  }
+  if (code) {
+    queryParams.append("code", code);
+  }
+
+  const renderResult = await render(ResetPasswordComponent, {
+    initialRoute: `profil/jelszo_helyreallit?${queryParams.toString()}`,
+    providers: [
+      provideHttpClient(withFetch()),
+      provideHttpClientTesting(),
+      provideRouter(routes),
+      provideTanStackQuery(testQueryClient),
+      provideZonelessChangeDetection(),
+    ],
+  });
+
+  const httpTesting = TestBed.inject(HttpTestingController);
+
+  return {
+    ...renderResult,
+    httpTesting,
+  };
+}

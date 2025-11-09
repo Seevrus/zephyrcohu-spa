@@ -14,6 +14,7 @@ import {
   type CreateUserRequest,
   type RequestNewPasswordRequest,
   type ResendRegistrationEmailRequest,
+  type ResetPasswordRequest,
   type SessionData,
   type SessionResponse,
   type UserSession,
@@ -144,6 +145,33 @@ export class UsersQueryService {
               ),
             ),
         ),
+    });
+  }
+
+  resetPassword() {
+    return mutationOptions<UserSession, ZephyrHttpError, ResetPasswordRequest>({
+      mutationKey: mutationKeys.register,
+      mutationFn: (request) =>
+        lastValueFrom(
+          this.http
+            .post<SessionResponse>(
+              `${environment.apiUrl}/users/profile/reset_password`,
+              request,
+            )
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+              map<SessionResponse, UserSession>(
+                UsersQueryService.mapSessionResponse,
+              ),
+            ),
+        ),
+      onSuccess: async () => {
+        await this.queryClient.invalidateQueries({
+          queryKey: ["session"],
+        });
+      },
     });
   }
 

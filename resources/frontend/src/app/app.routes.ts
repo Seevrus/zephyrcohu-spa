@@ -1,11 +1,12 @@
 import { type Routes } from "@angular/router";
 
 export type QueryParamsByPath = {
-  "regisztracio/elvet": {
+  "profil/jelszo_helyreallit": {
     code?: string;
     email?: string;
   };
-  "regisztracio/megerosit": QueryParamsByPath["regisztracio/elvet"];
+  "regisztracio/elvet": QueryParamsByPath["profil/jelszo_helyreallit"];
+  "regisztracio/megerosit": QueryParamsByPath["profil/jelszo_helyreallit"];
 };
 
 export const routes: Routes = [

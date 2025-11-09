@@ -18,6 +18,12 @@ export type ResendRegistrationEmailRequest = {
   email: string;
 };
 
+export type ResetPasswordRequest = {
+  code: string;
+  email: string;
+  password: string;
+};
+
 export type SessionResponse<D extends SessionData | null = SessionData> = {
   data: D;
 };
