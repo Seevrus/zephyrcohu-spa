@@ -1,4 +1,4 @@
-import { ApiError } from "../../types/errors";
+import { type ApiError } from "../../types/errors";
 
 export function createResetPasswordErrorResponse(error: ApiError) {
   switch (error) {
