@@ -10,6 +10,11 @@ export type CreateUserRequest = {
   newsletter: boolean;
 };
 
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
+
 export type RequestNewPasswordRequest = {
   email: string;
 };

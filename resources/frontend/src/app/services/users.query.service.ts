@@ -12,6 +12,7 @@ import { environment } from "../../environments/environment";
 import {
   type ConfirmOrRevokeEmailRequest,
   type CreateUserRequest,
+  type LoginRequest,
   type RequestNewPasswordRequest,
   type ResendRegistrationEmailRequest,
   type ResetPasswordRequest,
@@ -28,6 +29,51 @@ import { mutationKeys, queryKeys } from "./queryKeys";
 export class UsersQueryService {
   private readonly http = inject(HttpClient);
   private readonly queryClient = inject(QueryClient);
+
+  login() {
+    return mutationOptions<UserSession, ZephyrHttpError, LoginRequest>({
+      mutationKey: mutationKeys.login,
+      mutationFn: (request) =>
+        lastValueFrom(
+          this.http
+            .post<SessionResponse>(`${environment.apiUrl}/users/login`, request)
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+              map<SessionResponse, UserSession>(
+                UsersQueryService.mapSessionResponse,
+              ),
+            ),
+        ),
+      onSuccess: async () => {
+        await this.queryClient.invalidateQueries({
+          queryKey: ["session"],
+        });
+      },
+    });
+  }
+
+  logout() {
+    return mutationOptions<void, ZephyrHttpError>({
+      mutationKey: mutationKeys.logout,
+      mutationFn: () =>
+        lastValueFrom(
+          this.http
+            .post<void>(`${environment.apiUrl}/users/login`, null)
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
+      onSuccess: async () => {
+        await this.queryClient.invalidateQueries({
+          queryKey: ["session"],
+        });
+      },
+    });
+  }
 
   register() {
     return mutationOptions<UserSession, ZephyrHttpError, CreateUserRequest>({

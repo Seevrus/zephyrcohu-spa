@@ -30,76 +30,78 @@ describe("Login Component", () => {
     expect(submitButton?.disabled).toBeTruthy();
   });
 
-  test("validates email correctly", async () => {
-    const { container } = await renderLoginComponent();
+  describe("should validate the form correctly", () => {
+    test("validates email correctly", async () => {
+      const { container } = await renderLoginComponent();
 
-    const emailInput = screen.getByTestId("email").querySelector("input")!;
-    await user.click(emailInput);
-    await user.tab();
+      const emailInput = screen.getByTestId("email").querySelector("input")!;
+      await user.click(emailInput);
+      await user.tab();
 
-    await waitFor(() => {
+      await waitFor(() => {
+        expect(container.querySelector("mat-error")).toHaveTextContent(
+          "Kötelező mező",
+        );
+      });
+
+      await user.type(emailInput, "invalid-email");
+      await user.tab();
+
       expect(container.querySelector("mat-error")).toHaveTextContent(
-        "Kötelező mező",
+        "Email cím formátuma nem megfelelő",
       );
     });
 
-    await user.type(emailInput, "invalid-email");
-    await user.tab();
+    test("validates password correctly", async () => {
+      const { container } = await renderLoginComponent();
 
-    expect(container.querySelector("mat-error")).toHaveTextContent(
-      "Email cím formátuma nem megfelelő",
-    );
-  });
+      const passwordInput = screen
+        .getByTestId("password")
+        .querySelector("input")!;
+      await user.click(passwordInput);
+      await user.tab();
 
-  test("validates password correctly", async () => {
-    const { container } = await renderLoginComponent();
+      await waitFor(() => {
+        expect(container.querySelector("mat-error")).toHaveTextContent(
+          "Kötelező mező",
+        );
+      });
 
-    const passwordInput = screen
-      .getByTestId("password")
-      .querySelector("input")!;
-    await user.click(passwordInput);
-    await user.tab();
+      await user.type(passwordInput, "12");
+      await user.tab();
 
-    await waitFor(() => {
       expect(container.querySelector("mat-error")).toHaveTextContent(
-        "Kötelező mező",
+        "Jelszó formátuma nem megfelelő",
       );
     });
 
-    await user.type(passwordInput, "12");
-    await user.tab();
+    test("toggle password button changes the type of the password input", async () => {
+      await renderLoginComponent();
 
-    expect(container.querySelector("mat-error")).toHaveTextContent(
-      "Jelszó formátuma nem megfelelő",
-    );
-  });
+      const togglePassword = screen.getByTestId("toggle-password");
+      await user.click(togglePassword);
 
-  test("toggle password button changes the type of the password input", async () => {
-    await renderLoginComponent();
+      const passwordInput = screen
+        .getByTestId("password")
+        .querySelector("input")!;
 
-    const togglePassword = screen.getByTestId("toggle-password");
-    await user.click(togglePassword);
+      expect(passwordInput.type).toBe("text");
+    });
 
-    const passwordInput = screen
-      .getByTestId("password")
-      .querySelector("input")!;
+    test("enables submit if the form is filled correctly", async () => {
+      await renderLoginComponent();
 
-    expect(passwordInput.type).toBe("text");
-  });
+      const emailInput = screen.getByTestId("email").querySelector("input")!;
+      await user.type(emailInput, "abc123@abc.com");
 
-  test("enables submit if the form is filled correctly", async () => {
-    await renderLoginComponent();
+      const passwordInput = screen
+        .getByTestId("password")
+        .querySelector("input")!;
+      await user.type(passwordInput, "abc123xyz");
 
-    const emailInput = screen.getByTestId("email").querySelector("input")!;
-    await user.type(emailInput, "abc123@abc.com");
-
-    const passwordInput = screen
-      .getByTestId("password")
-      .querySelector("input")!;
-    await user.type(passwordInput, "abc123xyz");
-
-    const submitButton = screen.getByTestId("submit-button");
-    expect(submitButton).not.toBeDisabled();
+      const submitButton = screen.getByTestId("submit-button");
+      expect(submitButton).not.toBeDisabled();
+    });
   });
 });
 

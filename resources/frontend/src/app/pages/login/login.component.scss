@@ -8,6 +8,12 @@
   .login-component {
     @include shared-register.form-layout;
 
+    .password-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
     @media (min-width: variables.$tablet-width) {
       .forgot-password {
         text-align: center;
