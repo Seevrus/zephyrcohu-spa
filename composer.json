@@ -11,15 +11,15 @@
   "require": {
     "php": "^8.3",
     "ext-pdo": "*",
-    "laravel/framework": "^12.37.0",
+    "laravel/framework": "^12.39.0",
     "laravel/sanctum": "^4.2",
-    "laravel/tinker": "^2.10"
+    "laravel/tinker": "^2.10.1"
   },
   "require-dev": {
     "laravel/pint": "^1.25.1",
-    "mockery/mockery": "^1.6",
-    "nunomaduro/collision": "^8.8",
-    "pestphp/pest": "^4.1"
+    "mockery/mockery": "^1.6.12",
+    "nunomaduro/collision": "^8.8.3",
+    "pestphp/pest": "^4.1.4"
   },
   "autoload": {
     "psr-4": {
