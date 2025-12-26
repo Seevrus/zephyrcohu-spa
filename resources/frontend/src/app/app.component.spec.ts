@@ -19,40 +19,48 @@ describe("App Component", () => {
     const { container } = await renderAppComponent("/");
 
     const footer = container.querySelector(".footer-main");
+
     expect(footer).toBeInTheDocument();
 
     const header = container.querySelector(".header-main");
+
     expect(header).toBeInTheDocument();
   });
 
   test("should render the Main Component initially", async () => {
     await renderAppComponent("/");
+
     expect(screen.getByTestId("main-component")).toBeInTheDocument();
   });
 
   test("renders the Login Component", async () => {
     await renderAppComponent("/bejelentkezes");
+
     expect(screen.getByTestId("login-component")).toBeInTheDocument();
   });
 
   test("renders the Forgot Password Component", async () => {
     await renderAppComponent("/profil/elfelejtett_jelszo");
+
     expect(screen.getByTestId("forgot-password-component")).toBeInTheDocument();
   });
 
   test("renders the Reset Password Component", async () => {
     await renderAppComponent("/profil/jelszo_helyreallit");
+
     expect(screen.getByTestId("reset-password-component")).toBeInTheDocument();
   });
 
   describe("registration", () => {
     test("renders the registration form", async () => {
       await renderAppComponent("/regisztracio");
+
       expect(screen.getByTestId("register-component")).toBeInTheDocument();
     });
 
     test("renders the decline registration form", async () => {
       await renderAppComponent("/regisztracio/elvet");
+
       expect(
         screen.getByTestId("register-mail-decline-component"),
       ).toBeInTheDocument();
@@ -60,6 +68,7 @@ describe("App Component", () => {
 
     test("renders the accept registration form", async () => {
       await renderAppComponent("/regisztracio/megerosit");
+
       expect(
         screen.getByTestId("register-mail-accept-component"),
       ).toBeInTheDocument();

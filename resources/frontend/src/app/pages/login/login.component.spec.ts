@@ -11,23 +11,23 @@ describe("Login Component", () => {
     await renderLoginComponent();
 
     const emailField = screen.getByTestId("email");
-    expect(emailField?.querySelector("label")?.textContent).toEqual(
-      "Email cím",
-    );
-    expect(emailField?.querySelector("input")?.type).toEqual("text");
+
+    expect(emailField?.querySelector("label")?.textContent).toBe("Email cím");
+    expect(emailField?.querySelector("input")?.type).toBe("text");
 
     const passwordField = screen.getByTestId("password");
-    expect(passwordField?.querySelector("label")?.textContent).toEqual(
-      "Jelszó",
-    );
-    expect(passwordField?.querySelector("input")?.type).toEqual("password");
+
+    expect(passwordField?.querySelector("label")?.textContent).toBe("Jelszó");
+    expect(passwordField?.querySelector("input")?.type).toBe("password");
 
     const togglePassword =
       screen.getByTestId<HTMLButtonElement>("toggle-password");
-    expect(togglePassword?.disabled).toBeFalsy();
+
+    expect(togglePassword?.disabled).toBe(false);
 
     const submitButton = screen.getByTestId<HTMLButtonElement>("submit-button");
-    expect(submitButton?.disabled).toBeTruthy();
+
+    expect(submitButton?.disabled).toBe(true);
   });
 
   describe("should validate the form correctly", () => {
@@ -100,6 +100,7 @@ describe("Login Component", () => {
       await user.type(passwordInput, "abc123xyz");
 
       const submitButton = screen.getByTestId("submit-button");
+
       expect(submitButton).not.toBeDisabled();
     });
   });

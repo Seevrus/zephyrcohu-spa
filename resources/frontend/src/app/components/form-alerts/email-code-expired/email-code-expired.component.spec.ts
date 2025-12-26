@@ -8,7 +8,7 @@ describe("Form - Email Code / Link expired - Component", () => {
 
     expect(
       (await screen.findByTestId("zephyr-error-card-content")).innerHTML,
-    ).toEqual(
+    ).toBe(
       "<p> A megadott link érvényessége lejárt. Ezt okozhatja a hivatalos 30 perces lejárati időn túli, vagy túl sok sikertelen próbálkozás is. Kérjük, kezdje elölről a folyamatot egy új link igénylésével. </p>",
     );
   });

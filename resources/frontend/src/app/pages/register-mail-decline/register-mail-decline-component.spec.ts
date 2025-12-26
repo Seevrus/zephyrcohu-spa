@@ -36,7 +36,7 @@ describe("Register Email, Revoke Registration", () => {
 
       expect(
         (await screen.findByTestId("revoke-error-message")).innerHTML,
-      ).toEqual(expectedMessage);
+      ).toStrictEqual(expectedMessage);
 
       httpTesting.verify();
     });
@@ -55,7 +55,7 @@ describe("Register Email, Revoke Registration", () => {
 
       expect(
         (await screen.findByTestId("revoke-error-message")).innerHTML,
-      ).toEqual(expectedMessage);
+      ).toStrictEqual(expectedMessage);
 
       httpTesting.verify();
     });
@@ -77,7 +77,7 @@ describe("Register Email, Revoke Registration", () => {
 
       expect(
         (await screen.findByTestId("revoke-error-message")).innerHTML,
-      ).toEqual(expectedMessage);
+      ).toStrictEqual(expectedMessage);
 
       httpTesting.verify();
     });
@@ -99,7 +99,7 @@ describe("Register Email, Revoke Registration", () => {
 
       expect(
         (await screen.findByTestId("revoke-error-message")).innerHTML,
-      ).toEqual(
+      ).toBe(
         '<!--container--><p _ngcontent-a-c2841415809=""> A megadott e-mail cím már megerősítésre került a rendszerünkben. Regisztrációja törléséhez kérjük jelentkezzen be, ezek után az "Adatok módosítása" menüpontban lehetséges a regisztráció törlése. Bármilyen probléma esetén kérjük, írjon nekünk a <a _ngcontent-a-c2841415809="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c2841415809=""> Bejelentkezéshez kérjük <a _ngcontent-a-c2841415809="" routerlink="/bejelentkezes" class="zephyr-link" href="/bejelentkezes">kattintson ide</a>. </p><!--container--><!--container-->',
       );
 
@@ -123,7 +123,7 @@ describe("Register Email, Revoke Registration", () => {
 
       expect(
         (await screen.findByTestId("revoke-error-message")).innerHTML,
-      ).toEqual(
+      ).toBe(
         '<!--container--><!--container--><p _ngcontent-a-c2841415809=""> Váratlan hiba képett fel a regisztráció elvetése során. Kérjük, írjon nekünk a <a _ngcontent-a-c2841415809="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c2841415809=""> Regisztrációhoz kérjük <a _ngcontent-a-c2841415809="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container-->',
       );
 
@@ -142,7 +142,7 @@ describe("Register Email, Revoke Registration", () => {
 
     expect(
       (await screen.findByTestId("revoke-success-message")).innerHTML,
-    ).toEqual(
+    ).toBe(
       '<p _ngcontent-a-c2841415809=""> A(z) abc@example.com e-mail címet és a hozzá tartozó minden adatot véglegesen töröltük az adatbázisunkból. </p><p _ngcontent-a-c2841415809=""> Regisztrációhoz kérjük <a _ngcontent-a-c2841415809="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p>',
     );
 

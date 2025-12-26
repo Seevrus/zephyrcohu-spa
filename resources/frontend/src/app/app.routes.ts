@@ -29,9 +29,8 @@ export const routes: Routes = [
   {
     path: "profil/elfelejtett_jelszo",
     async loadComponent() {
-      const { ForgotPasswordComponent } = await import(
-        "./pages/forgot-password/forgot-password.component"
-      );
+      const { ForgotPasswordComponent } =
+        await import("./pages/forgot-password/forgot-password.component");
       return ForgotPasswordComponent;
     },
     title: "Elfelejtett jelszó",
@@ -39,9 +38,8 @@ export const routes: Routes = [
   {
     path: "profil/jelszo_helyreallit",
     async loadComponent() {
-      const { ResetPasswordComponent } = await import(
-        "./pages/reset-password/reset-password.component"
-      );
+      const { ResetPasswordComponent } =
+        await import("./pages/reset-password/reset-password.component");
       return ResetPasswordComponent;
     },
     title: "Jelszó helyreállítása",
@@ -49,9 +47,8 @@ export const routes: Routes = [
   {
     path: "regisztracio",
     async loadComponent() {
-      const { RegisterComponent } = await import(
-        "./pages/register/register.component"
-      );
+      const { RegisterComponent } =
+        await import("./pages/register/register.component");
       return RegisterComponent;
     },
     title: "Regisztráció",
@@ -59,9 +56,8 @@ export const routes: Routes = [
   {
     path: "regisztracio/elvet",
     async loadComponent() {
-      const { RegisterMailDeclineComponent } = await import(
-        "./pages/register-mail-decline/register-mail-decline.component"
-      );
+      const { RegisterMailDeclineComponent } =
+        await import("./pages/register-mail-decline/register-mail-decline.component");
       return RegisterMailDeclineComponent;
     },
     title: "Regisztráció elvetése",
@@ -69,9 +65,8 @@ export const routes: Routes = [
   {
     path: "regisztracio/megerosit",
     async loadComponent() {
-      const { RegisterMailAcceptComponent } = await import(
-        "./pages/register-mail-accept/register-mail-accept.component"
-      );
+      const { RegisterMailAcceptComponent } =
+        await import("./pages/register-mail-accept/register-mail-accept.component");
       return RegisterMailAcceptComponent;
     },
     title: "Regisztráció megerősítése",

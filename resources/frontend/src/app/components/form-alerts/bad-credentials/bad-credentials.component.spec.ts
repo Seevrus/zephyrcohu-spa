@@ -8,7 +8,7 @@ describe("Form - Bad Credentials - Component", () => {
 
     expect(
       (await screen.findByTestId("zephyr-error-card-content")).innerHTML,
-    ).toEqual("<p>A megadott email / jelszó kombináció nem megfelelő.</p>");
+    ).toBe("<p>A megadott email / jelszó kombináció nem megfelelő.</p>");
   });
 });
 

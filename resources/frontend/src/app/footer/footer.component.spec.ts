@@ -19,11 +19,9 @@ describe("Footer Component", () => {
       ".footer-actions > a > .mdc-button__label",
     );
 
-    expect([...footerNavLabels].map((link) => link?.textContent)).toEqual([
-      "Kapcsolat",
-      "Honlaptérkép",
-      "Adatvédelmi tájékoztató",
-    ]);
+    expect([...footerNavLabels].map((link) => link?.textContent)).toStrictEqual(
+      ["Kapcsolat", "Honlaptérkép", "Adatvédelmi tájékoztató"],
+    );
   });
 
   test("should have the correct copyright notice", async () => {

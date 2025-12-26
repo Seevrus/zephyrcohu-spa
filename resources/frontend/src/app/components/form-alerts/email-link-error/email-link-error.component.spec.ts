@@ -8,7 +8,7 @@ describe("Form - Email Link Error - Component", () => {
 
     expect(
       (await screen.findByTestId("zephyr-error-card-content")).innerHTML,
-    ).toEqual(
+    ).toBe(
       `<p> A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p>`,
     );
   });

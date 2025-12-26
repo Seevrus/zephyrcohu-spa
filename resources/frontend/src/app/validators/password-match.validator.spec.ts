@@ -19,6 +19,7 @@ describe("passwordMatchValidator", () => {
     });
 
     const validationResult = passwordMatchValidator(testGroup);
+
     expect(validationResult).toBeNull();
   });
 
@@ -29,6 +30,7 @@ describe("passwordMatchValidator", () => {
     });
 
     const validationResult = passwordMatchValidator(testGroup);
+
     expect(validationResult).toBeNull();
   });
 
@@ -39,6 +41,7 @@ describe("passwordMatchValidator", () => {
     });
 
     const validationResult = passwordMatchValidator(testGroup);
+
     expect(validationResult).toBeNull();
   });
 
@@ -49,7 +52,8 @@ describe("passwordMatchValidator", () => {
     });
 
     const validationResult = passwordMatchValidator(testGroup);
-    expect(validationResult).toEqual({
+
+    expect(validationResult).toStrictEqual({
       passwordsDontMatch: true,
     });
   });

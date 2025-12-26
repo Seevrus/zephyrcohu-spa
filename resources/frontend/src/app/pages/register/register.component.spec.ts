@@ -25,8 +25,9 @@ describe("Register Component", () => {
       await renderRegisterComponent();
 
       const emailField = screen.getByTestId("email");
+
       expect(emailField.querySelector("label")).toHaveTextContent("Email cím");
-      expect(emailField.querySelector("input")?.type).toEqual("text");
+      expect(emailField.querySelector("input")?.type).toBe("text");
 
       expect(screen.getByTestId("passwords-container")).toBeInTheDocument();
     });
@@ -40,6 +41,7 @@ describe("Register Component", () => {
 
       const newsletterCheckboxLabel =
         newsletterCheckboxContainer?.querySelector("label");
+
       expect(newsletterCheckboxLabel).toHaveTextContent(
         "Szeretnék hírlevelet kapni a fontosabb újdonságokról.",
       );
@@ -48,6 +50,7 @@ describe("Register Component", () => {
         newsletterCheckboxContainer?.querySelector<HTMLInputElement>(
           "input[type='checkbox']",
         );
+
       expect(newsletterCheckbox).not.toBeChecked();
 
       const cookiesCheckboxContainer = container.querySelector(
@@ -56,6 +59,7 @@ describe("Register Component", () => {
 
       const cookiesCheckboxLabel =
         cookiesCheckboxContainer?.querySelector("label");
+
       expect(cookiesCheckboxLabel).toHaveTextContent(
         "* Hozzájárulok a bejelentkezési adatokat tartalmazó cookie-k tárolásához.",
       );
@@ -64,6 +68,7 @@ describe("Register Component", () => {
         cookiesCheckboxContainer?.querySelector<HTMLInputElement>(
           "input[type='checkbox']",
         );
+
       expect(cookiesCheckbox).not.toBeChecked();
     });
   });
@@ -166,9 +171,9 @@ describe("Register Component", () => {
         statusText: "Conflict",
       });
 
-      expect(
-        await screen.findByTestId("register-already-exists"),
-      ).toBeInTheDocument();
+      await expect(
+        screen.findByTestId("register-already-exists"),
+      ).resolves.toBeInTheDocument();
 
       expect(
         screen.queryByTestId("register-exists-not-confirmed"),
@@ -206,9 +211,9 @@ describe("Register Component", () => {
         statusText: "Conflict",
       });
 
-      expect(
-        await screen.findByTestId("register-exists-not-confirmed"),
-      ).toBeInTheDocument();
+      await expect(
+        screen.findByTestId("register-exists-not-confirmed"),
+      ).resolves.toBeInTheDocument();
 
       expect(screen.queryByTestId("register-exists")).not.toBeInTheDocument();
       expect(
@@ -244,9 +249,9 @@ describe("Register Component", () => {
         statusText: "Internal Server Error",
       });
 
-      expect(
-        await screen.findByTestId("form-unexpected-error"),
-      ).toBeInTheDocument();
+      await expect(
+        screen.findByTestId("form-unexpected-error"),
+      ).resolves.toBeInTheDocument();
 
       expect(screen.queryByTestId("register-exists")).not.toBeInTheDocument();
       expect(
@@ -282,13 +287,14 @@ describe("Register Component", () => {
         statusText: "Internal Server Error",
       });
 
-      expect(
-        await screen.findByTestId("form-unexpected-error"),
-      ).toBeInTheDocument();
+      await expect(
+        screen.findByTestId("form-unexpected-error"),
+      ).resolves.toBeInTheDocument();
 
       expect(submitButton).toBeDisabled();
 
       await fillForm(fixture, { email: "abc124@gmail.com" });
+
       expect(submitButton).toBeEnabled();
     });
   });
@@ -306,7 +312,9 @@ describe("Register Component", () => {
     const request = await waitFor(() => httpTesting.expectOne(registerRequest));
     request.flush(getSessionOkResponse);
 
-    expect(await screen.findByTestId("register-success")).toBeInTheDocument();
+    await expect(
+      screen.findByTestId("register-success"),
+    ).resolves.toBeInTheDocument();
 
     expect(
       screen.queryByTestId("register-already-exists"),
@@ -348,9 +356,9 @@ describe("Register Component", () => {
       statusText: "Internal Server Error",
     });
 
-    expect(
-      await screen.findByTestId("register-resend-email-error"),
-    ).toBeInTheDocument();
+    await expect(
+      screen.findByTestId("register-resend-email-error"),
+    ).resolves.toBeInTheDocument();
 
     expect(
       screen.queryByTestId("register-already-exists"),
@@ -385,9 +393,9 @@ describe("Register Component", () => {
 
     resendConfirmEmailRequest.flush(null);
 
-    expect(
-      await screen.findByTestId("register-resend-email-success"),
-    ).toBeInTheDocument();
+    await expect(
+      screen.findByTestId("register-resend-email-success"),
+    ).resolves.toBeInTheDocument();
 
     expect(
       screen.queryByTestId("register-already-exists"),

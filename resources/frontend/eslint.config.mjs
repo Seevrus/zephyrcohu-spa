@@ -1,7 +1,9 @@
 // @ts-check
 
 import eslint from "@eslint/js";
+import vitest from "@vitest/eslint-plugin";
 import angular from "angular-eslint";
+import { defineConfig } from "eslint/config";
 import eslintConfigPrettier from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
 import promisePlugin from "eslint-plugin-promise";
@@ -11,7 +13,7 @@ import unicorn from "eslint-plugin-unicorn";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
   {
     languageOptions: {
       ecmaVersion: 2022,
@@ -163,11 +165,39 @@ export default tseslint.config(
   },
   {
     files: ["**/*.spec.ts"],
+    languageOptions: {
+      globals: {
+        ...vitest.environments.env.globals,
+      },
+    },
+    plugins: {
+      vitest,
+    },
     rules: {
+      ...vitest.configs.all.rules,
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
       "sonarjs/no-hardcoded-passwords": "off",
+      "vitest/consistent-test-filename": [
+        "warn",
+        {
+          pattern: ".*\\.spec\\.ts$",
+        },
+      ],
+      "vitest/consistent-test-it": [
+        "warn",
+        {
+          fn: "test",
+          withinDescribe: "test",
+        },
+      ],
+      "vitest/max-expects": "off",
+      "vitest/no-hooks": "off",
+      "vitest/prefer-describe-function-title": "off",
+      "vitest/prefer-expect-assertions": "off",
+      "vitest/prefer-importing-vitest-globals": "off",
+      "vitest/prefer-lowercase-title": "off",
     },
   },
   {

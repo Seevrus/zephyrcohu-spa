@@ -31,7 +31,7 @@ describe("App Title Strategy", () => {
     appTitleStrategy = TestBed.inject(AppTitleStrategy);
   });
 
-  it("updates the title correctly", () => {
+  test("updates the title correctly", () => {
     appTitleStrategy.updateTitle({} as unknown as RouterStateSnapshot);
 
     expect(setTitleSpy).toHaveBeenCalledWith("Test Title - Zephyr Bt.");

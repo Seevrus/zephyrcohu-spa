@@ -27,7 +27,7 @@ describe("Header", () => {
 
     const userActions = await screen.findAllByTestId("header-user-action");
 
-    expect([...userActions].map((action) => action.textContent)).toEqual([
+    expect([...userActions].map((action) => action.textContent)).toStrictEqual([
       "Bejelentkezés",
       "Regisztráció",
     ]);
@@ -41,9 +41,9 @@ describe("Header", () => {
     breadcrumbService.setBreadcrumb("Főoldal");
     await fixture.whenStable();
 
-    expect(await screen.findByTestId("header-breadcrumb")).toHaveTextContent(
-      "Megjelenített lap: Főoldal",
-    );
+    await expect(
+      screen.findByTestId("header-breadcrumb"),
+    ).resolves.toHaveTextContent("Megjelenített lap: Főoldal");
   });
 });
 

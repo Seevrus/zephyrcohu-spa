@@ -8,7 +8,7 @@ describe("Form - Unexpected Error - Component", () => {
 
     expect(
       (await screen.findByTestId("zephyr-error-card-content")).innerHTML,
-    ).toEqual(
+    ).toBe(
       `<p> Váratlan hiba lépett fel a folyamat során. Kérjük, írjon nekünk a <a class="zephyr-link on-error" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p>`,
     );
   });

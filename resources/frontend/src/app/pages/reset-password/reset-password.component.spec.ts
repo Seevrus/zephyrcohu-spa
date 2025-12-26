@@ -134,9 +134,9 @@ describe("Reset Password Component", () => {
         statusText: "Bad Request",
       });
 
-      expect(
-        await screen.findByTestId("bad-credentials-error"),
-      ).toBeInTheDocument();
+      await expect(
+        screen.findByTestId("bad-credentials-error"),
+      ).resolves.toBeInTheDocument();
 
       expect(
         screen.queryByTestId("email-code-expired-error"),
@@ -168,9 +168,9 @@ describe("Reset Password Component", () => {
         statusText: "Gone",
       });
 
-      expect(
-        await screen.findByTestId("email-code-expired-error"),
-      ).toBeInTheDocument();
+      await expect(
+        screen.findByTestId("email-code-expired-error"),
+      ).resolves.toBeInTheDocument();
 
       expect(
         screen.queryByTestId("bad-credentials-error"),
@@ -202,9 +202,9 @@ describe("Reset Password Component", () => {
         statusText: "Internal Server Error",
       });
 
-      expect(
-        await screen.findByTestId("form-unexpected-error"),
-      ).toBeInTheDocument();
+      await expect(
+        screen.findByTestId("form-unexpected-error"),
+      ).resolves.toBeInTheDocument();
 
       expect(
         screen.queryByTestId("bad-credentials-error"),
@@ -236,13 +236,14 @@ describe("Reset Password Component", () => {
         statusText: "Internal Server Error",
       });
 
-      expect(
-        await screen.findByTestId("form-unexpected-error"),
-      ).toBeInTheDocument();
+      await expect(
+        screen.findByTestId("form-unexpected-error"),
+      ).resolves.toBeInTheDocument();
 
       expect(submitButton).toBeDisabled();
 
       await fillForm(fixture, "awesomeNewPassword");
+
       expect(submitButton).toBeEnabled();
     });
   });

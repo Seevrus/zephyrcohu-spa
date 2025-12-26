@@ -19,37 +19,41 @@ describe("PasswordRepeatComponent", () => {
       await renderPasswordRepeatComponent();
 
       const passwordField = screen.getByTestId("password");
+
       expect(passwordField.querySelector("label")).toHaveTextContent("Jelszó");
-      expect(passwordField.querySelector("input")?.type).toEqual("password");
+      expect(passwordField.querySelector("input")?.type).toBe("password");
 
       const passwordAgainField = screen.getByTestId("password-again");
+
       expect(passwordAgainField.querySelector("label")).toHaveTextContent(
         "Jelszó újra",
       );
-      expect(passwordAgainField.querySelector("input")?.type).toEqual(
-        "password",
-      );
+      expect(passwordAgainField.querySelector("input")?.type).toBe("password");
     });
 
     test("password helpers", async () => {
       await renderPasswordRepeatComponent();
 
       const passwordCharacters = screen.getByTestId("password-characters");
+
       expect(passwordCharacters).toHaveTextContent(
         "A jelszó minimális hossza 8 karakter. Engedélyezett karakterek: magyar ABC kis- és nagybetűi, számok, illetve az alábbi speciális karakterek: . _ + # % @ -",
       );
 
       const passwordStrength = screen.queryByTestId("password-strength");
+
       expect(passwordStrength).toBeNull();
 
       const passwordGenerateHelp = screen.getByTestId("password-generate-help");
+
       expect(passwordGenerateHelp).toHaveTextContent(
         "Erős jelszavak generálása pofonegyszerűen - segédlet az alábbi oldalon.",
       );
 
       const helpLink =
         passwordGenerateHelp?.querySelector<HTMLAnchorElement>("a");
-      expect(helpLink?.href).toEqual(
+
+      expect(helpLink?.href).toBe(
         "https://hvg.hu/tudomany/20171117_eros_jelszo_letrehozasa_generator_nehezen_kitalalhato_jelszavak_nehezen_feltorheto_jelszo_biztonsagos_milyen_jelszot_valasszak",
       );
       expect(helpLink?.target).toBe("_blank");
@@ -85,6 +89,7 @@ describe("PasswordRepeatComponent", () => {
     await user.type(passwordInput, "weakpass");
 
     const passwordStrength = screen.getByTestId("password-strength");
+
     expect(passwordStrength).toHaveTextContent("A jelszó erőssége: gyenge");
   });
 });

@@ -22,8 +22,9 @@ describe("Forgot Password Component", () => {
       await renderForgotPasswordComponent();
 
       const emailField = screen.getByTestId("email");
+
       expect(emailField.querySelector("label")).toHaveTextContent("Email cím");
-      expect(emailField.querySelector("input")?.type).toEqual("text");
+      expect(emailField.querySelector("input")?.type).toBe("text");
     });
 
     test("submit button", async () => {
@@ -92,9 +93,9 @@ describe("Forgot Password Component", () => {
       statusText: "Internal Server Error",
     });
 
-    expect(
-      await screen.findByTestId("form-unexpected-error"),
-    ).toBeInTheDocument();
+    await expect(
+      screen.findByTestId("form-unexpected-error"),
+    ).resolves.toBeInTheDocument();
 
     expect(
       screen.queryByTestId("forgot-password-email-sent"),
@@ -119,9 +120,9 @@ describe("Forgot Password Component", () => {
 
     request.flush(null);
 
-    expect(
-      await screen.findByTestId("forgot-password-email-sent"),
-    ).toBeInTheDocument();
+    await expect(
+      screen.findByTestId("forgot-password-email-sent"),
+    ).resolves.toBeInTheDocument();
 
     expect(
       screen.queryByTestId("form-unexpected-error"),
