@@ -42,7 +42,7 @@ describe("Breadcrumb Service", () => {
       });
     });
 
-    it("should set undefined if the breadcrumb does not exist", () => {
+    test("should set undefined if the breadcrumb does not exist", () => {
       breadcrumbService.setBreadcrumb("NonExistingBreadcrumb");
 
       expect(breadcrumbService.breadcrumb()).toBeUndefined();

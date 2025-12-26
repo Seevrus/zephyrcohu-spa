@@ -5,11 +5,11 @@ import { FooterComponent } from "./footer.component";
 
 describe("Footer Component", () => {
   beforeAll(() => {
-    jest.useFakeTimers().setSystemTime(new Date("2025-08-31"));
+    vi.useFakeTimers().setSystemTime(new Date("2025-08-31"));
   });
 
   afterAll(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   test("should have the correct navigation items", async () => {

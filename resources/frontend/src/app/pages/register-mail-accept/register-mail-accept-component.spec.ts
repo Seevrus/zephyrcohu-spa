@@ -30,7 +30,7 @@ describe("Register Email, Accept Registration", () => {
 
   describe("confirm errors", () => {
     const expectedMessage =
-      '<p> A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p> Regisztrációhoz kérjük <a routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container--><!--container--><!--container-->';
+      '<p _ngcontent-a-c2389710856=""> A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a <a _ngcontent-a-c2389710856="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c2389710856=""> Regisztrációhoz kérjük <a _ngcontent-a-c2389710856="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container--><!--container--><!--container-->';
 
     test("bad query parameters", async () => {
       const { httpTesting } = await renderComponent(undefined, TEST_CODE);
@@ -95,7 +95,7 @@ describe("Register Email, Accept Registration", () => {
       expect(
         (await screen.findByTestId("confirm-error-message")).innerHTML,
       ).toEqual(
-        '<!--container--><p> Ezt a felhasználót már aktiválták. Bármilyen probléma esetén kérjük, írjon nekünk a <a class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p> Bejelentkezéshez kérjük <a routerlink="/bejelentkezes" class="zephyr-link" href="/bejelentkezes">kattintson ide</a>. </p><!--container--><!--container-->',
+        '<!--container--><p _ngcontent-a-c2389710856=""> Ezt a felhasználót már aktiválták. Bármilyen probléma esetén kérjük, írjon nekünk a <a _ngcontent-a-c2389710856="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c2389710856=""> Bejelentkezéshez kérjük <a _ngcontent-a-c2389710856="" routerlink="/bejelentkezes" class="zephyr-link" href="/bejelentkezes">kattintson ide</a>. </p><!--container--><!--container-->',
       );
 
       httpTesting.verify();
@@ -116,7 +116,7 @@ describe("Register Email, Accept Registration", () => {
       expect(
         (await screen.findByTestId("confirm-error-message")).innerHTML,
       ).toEqual(
-        '<!--container--><!--container--><p> Váratlan hiba képett fel az email cím megerősítése során. Kérjük, írjon nekünk a <a class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p> Regisztrációhoz kérjük <a routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container-->',
+        '<!--container--><!--container--><p _ngcontent-a-c2389710856=""> Váratlan hiba képett fel az email cím megerősítése során. Kérjük, írjon nekünk a <a _ngcontent-a-c2389710856="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c2389710856=""> Regisztrációhoz kérjük <a _ngcontent-a-c2389710856="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container-->',
       );
 
       httpTesting.verify();
@@ -135,7 +135,7 @@ describe("Register Email, Accept Registration", () => {
     expect(
       (await screen.findByTestId("confirm-success-message")).innerHTML,
     ).toEqual(
-      '<p> A(z) abc@example.com e-mail címmel és a hozzá tartozó jelszó segítségével mostantól be tud jelentkezni a honlapunkon. </p><p> Bejelentkezéshez kérjük <a routerlink="/bejelentkezes" class="zephyr-link" href="/bejelentkezes">kattintson ide</a>. </p>',
+      '<p _ngcontent-a-c2389710856=""> A(z) abc@example.com e-mail címmel és a hozzá tartozó jelszó segítségével mostantól be tud jelentkezni a honlapunkon. </p><p _ngcontent-a-c2389710856=""> Bejelentkezéshez kérjük <a _ngcontent-a-c2389710856="" routerlink="/bejelentkezes" class="zephyr-link" href="/bejelentkezes">kattintson ide</a>. </p>',
     );
 
     httpTesting.verify();

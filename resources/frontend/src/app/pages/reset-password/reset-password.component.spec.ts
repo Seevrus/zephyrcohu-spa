@@ -254,7 +254,7 @@ describe("Reset Password Component", () => {
     );
 
     const router = TestBed.inject(Router);
-    const navigateSpy = jest.spyOn(router, "navigate");
+    const navigateSpy = vi.spyOn(router, "navigate");
 
     await fillForm(fixture);
 

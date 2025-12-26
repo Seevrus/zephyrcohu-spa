@@ -2,22 +2,23 @@ import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { Title } from "@angular/platform-browser";
 import { type RouterStateSnapshot } from "@angular/router";
+import { type Mock } from "vitest";
 
 import { AppTitleStrategy } from "./app.title.strategy";
 import { BreadcrumbService } from "./services/breadcrumb.service";
 
 describe("App Title Strategy", () => {
   let appTitleStrategy: AppTitleStrategy;
-  let setBreadCrumbSpy: jest.SpyInstance<void, [title: string]>;
-  let setTitleSpy: jest.SpyInstance<void, [newTitle: string]>;
+  let setBreadCrumbSpy: Mock<(title: string) => void>;
+  let setTitleSpy: Mock<(newTitle: string) => void>;
 
   beforeEach(() => {
-    jest
-      .spyOn(AppTitleStrategy.prototype, "buildTitle")
-      .mockReturnValue("Test Title");
+    vi.spyOn(AppTitleStrategy.prototype, "buildTitle").mockReturnValue(
+      "Test Title",
+    );
 
-    setBreadCrumbSpy = jest.spyOn(BreadcrumbService.prototype, "setBreadcrumb");
-    setTitleSpy = jest.spyOn(Title.prototype, "setTitle");
+    setBreadCrumbSpy = vi.spyOn(BreadcrumbService.prototype, "setBreadcrumb");
+    setTitleSpy = vi.spyOn(Title.prototype, "setTitle");
 
     TestBed.configureTestingModule({
       providers: [
