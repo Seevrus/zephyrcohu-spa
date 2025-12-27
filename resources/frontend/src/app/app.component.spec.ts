@@ -8,15 +8,19 @@ import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { provideRouter } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
-import { render, screen } from "@testing-library/angular";
+import { render, screen, waitFor } from "@testing-library/angular";
 
 import { testQueryClient } from "../mocks/testQueryClient";
+import getSessionErrorResponse from "../mocks/users/getSessionErrorResponse.json";
+import getSessionOkResponse from "../mocks/users/getSessionOkResponse.json";
+import { sessionRequest } from "../mocks/users/sessionRequest";
 import { AppComponent } from "./app.component";
 import { routes } from "./app.routes";
 
 describe("App Component", () => {
   test("should render header and footer", async () => {
-    const { container } = await renderAppComponent("/");
+    const { renderResult } = renderAppComponent("/");
+    const { container } = await renderResult;
 
     const footer = container.querySelector(".footer-main");
 
@@ -28,68 +32,197 @@ describe("App Component", () => {
   });
 
   test("should render the Main Component initially", async () => {
-    await renderAppComponent("/");
+    renderAppComponent("/");
 
-    expect(screen.getByTestId("main-component")).toBeInTheDocument();
+    await expect(
+      screen.findByTestId("main-component"),
+    ).resolves.toBeInTheDocument();
   });
 
-  test("renders the Login Component", async () => {
-    await renderAppComponent("/bejelentkezes");
+  describe("Login Component", () => {
+    test("redirects to the main page if the user is already logged in", async () => {
+      const { httpTesting } = renderAppComponent("/bejelentkezes");
 
-    expect(screen.getByTestId("login-component")).toBeInTheDocument();
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionOkResponse);
+
+      await expect(
+        screen.findByTestId("main-component"),
+      ).resolves.toBeInTheDocument();
+    });
+
+    test("renders the Login Component", async () => {
+      const { httpTesting } = renderAppComponent("/bejelentkezes");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionErrorResponse);
+
+      await expect(
+        screen.findByTestId("login-component"),
+      ).resolves.toBeInTheDocument();
+    });
   });
 
-  test("renders the Forgot Password Component", async () => {
-    await renderAppComponent("/profil/elfelejtett_jelszo");
+  describe("Forgot Password Component", () => {
+    test("redirects to the main page if the user is already logged in", async () => {
+      const { httpTesting } = renderAppComponent("/profil/elfelejtett_jelszo");
 
-    expect(screen.getByTestId("forgot-password-component")).toBeInTheDocument();
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionOkResponse);
+
+      await expect(
+        screen.findByTestId("main-component"),
+      ).resolves.toBeInTheDocument();
+    });
+
+    test("renders the Forgot Password Component", async () => {
+      const { httpTesting } = renderAppComponent("/profil/elfelejtett_jelszo");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionErrorResponse);
+
+      await expect(
+        screen.findByTestId("forgot-password-component"),
+      ).resolves.toBeInTheDocument();
+    });
   });
 
-  test("renders the Reset Password Component", async () => {
-    await renderAppComponent("/profil/jelszo_helyreallit");
+  describe("Reset Password Component", () => {
+    test("redirects to the main page if the user is already logged in", async () => {
+      const { httpTesting } = renderAppComponent("/profil/jelszo_helyreallit");
 
-    expect(screen.getByTestId("reset-password-component")).toBeInTheDocument();
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionOkResponse);
+
+      await expect(
+        screen.findByTestId("main-component"),
+      ).resolves.toBeInTheDocument();
+    });
+
+    test("renders the Reset Password Component", async () => {
+      const { httpTesting } = renderAppComponent("/profil/jelszo_helyreallit");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionErrorResponse);
+
+      await expect(
+        screen.findByTestId("reset-password-component"),
+      ).resolves.toBeInTheDocument();
+    });
   });
 
   describe("registration", () => {
-    test("renders the registration form", async () => {
-      await renderAppComponent("/regisztracio");
+    test("redirects to the main page if the user is already logged in", async () => {
+      const { httpTesting } = renderAppComponent("/regisztracio");
 
-      expect(screen.getByTestId("register-component")).toBeInTheDocument();
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionOkResponse);
+
+      await expect(
+        screen.findByTestId("main-component"),
+      ).resolves.toBeInTheDocument();
+    });
+
+    test("renders the registration form", async () => {
+      const { httpTesting } = renderAppComponent("/regisztracio");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionErrorResponse);
+
+      await expect(
+        screen.findByTestId("register-component"),
+      ).resolves.toBeInTheDocument();
+    });
+
+    test("redirects to the main page if a logged in user tries to decline registration", async () => {
+      const { httpTesting } = renderAppComponent("/regisztracio/elvet");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionOkResponse);
+
+      await expect(
+        screen.findByTestId("main-component"),
+      ).resolves.toBeInTheDocument();
     });
 
     test("renders the decline registration form", async () => {
-      await renderAppComponent("/regisztracio/elvet");
+      const { httpTesting } = renderAppComponent("/regisztracio/elvet");
 
-      expect(
-        screen.getByTestId("register-mail-decline-component"),
-      ).toBeInTheDocument();
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionErrorResponse);
+
+      await expect(
+        screen.findByTestId("register-mail-decline-component"),
+      ).resolves.toBeInTheDocument();
+    });
+
+    test("redirects to the main page if a logged in user tries to accept registration", async () => {
+      const { httpTesting } = renderAppComponent("/regisztracio/megerosit");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionOkResponse);
+
+      await expect(
+        screen.findByTestId("main-component"),
+      ).resolves.toBeInTheDocument();
     });
 
     test("renders the accept registration form", async () => {
-      await renderAppComponent("/regisztracio/megerosit");
+      const { httpTesting } = renderAppComponent("/regisztracio/megerosit");
 
-      expect(
-        screen.getByTestId("register-mail-accept-component"),
-      ).toBeInTheDocument();
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionErrorResponse);
+
+      await expect(
+        screen.findByTestId("register-mail-accept-component"),
+      ).resolves.toBeInTheDocument();
     });
   });
 });
 
-async function renderAppComponent(initialRoute: string) {
+function renderAppComponent(initialRoute: string) {
+  testQueryClient.clear();
+
   const renderResult = render(AppComponent, {
     initialRoute,
     providers: [
       provideHttpClient(withFetch()),
-      provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
+      provideHttpClientTesting(),
       provideRouter(routes),
       provideLocationMocks(),
       provideZonelessChangeDetection(),
     ],
   });
 
-  TestBed.inject(HttpTestingController);
+  const httpTesting = TestBed.inject(HttpTestingController);
 
-  return renderResult;
+  return {
+    renderResult,
+    httpTesting,
+  };
 }

@@ -160,6 +160,7 @@ export default defineConfig(
       "promise/always-return": "off",
       "promise/catch-or-return": "off",
       "sonarjs/cognitive-complexity": "off",
+      "sonarjs/function-return-type": "off",
       "sonarjs/no-redundant-jump": "off",
     },
   },

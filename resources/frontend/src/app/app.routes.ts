@@ -1,5 +1,7 @@
 import { type Routes } from "@angular/router";
 
+import { guestGuard } from "./guards/guest.guard";
+
 export type QueryParamsByPath = {
   "profil/jelszo_helyreallit": {
     code?: string;
@@ -20,6 +22,7 @@ export const routes: Routes = [
   },
   {
     path: "bejelentkezes",
+    canActivate: [guestGuard],
     async loadComponent() {
       const { LoginComponent } = await import("./pages/login/login.component");
       return LoginComponent;
@@ -28,6 +31,7 @@ export const routes: Routes = [
   },
   {
     path: "profil/elfelejtett_jelszo",
+    canActivate: [guestGuard],
     async loadComponent() {
       const { ForgotPasswordComponent } =
         await import("./pages/forgot-password/forgot-password.component");
@@ -37,6 +41,7 @@ export const routes: Routes = [
   },
   {
     path: "profil/jelszo_helyreallit",
+    canActivate: [guestGuard],
     async loadComponent() {
       const { ResetPasswordComponent } =
         await import("./pages/reset-password/reset-password.component");
@@ -46,6 +51,7 @@ export const routes: Routes = [
   },
   {
     path: "regisztracio",
+    canActivate: [guestGuard],
     async loadComponent() {
       const { RegisterComponent } =
         await import("./pages/register/register.component");
@@ -55,6 +61,7 @@ export const routes: Routes = [
   },
   {
     path: "regisztracio/elvet",
+    canActivate: [guestGuard],
     async loadComponent() {
       const { RegisterMailDeclineComponent } =
         await import("./pages/register-mail-decline/register-mail-decline.component");
@@ -64,6 +71,7 @@ export const routes: Routes = [
   },
   {
     path: "regisztracio/megerosit",
+    canActivate: [guestGuard],
     async loadComponent() {
       const { RegisterMailAcceptComponent } =
         await import("./pages/register-mail-accept/register-mail-accept.component");
