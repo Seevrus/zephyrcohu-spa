@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from "@angular/common";
-import { Component, inject } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { MatAnchor, MatButton } from "@angular/material/button";
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { injectQuery } from "@tanstack/angular-query-experimental";
@@ -27,11 +27,16 @@ export class HeaderComponent {
   private readonly breadcrumbService = inject(BreadcrumbService);
   private readonly usersQueryService = inject(UsersQueryService);
 
-  readonly breadcrumb = this.breadcrumbService.breadcrumb;
-
   private readonly sessionQuery = injectQuery(() =>
     this.usersQueryService.session(),
   );
+
+  readonly breadcrumb = this.breadcrumbService.breadcrumb;
+  readonly email = signal(this.sessionQuery.data()?.email);
+
+  onLogout() {
+    console.log("Kijelentkezés...");
+  }
 
   get showLogin() {
     return (

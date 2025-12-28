@@ -22,6 +22,16 @@
   .header-actions-container {
     .header-breadcrumb {
       display: none;
+
+      &--breadcrumb {
+        font-weight: 500;
+      }
+    }
+
+    .header-active-user {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin: 0.5rem 0 0 0;
     }
 
     .header-user-actions {

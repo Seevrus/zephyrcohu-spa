@@ -29,11 +29,28 @@
           >Regisztráció</a
         >
       </div>
+    } @else {
+      <div class="header-active-user">Bejelentkezve: {{ email() }}</div>
+      <div class="header-user-actions">
+        <a
+          data-testid="header-user-action"
+          mat-button
+          routerLink="/profil"
+          routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >Adatok módosítása</a
+        >
+        <button
+          data-testid="header-user-action"
+          mat-button
+          (click)="onLogout()"
+        >Kijelentkezés</button>
+      </div>
     }
     <div data-testid="header-breadcrumb" class="header-breadcrumb">
       @if (breadcrumb()) {
-        <span class="header-breadcrumb--title">Megjelenített lap:</span>
-        {{ breadcrumb() }}
+        <span class="header-breadcrumb--title">Megjelenített lap: </span>
+        <span class="header-breadcrumb--breadcrumb">{{ breadcrumb() }}</span>
       }
     </div>
   </div>
