@@ -6,16 +6,6 @@ import { BreadcrumbService } from "./breadcrumb.service";
 describe("Breadcrumb Service", () => {
   let breadcrumbService: BreadcrumbService;
 
-  @Component({
-    selector: "app-fixture",
-    template: `<div data-testid="breadcrumb">
-      {{ breadcrumbService.breadcrumb() }}
-    </div>`,
-  })
-  class TestComponent {
-    readonly breadcrumbService = inject(BreadcrumbService);
-  }
-
   beforeEach(async () => {
     await render(TestComponent, {
       configureTestBed(testBed) {
@@ -45,3 +35,13 @@ describe("Breadcrumb Service", () => {
     });
   });
 });
+
+@Component({
+  selector: "app-fixture",
+  template: `<div data-testid="breadcrumb">
+    {{ breadcrumbService.breadcrumb() }}
+  </div>`,
+})
+class TestComponent {
+  readonly breadcrumbService = inject(BreadcrumbService);
+}

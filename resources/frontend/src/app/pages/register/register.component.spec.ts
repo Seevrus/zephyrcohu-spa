@@ -9,9 +9,9 @@ import { render, screen, waitFor } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
 
 import { testQueryClient } from "../../../mocks/testQueryClient";
+import { createPostResendConfirmEmailErrorResponse } from "../../../mocks/users/createPostResendConfirmEmailErrorResponse";
 import { createRegisterErrorResponse } from "../../../mocks/users/createRegisterErrorResponse";
 import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
-import postResendConfirmEmailErrorResponse from "../../../mocks/users/postResendConfirmEmailErrorResponse.json";
 import { registerRequest } from "../../../mocks/users/registerRequest";
 import { resendConfirmationEmailRequest } from "../../../mocks/users/resendConfirmationEmailRequest";
 import { RegisterComponent } from "./register.component";
@@ -350,10 +350,13 @@ describe("Register Component", () => {
       httpTesting.expectOne(resendConfirmationEmailRequest),
     );
 
-    resendConfirmEmailRequest.flush(postResendConfirmEmailErrorResponse, {
-      status: 500,
-      statusText: "Internal Server Error",
-    });
+    resendConfirmEmailRequest.flush(
+      createPostResendConfirmEmailErrorResponse("INTERNAL_SERVER_ERROR"),
+      {
+        status: 500,
+        statusText: "Internal Server Error",
+      },
+    );
 
     await expect(
       screen.findByTestId("register-resend-email-error"),

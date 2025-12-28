@@ -1,4 +1,4 @@
-import { Component, inject, signal } from "@angular/core";
+import { Component, inject, type OnDestroy, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField } from "@angular/material/form-field";
@@ -15,6 +15,7 @@ import { RegisterResendEmailErrorComponent } from "../../components/form-alerts/
 import { RegisterResendEmailSuccessComponent } from "../../components/form-alerts/register-resend-email-success/register-resend-email-success.component";
 import { RegisterSuccessComponent } from "../../components/form-alerts/register-success/register-success.component";
 import { PasswordRepeatComponent } from "../../components/password-repeat/password-repeat.component";
+import { ResendConfirmationEmailService } from "../../services/resend-confirmation-email.service";
 import { UsersQueryService } from "../../services/users.query.service";
 import { passwordMatchValidator } from "../../validators/password-match.validator";
 
@@ -40,8 +41,11 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   styleUrl: "./register.component.scss",
   templateUrl: "./register.component.html",
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
+  private readonly resendRegistrationEmailService = inject(
+    ResendConfirmationEmailService,
+  );
   private readonly usersQueryService = inject(UsersQueryService);
 
   private readonly passwordPattern = new RegExp(
@@ -50,23 +54,12 @@ export class RegisterComponent {
 
   readonly registeredEmail = signal<string>("");
   readonly registerErrorMessage = signal<string>("");
-
-  /**
-   * | EMAIL_NOT_FOUND
-   * | INTERNAL_SERVER_ERROR
-   * | USER_ALREADY_CONFIRMED
-   *
-   * But we will be a bit optimistic here. Given how the action is enabled, only unexpected errors will occur.
-   */
-  readonly resendConfirmationEmailErrorMessage = signal<string>("");
-  readonly resentEmail = signal<string>("");
+  readonly resendConfirmationEmailErrorMessage =
+    this.resendRegistrationEmailService.resendConfirmationEmailErrorMessage;
+  readonly resentEmail = this.resendRegistrationEmailService.resentEmail;
 
   protected readonly registerMutation = injectMutation(() =>
     this.usersQueryService.register(),
-  );
-
-  private readonly resendRegistrationEmailMutation = injectMutation(() =>
-    this.usersQueryService.resendRegistrationConfirmEmail(),
   );
 
   readonly zephyrEmail = zephyr;
@@ -96,6 +89,11 @@ export class RegisterComponent {
 
   get password() {
     return this.registerForm.get("passwords.password");
+  }
+
+  ngOnDestroy() {
+    this.resendConfirmationEmailErrorMessage.set("");
+    this.resentEmail.set("");
   }
 
   async onRegister() {
@@ -131,21 +129,10 @@ export class RegisterComponent {
   }
 
   async onResendConfirmationEmail() {
-    try {
-      this.registeredEmail.set("");
-      this.registerErrorMessage.set("");
-      this.resendConfirmationEmailErrorMessage.set("");
-      this.resentEmail.set("");
+    this.registeredEmail.set("");
+    this.registerErrorMessage.set("");
 
-      const email = this.email?.value ?? "";
-      await this.resendRegistrationEmailMutation.mutateAsync({ email });
-      this.resentEmail.set(email);
-    } catch (error) {
-      if (error instanceof ZephyrHttpError) {
-        this.resendConfirmationEmailErrorMessage.set(error.code);
-      } else {
-        this.resendConfirmationEmailErrorMessage.set("INTERNAL_SERVER_ERROR");
-      }
-    }
+    const email = this.email?.value ?? "";
+    await this.resendRegistrationEmailService.onResendConfirmationEmail(email);
   }
 }
