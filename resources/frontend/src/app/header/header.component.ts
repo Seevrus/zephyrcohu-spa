@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from "@angular/common";
-import { Component, inject, signal } from "@angular/core";
+import { Component, computed, inject, signal } from "@angular/core";
 import { MatAnchor, MatButton } from "@angular/material/button";
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { injectQuery } from "@tanstack/angular-query-experimental";
@@ -33,15 +33,16 @@ export class HeaderComponent {
 
   readonly breadcrumb = this.breadcrumbService.breadcrumb;
   readonly email = signal(this.sessionQuery.data()?.email);
+  readonly showLogin = computed(
+    () =>
+      !this.sessionQuery.isPending() &&
+      (this.sessionQuery.isError() || !this.sessionQuery.data()),
+  );
+  readonly showProfile = computed(
+    () => !this.sessionQuery.isPending() && !!this.sessionQuery.data(),
+  );
 
   onLogout() {
     console.log("Kijelentkezés...");
-  }
-
-  get showLogin() {
-    return (
-      !this.sessionQuery.isPending() &&
-      (this.sessionQuery.isError() || !this.sessionQuery.data())
-    );
   }
 }

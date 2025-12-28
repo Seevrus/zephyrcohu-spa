@@ -10,7 +10,7 @@
     />
   </div>
   <div class="header-actions-container">
-    @if (showLogin) {
+    @if (showLogin()) {
       <div class="header-user-actions">
         <a
           data-testid="header-user-action"
@@ -29,7 +29,8 @@
           >Regisztráció</a
         >
       </div>
-    } @else {
+    }
+    @if(showProfile()) {
       <div class="header-active-user">Bejelentkezve: {{ email() }}</div>
       <div class="header-user-actions">
         <a
@@ -38,13 +39,15 @@
           routerLink="/profil"
           routerLinkActive="active-link"
           [routerLinkActiveOptions]="{ exact: true }"
-        >Adatok módosítása</a
+          >Adatok módosítása</a
         >
         <button
           data-testid="header-user-action"
           mat-button
           (click)="onLogout()"
-        >Kijelentkezés</button>
+        >
+          Kijelentkezés
+        </button>
       </div>
     }
     <div data-testid="header-breadcrumb" class="header-breadcrumb">
