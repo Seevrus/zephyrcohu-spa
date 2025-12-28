@@ -1,10 +1,37 @@
 <div class="login-component" data-testid="login-component">
   <h1>Bejelentkezés</h1>
+  @if (loginErrorMessage()) {
+    @switch (loginErrorMessage()) {
+      @case ("BAD_CREDENTIALS") {
+        <app-bad-credentials />
+      }
+      @case ("TOO_MANY_LOGIN_ATTEMPTS") {
+        <app-too-many-login-attempts />
+      }
+      @case ("USER_ALREADY_LOGGED_IN") {
+        <app-user-already-logged-in />
+      }
+      @case ("USER_NOT_CONFIRMED") {
+        <app-register-exists-not-confirmed
+          email="{{ email?.value }}"
+          (resendConfirmationEmail)="onResendConfirmationEmail()"
+        />
+      }
+      @default {
+        <app-form-unexpected-error />
+      }
+    }
+  }
+  @if (resendConfirmationEmailErrorMessage()) {
+    <app-register-resend-email-error />
+  } @else if (resentEmail()) {
+    <app-register-resend-email-success resentEmail="{{ resentEmail() }}}" />
+  }
   <p>
     A bejelentkezéshez kérem adja meg regisztrált email címét és a hozzá tartozó
     jelszavát:
   </p>
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
     <div class="form-elements-container">
       <mat-form-field data-testid="email">
         <mat-label>Email cím</mat-label>
@@ -20,7 +47,7 @@
           <mat-label>Jelszó</mat-label>
           <input
             matInput
-            [type]="isPasswordVisible ? 'text' : 'password'"
+            [type]="isPasswordVisible() ? 'text' : 'password'"
             formControlName="password"
           />
           @if (loginForm.hasError("required", "password")) {
@@ -35,17 +62,19 @@
           type="button"
           (click)="togglePassword()"
         >
-          {{ isPasswordVisible ? "Jelszó elrejtése" : "Jelszó megjelenítése" }}
+          {{
+            isPasswordVisible() ? "Jelszó elrejtése" : "Jelszó megjelenítése"
+          }}
         </button>
       </div>
-      <button
-        mat-flat-button
+      <app-button-loadable
         data-testid="submit-button"
         type="submit"
+        [loading]="loginMutation.isPending()"
         [disabled]="!loginForm.valid || !loginForm.dirty"
       >
         Belépés
-      </button>
+      </app-button-loadable>
     </div>
   </form>
   <p class="forgot-password">
