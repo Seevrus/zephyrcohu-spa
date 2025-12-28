@@ -1,8 +1,4 @@
-import {
-  Component,
-  inject,
-  provideZonelessChangeDetection,
-} from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { render, screen, waitFor } from "@testing-library/angular";
 
 import { BreadcrumbService } from "./breadcrumb.service";
@@ -25,7 +21,7 @@ describe("Breadcrumb Service", () => {
       configureTestBed(testBed) {
         breadcrumbService = testBed.inject(BreadcrumbService);
       },
-      providers: [BreadcrumbService, provideZonelessChangeDetection()],
+      providers: [BreadcrumbService],
     });
   });
 

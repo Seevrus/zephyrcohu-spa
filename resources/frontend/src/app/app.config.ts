@@ -6,7 +6,6 @@ import {
 import {
   type ApplicationConfig,
   provideBrowserGlobalErrorListeners,
-  provideZonelessChangeDetection,
 } from "@angular/core";
 import { provideRouter, TitleStrategy } from "@angular/router";
 import {
@@ -46,6 +45,5 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideTanStackQuery(queryClient, withDevtools()),
     { provide: TitleStrategy, useClass: AppTitleStrategy },
-    provideZonelessChangeDetection(),
   ],
 };

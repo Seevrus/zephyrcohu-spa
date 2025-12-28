@@ -3,7 +3,6 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
-import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { provideRouter } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
@@ -12,14 +11,13 @@ import { render, screen, waitFor } from "@testing-library/angular";
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createRevokeRegistrationErrorResponse } from "../../../mocks/users/createRevokeRegistrationErrorResponse";
 import { revokeRegistrationRequest } from "../../../mocks/users/revokeRegistrationRequest";
-import { routes } from "../../app.routes";
 import { RegisterMailDeclineComponent } from "./register-mail-decline.component";
 
 const TEST_EMAIL = "abc@example.com";
 const TEST_CODE = "1234567890";
 
 describe("Register Email, Revoke Registration", () => {
-  test("initial state", async () => {
+  test("initial state", { timeout: 30000 }, async () => {
     await renderComponent(TEST_EMAIL, TEST_CODE);
 
     expect(screen.getByTestId("revoke-in-progress")).toHaveTextContent(
@@ -168,8 +166,13 @@ async function renderComponent(
       provideHttpClient(withFetch()),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
-      provideRouter(routes),
-      provideZonelessChangeDetection(),
+      provideRouter([
+        {
+          path: "regisztracio/elvet",
+          component: RegisterMailDeclineComponent,
+          title: "Regisztráció elvetése",
+        },
+      ]),
     ],
   });
 

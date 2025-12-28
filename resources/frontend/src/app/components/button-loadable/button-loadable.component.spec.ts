@@ -1,4 +1,3 @@
-import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { ButtonLoadableComponent } from "./button-loadable.component";
@@ -31,7 +30,6 @@ async function renderLoadableButton({
     `<app-button-loadable [disabled]="${disabled}" [loading]="${loading}">Click Me</app-button-loadable>`,
     {
       imports: [ButtonLoadableComponent],
-      providers: [provideZonelessChangeDetection()],
     },
   );
 }

@@ -3,7 +3,6 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
-import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { provideRouter } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
@@ -13,7 +12,6 @@ import { testQueryClient } from "../../../mocks/testQueryClient";
 import { confirmEmailRequest } from "../../../mocks/users/confirmEmailRequest";
 import { createConfirmEmailErrorResponse } from "../../../mocks/users/createConfirmEmailErrorResponse";
 import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
-import { routes } from "../../app.routes";
 import { RegisterMailAcceptComponent } from "./register-mail-accept.component";
 
 const TEST_EMAIL = "abc@example.com";
@@ -160,8 +158,13 @@ async function renderComponent(
       provideHttpClient(withFetch()),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
-      provideRouter(routes),
-      provideZonelessChangeDetection(),
+      provideRouter([
+        {
+          path: "regisztracio/megerosit",
+          component: RegisterMailAcceptComponent,
+          title: "Regisztráció megerősítése",
+        },
+      ]),
     ],
   });
 

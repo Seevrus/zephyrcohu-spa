@@ -3,7 +3,6 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
-import { provideZonelessChangeDetection } from "@angular/core";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideRouter, Router } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
@@ -14,7 +13,6 @@ import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createResetPasswordErrorResponse } from "../../../mocks/users/createResetPasswordErrorResponse";
 import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
 import { resetPasswordRequest } from "../../../mocks/users/resetPasswordRequest";
-import { routes } from "../../app.routes";
 import { ResetPasswordComponent } from "./reset-password.component";
 
 describe("Reset Password Component", () => {
@@ -310,9 +308,14 @@ async function renderResetPasswordComponent(
     providers: [
       provideHttpClient(withFetch()),
       provideHttpClientTesting(),
-      provideRouter(routes),
+      provideRouter([
+        {
+          path: "profil/jelszo_helyreallit",
+          component: ResetPasswordComponent,
+          title: "Jelszó helyreállítása",
+        },
+      ]),
       provideTanStackQuery(testQueryClient),
-      provideZonelessChangeDetection(),
     ],
   });
 
