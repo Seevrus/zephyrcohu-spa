@@ -8,7 +8,6 @@ import { provideRouter, Router } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
-import { expect } from "vitest";
 
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createLoginErrorResponse } from "../../../mocks/users/createLoginErrorResponse";

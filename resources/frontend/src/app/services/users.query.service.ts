@@ -48,7 +48,7 @@ export class UsersQueryService {
         ),
       onSuccess: async () => {
         await this.queryClient.invalidateQueries({
-          queryKey: ["session"],
+          queryKey: queryKeys.session,
         });
       },
     });
@@ -60,16 +60,12 @@ export class UsersQueryService {
       mutationFn: () =>
         lastValueFrom(
           this.http
-            .post<void>(`${environment.apiUrl}/users/login`, null)
-            .pipe(
-              catchError((error: HttpErrorResponse) =>
-                throwError(() => throwHttpError(error)),
-              ),
-            ),
+            .post<void>(`${environment.apiUrl}/users/logout`, null)
+            .pipe(catchError(() => of(void 0))),
         ),
       onSuccess: async () => {
         await this.queryClient.invalidateQueries({
-          queryKey: ["session"],
+          queryKey: queryKeys.session,
         });
       },
     });
@@ -96,7 +92,7 @@ export class UsersQueryService {
         ),
       onSuccess: async () => {
         await this.queryClient.invalidateQueries({
-          queryKey: ["session"],
+          queryKey: queryKeys.session,
         });
       },
     });
@@ -215,7 +211,7 @@ export class UsersQueryService {
         ),
       onSuccess: async () => {
         await this.queryClient.invalidateQueries({
-          queryKey: ["session"],
+          queryKey: queryKeys.session,
         });
       },
     });

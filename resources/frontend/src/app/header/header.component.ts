@@ -1,8 +1,11 @@
 import { NgOptimizedImage } from "@angular/common";
 import { Component, computed, inject, signal } from "@angular/core";
 import { MatAnchor, MatButton } from "@angular/material/button";
-import { RouterLink, RouterLinkActive } from "@angular/router";
-import { injectQuery } from "@tanstack/angular-query-experimental";
+import { Router, RouterLink, RouterLinkActive } from "@angular/router";
+import {
+  injectMutation,
+  injectQuery,
+} from "@tanstack/angular-query-experimental";
 
 import { BreadcrumbService } from "../services/breadcrumb.service";
 import { UsersQueryService } from "../services/users.query.service";
@@ -25,7 +28,12 @@ import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
 })
 export class HeaderComponent {
   private readonly breadcrumbService = inject(BreadcrumbService);
+  private readonly router = inject(Router);
   private readonly usersQueryService = inject(UsersQueryService);
+
+  private readonly logoutMutation = injectMutation(() =>
+    this.usersQueryService.logout(),
+  );
 
   private readonly sessionQuery = injectQuery(() =>
     this.usersQueryService.session(),
@@ -42,7 +50,8 @@ export class HeaderComponent {
     () => !this.sessionQuery.isPending() && !!this.sessionQuery.data(),
   );
 
-  onLogout() {
-    console.log("Kijelentkezés...");
+  async onLogout() {
+    await this.logoutMutation.mutateAsync();
+    this.router.navigate(["/"]);
   }
 }

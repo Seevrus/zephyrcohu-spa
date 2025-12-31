@@ -4,17 +4,22 @@ import {
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
+import { Router } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
+import userEvent from "@testing-library/user-event/dist/cjs/index.js";
 
 import { testQueryClient } from "../../mocks/testQueryClient";
 import getSessionErrorResponse from "../../mocks/users/getSessionErrorResponse.json";
 import getSessionOkResponse from "../../mocks/users/getSessionOkResponse.json";
+import { logoutRequest } from "../../mocks/users/logoutRequest";
 import { sessionRequest } from "../../mocks/users/sessionRequest";
 import { BreadcrumbService } from "../services/breadcrumb.service";
 import { HeaderComponent } from "./header.component";
 
 describe("Header", () => {
+  const user = userEvent.setup();
+
   test("should have the correct user actions if the user is not logged in", async () => {
     const { httpTesting } = await renderHeader();
 
@@ -59,6 +64,48 @@ describe("Header", () => {
     await expect(
       screen.findByTestId("header-breadcrumb"),
     ).resolves.toHaveTextContent("Megjelenített lap: Főoldal");
+  });
+
+  test("should navigate to home on successful logout", async () => {
+    const { httpTesting } = await renderHeader();
+
+    const router = TestBed.inject(Router);
+    const navigateSpy = vi.spyOn(router, "navigate");
+
+    let testSessionRequest = await waitFor(() =>
+      httpTesting.expectOne(sessionRequest),
+    );
+
+    testSessionRequest.flush(getSessionOkResponse);
+
+    const logoutButton = (
+      await screen.findAllByTestId("header-user-action")
+    ).find((button) => button.textContent.includes("Kijelentkezés"));
+
+    await user.click(logoutButton!);
+
+    const testLogoutRequest = await waitFor(() =>
+      httpTesting.expectOne(logoutRequest),
+    );
+
+    testLogoutRequest.flush(null);
+
+    testSessionRequest = await waitFor(() =>
+      httpTesting.expectOne(sessionRequest),
+    );
+
+    testSessionRequest.flush(getSessionErrorResponse, {
+      status: 401,
+      statusText: "Unauthorized",
+    });
+
+    await waitFor(() => {
+      expect(navigateSpy).toHaveBeenCalledWith(["/"]);
+    });
+
+    navigateSpy.mockRestore();
+
+    httpTesting.verify();
   });
 });
 
