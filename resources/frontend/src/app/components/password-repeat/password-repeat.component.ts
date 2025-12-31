@@ -44,6 +44,8 @@ import { allowedPasswordCharacters } from "../../../constants/forms";
 })
 export class PasswordRepeatComponent implements OnInit, OnDestroy {
   formGroupName = input.required<string | null>();
+  showMessage = input.required<boolean | undefined>();
+
   protected parentContainer = inject(ControlContainer, {
     optional: true,
     skipSelf: true,

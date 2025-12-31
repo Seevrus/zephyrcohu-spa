@@ -3,6 +3,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "composite": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "outDir": "./out-tsc/spec",

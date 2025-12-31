@@ -1,5 +1,10 @@
-import { Component, inject, signal } from "@angular/core";
-import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { Component, inject, signal, ViewChild } from "@angular/core";
+import {
+  FormBuilder,
+  FormGroupDirective,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { MatError, MatFormField } from "@angular/material/form-field";
 import { MatInput, MatLabel } from "@angular/material/input";
 import { injectMutation } from "@tanstack/angular-query-experimental";
@@ -29,6 +34,8 @@ import { UsersQueryService } from "../../services/users.query.service";
   styleUrl: "./forgot-password.component.scss",
 })
 export class ForgotPasswordComponent {
+  @ViewChild(FormGroupDirective) private formDir?: FormGroupDirective;
+
   private readonly formBuilder = inject(FormBuilder);
   private readonly usersQueryService = inject(UsersQueryService);
 
@@ -57,6 +64,7 @@ export class ForgotPasswordComponent {
       await this.requestNewPasswordMutation.mutateAsync({ email });
 
       this.targetEmail.set(email);
+      this.formDir?.resetForm();
     } catch (error) {
       if (error instanceof ZephyrHttpError) {
         this.requestPasswordResetErrorMessage.set(error.code);

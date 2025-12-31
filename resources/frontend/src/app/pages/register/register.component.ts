@@ -1,5 +1,16 @@
-import { Component, inject, type OnDestroy, signal } from "@angular/core";
-import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import {
+  Component,
+  inject,
+  type OnDestroy,
+  signal,
+  ViewChild,
+} from "@angular/core";
+import {
+  FormBuilder,
+  FormGroupDirective,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
@@ -42,6 +53,8 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   templateUrl: "./register.component.html",
 })
 export class RegisterComponent implements OnDestroy {
+  @ViewChild(FormGroupDirective) private formDir?: FormGroupDirective;
+
   private readonly formBuilder = inject(FormBuilder);
   private readonly resendRegistrationEmailService = inject(
     ResendConfirmationEmailService,
@@ -118,7 +131,7 @@ export class RegisterComponent implements OnDestroy {
       });
 
       this.registeredEmail.set(email);
-      this.registerForm.reset();
+      this.formDir?.resetForm();
     } catch (error) {
       if (error instanceof ZephyrHttpError) {
         this.registerErrorMessage.set(error.code);

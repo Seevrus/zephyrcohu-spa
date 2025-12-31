@@ -38,7 +38,10 @@
           <mat-error>Email cím formátuma nem megfelelő</mat-error>
         }
       </mat-form-field>
-      <app-password-repeat [formGroupName]="'passwords'" />
+      <app-password-repeat
+        [formGroupName]="'passwords'"
+        [showMessage]="password?.valid"
+      />
       <mat-checkbox formControlName="newsletter">
         Szeretnék hírlevelet kapni a fontosabb újdonságokról.
       </mat-checkbox>

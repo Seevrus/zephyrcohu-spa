@@ -8,6 +8,7 @@
     "isolatedModules": true,
     "module": "preserve",
     "moduleResolution": "bundler",
+    "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,

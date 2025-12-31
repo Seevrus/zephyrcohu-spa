@@ -95,7 +95,7 @@ describe("PasswordRepeatComponent", () => {
   selector: "app-host-component",
   template: `
     <form [formGroup]="testForm">
-      <app-password-repeat formGroupName="passwords" />
+      <app-password-repeat formGroupName="passwords" [showMessage]="true" />
     </form>
   `,
   imports: [ReactiveFormsModule, PasswordRepeatComponent],
