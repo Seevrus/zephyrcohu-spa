@@ -8,12 +8,11 @@
     "isolatedModules": true,
     "module": "preserve",
     "moduleResolution": "bundler",
-    "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
-    "outDir": "./dist/out-tsc",
+    "outDir": "./out-tsc/full",
     "skipLibCheck": true,
     "strict": true,
     "target": "ES2022"
