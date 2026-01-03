@@ -147,8 +147,16 @@ describe('Login Controller', function () {
     });
 
     test('logs in the user', function () {
+        Carbon::setTestNowAndTimezone('2025-01-11 07:00:00', 'Europe/Budapest');
+
         $response = $this->withHeaders(['Origin' => 'http://127.0.0.1:4200'])
             ->postJson('/api/users/login', $this->okRequest);
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'user006@example.com',
+            'ip_address' => '127.0.0.1',
+            'last_active' => Carbon::now(),
+        ]);
 
         $response->assertStatus(200)->assertJson([
             'data' => [

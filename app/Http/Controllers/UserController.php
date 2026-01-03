@@ -74,6 +74,10 @@ class UserController extends Controller {
                 $request->session()->regenerate();
                 $user = Auth::user();
 
+                $user->ip_address = request()->ip();
+                $user->last_active = Carbon::now();
+                $user->save();
+
                 return new UserResource($user->load('admin'));
             }
 
@@ -91,6 +95,10 @@ class UserController extends Controller {
 
     public function logout(Request $request) {
         try {
+            $user = Auth::user();
+            $user->ip_address = null;
+            $user->save();
+
             Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
