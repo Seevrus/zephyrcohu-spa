@@ -40,7 +40,7 @@ export class HeaderComponent {
   );
 
   readonly breadcrumb = this.breadcrumbService.breadcrumb;
-  readonly email = signal(this.sessionQuery.data()?.email);
+  readonly email = computed(() => this.sessionQuery.data()?.email);
   readonly showLogin = computed(
     () =>
       !this.sessionQuery.isPending() &&
