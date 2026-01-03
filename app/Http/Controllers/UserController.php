@@ -9,8 +9,10 @@ use App\Http\Requests\ForgottenPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ResendConfirmEmailRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\ErrorResource;
 use App\Http\Resources\UserResource;
+use App\Mail\EmailUpdateRequested;
 use App\Mail\ForgottenPassword;
 use App\Mail\UserRegistered;
 use App\Models\User;
@@ -213,6 +215,7 @@ class UserController extends Controller {
             }
 
             $user->password = Hash::make($newPassword);
+            $user->password_set_at = Carbon::now();
             $user->newPassword()->delete();
             $user->save();
 
@@ -257,6 +260,43 @@ class UserController extends Controller {
     public function session(Request $request) {
         try {
             $user = $request->user();
+
+            return new UserResource($user->load('admin'));
+        } catch (Throwable $e) {
+            abort(500);
+        }
+    }
+
+    public function updateProfile(UpdateProfileRequest $request) {
+        try {
+            $user = $request->user();
+
+            $email = $request->email;
+            $password = $request->password;
+            $newsletter = $request->newsletter;
+
+            if ($email) {
+                $emailCode = $this->generate_code();
+
+                $user->newEmail()->upsert([
+                    'new_email' => $email,
+                    'email_code' => Hash::make($emailCode),
+                    'issued_at' => Carbon::now(),
+                ], ['user_id'], ['new_email', 'email_code', 'issued_at']);
+
+                Mail::to($email)->send(new EmailUpdateRequested($email, $emailCode));
+            }
+
+            if ($password) {
+                $user->password = Hash::make($password);
+                $user->password_set_at = Carbon::now();
+            }
+
+            if (! is_null($newsletter)) {
+                $user->newsletter = (bool) $newsletter;
+            }
+
+            $user->save();
 
             return new UserResource($user->load('admin'));
         } catch (Throwable $e) {
