@@ -9,6 +9,7 @@ use App\Http\Requests\ForgottenPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ResendConfirmEmailRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\UpdateProfileEmailRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\ErrorResource;
 use App\Http\Resources\UserResource;
@@ -263,6 +264,41 @@ class UserController extends Controller {
 
             return new UserResource($user->load('admin'));
         } catch (Throwable $e) {
+            abort(500);
+        }
+    }
+
+    public function updateConfirmNewEmail(UpdateProfileEmailRequest $request) {
+        try {
+            $sender = $request->user();
+
+            $email = $request->email;
+            $emailCode = $request->code;
+
+            $user = User::whereRelation('newEmail', 'new_email', '=', $email)->first();
+
+            $canUpdateEmail = Gate::inspect('confirmNewEmail', [User::class, $user, $emailCode]);
+            if ($canUpdateEmail->denied()) {
+                return response(
+                    new ErrorResource($canUpdateEmail->status(), ErrorCode::from($canUpdateEmail->message())),
+                    $canUpdateEmail->status()
+                );
+            }
+
+            $user->email = $email;
+            $user->newEmail()->delete();
+            $user->save();
+
+            if ($sender) {
+                $request->session()->regenerate();
+            }
+
+            return new UserResource($user->load('admin'));
+        } catch (Throwable $e) {
+            if ($e instanceof RuntimeException) {
+                throw new BadRequestException;
+            }
+
             abort(500);
         }
     }

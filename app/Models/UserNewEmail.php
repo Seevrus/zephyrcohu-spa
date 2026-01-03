@@ -14,6 +14,16 @@ class UserNewEmail extends Model {
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'user_id', 'new_email', 'email_code', 'issued_at',
+    ];
+
+    protected function casts(): array {
+        return [
+            'issued_at' => 'datetime',
+        ];
+    }
+
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }

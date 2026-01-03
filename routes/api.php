@@ -8,6 +8,7 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
         Route::post('/request_new_password', 'requestNewPassword');
         Route::post('/reset_password', 'resetPassword');
         Route::post('/update', 'updateProfile')->middleware('auth:sanctum');
+        Route::post('/update/confirm_new_email', 'updateConfirmNewEmail');
     });
 
     Route::prefix('register')->group(function () {

@@ -29,6 +29,28 @@ class UserPolicy {
         return Response::allow();
     }
 
+    public function confirmNewEmail(?User $sender, ?User $user, string $code): Response {
+        $storedCode = $user?->newEmail?->email_code;
+
+        if (is_null($user) || ! $storedCode) {
+            return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
+        }
+
+        $isCodeCorrect = Hash::check($code, $storedCode);
+        if (! $isCodeCorrect) {
+            $user->newEmail()->delete();
+
+            return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
+        }
+
+        $expired = $user->newEmail->issued_at->lt(Carbon::now()->subMinutes(30));
+        if ($expired) {
+            return Response::denyWithStatus(410, ErrorCode::CODE_EXPIRED->value);
+        }
+
+        return Response::allow();
+    }
+
     public function login(?User $sender, string $email, string $password): Response {
         UserLoginAttempt::where('last_attempt', '<', Carbon::now()->subHour())
             ->delete();
@@ -106,11 +128,13 @@ class UserPolicy {
     }
 
     public function resetPassword(?User $sender, ?User $user, string $code): Response {
-        if (is_null($user) || ! $user->newPassword?->password_code) {
+        $storedCode = $user->newPassword?->password_code;
+
+        if (is_null($user) || ! $storedCode) {
             return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
         }
 
-        $isCodeCorrect = Hash::check($code, $user->newPassword->password_code);
+        $isCodeCorrect = Hash::check($code, $storedCode);
         if (! $isCodeCorrect) {
             $user->newPassword()->delete();
 
