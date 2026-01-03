@@ -27,23 +27,27 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 
-  a.zephyr-link {
-    color: var(--mat-sys-primary);
-    font-weight: 500;
-    text-decoration: underline;
+  a,
+  span {
+    &.zephyr-link {
+      color: var(--mat-sys-primary);
+      cursor: pointer;
+      font-weight: 500;
+      text-decoration: underline;
 
-    &.on-error {
-      color: var(--mat-sys-on-error);
-    }
+      &.on-error {
+        color: var(--mat-sys-on-error);
+      }
 
-    &.on-success {
-      color: var(--mat-sys-on-primary);
-    }
+      &.on-success {
+        color: var(--mat-sys-on-primary);
+      }
 
-    &:hover {
-      color: var(--mat-sys-on-primary);
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-      background-color: var(--mat-sys-primary);
+      &:hover {
+        color: var(--mat-sys-on-primary);
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        background-color: var(--mat-sys-primary);
+      }
     }
   }
 
