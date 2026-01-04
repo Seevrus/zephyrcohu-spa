@@ -15,6 +15,7 @@ use App\Http\Resources\ErrorResource;
 use App\Http\Resources\UserResource;
 use App\Mail\EmailUpdateRequested;
 use App\Mail\ForgottenPassword;
+use App\Mail\UserDeleted;
 use App\Mail\UserRegistered;
 use App\Models\User;
 use Carbon\Carbon;
@@ -55,6 +56,29 @@ class UserController extends Controller {
 
             return new UserResource($user);
         } catch (Throwable $e) {
+            abort(500);
+        }
+    }
+
+    public function deleteProfile(Request $request) {
+        try {
+            $user = $request->user();
+            $email = $user->email;
+
+            $user->delete();
+
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            Mail::to($email)->send(new UserDeleted);
+
+            return response(null, 204);
+        } catch (Throwable $e) {
+            if ($e instanceof RuntimeException) {
+                throw new BadRequestException;
+            }
+
             abort(500);
         }
     }
