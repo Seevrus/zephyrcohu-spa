@@ -102,6 +102,34 @@ describe("App Component", () => {
     });
   });
 
+  describe("Profile Component", () => {
+    test("redirects to a guard page if the user is not logged in", async () => {
+      const { httpTesting } = renderAppComponent("/profil");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionErrorResponse);
+
+      await expect(
+        screen.findByTestId("registered-only-component"),
+      ).resolves.toBeInTheDocument();
+    });
+
+    test("renders the profile update forms", async () => {
+      const { httpTesting } = renderAppComponent("/profil");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionOkResponse);
+
+      await expect(
+        screen.findByTestId("profile-component"),
+      ).resolves.toBeInTheDocument();
+    });
+  });
+
   describe("Reset Password Component", () => {
     test("redirects to the main page if the user is already logged in", async () => {
       const { httpTesting } = renderAppComponent("/profil/jelszo_helyreallit");

@@ -1,6 +1,7 @@
 import { type Routes } from "@angular/router";
 
 import { guestGuard } from "./guards/guest.guard";
+import { userGuard } from "./guards/user.guard";
 
 export type QueryParamsByPath = {
   "profil/jelszo_helyreallit": {
@@ -28,6 +29,16 @@ export const routes: Routes = [
       return LoginComponent;
     },
     title: "Bejelentkezés",
+  },
+  {
+    path: "profil",
+    canActivate: [userGuard],
+    async loadComponent() {
+      const { ProfileComponent } =
+        await import("./pages/profile/profile.component");
+      return ProfileComponent;
+    },
+    title: "Adatmódosítás",
   },
   {
     path: "profil/elfelejtett_jelszo",

@@ -12,10 +12,11 @@ export class BreadcrumbService {
   }
 
   private static readonly breadcrumbsByTitle: Record<string, string> = {
+    Adatmódosítás: "Profil - Adatmódosítás",
     Bejelentkezés: "Bejelentkezés",
     "Elfelejtett jelszó": "Profil - Elfelejtett jelszó",
-    "Jelszó helyreállítása": "Profil - Jelszó helyreállítása",
     Főoldal: "Főoldal",
+    "Jelszó helyreállítása": "Profil - Jelszó helyreállítása",
     Regisztráció: "Regisztráció",
     "Regisztráció elvetése": "Regisztráció elvetése",
     "Regisztráció megerősítése": "Regisztráció megerősítése",
