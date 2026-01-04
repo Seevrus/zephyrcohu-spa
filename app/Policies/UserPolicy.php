@@ -128,7 +128,7 @@ class UserPolicy {
     }
 
     public function resetPassword(?User $sender, ?User $user, string $code): Response {
-        $storedCode = $user->newPassword?->password_code;
+        $storedCode = $user?->newPassword?->password_code;
 
         if (is_null($user) || ! $storedCode) {
             return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
@@ -136,7 +136,7 @@ class UserPolicy {
 
         $isCodeCorrect = Hash::check($code, $storedCode);
         if (! $isCodeCorrect) {
-            $user->newPassword()->delete();
+            $user->newPassword()?->delete();
 
             return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
         }

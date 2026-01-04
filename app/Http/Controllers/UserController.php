@@ -241,7 +241,7 @@ class UserController extends Controller {
 
             $user->password = Hash::make($newPassword);
             $user->password_set_at = Carbon::now();
-            $user->newPassword()->delete();
+            $user->newPassword()?->delete();
             $user->save();
 
             if (Auth::attempt(['email' => $email, 'password' => $newPassword])) {
