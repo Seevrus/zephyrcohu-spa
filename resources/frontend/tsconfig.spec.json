@@ -3,11 +3,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "composite": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "outDir": "./out-tsc/spec",
     "types": ["vitest/globals"]
   },
-  "include": ["vitest.*.ts", "src/mocks", "src/**/*.spec.ts", "src/**/*.d.ts"]
+  "include": ["vitest.*.ts", "src/**/*.spec.ts", "src/**/*.d.ts"]
 }

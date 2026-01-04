@@ -66,6 +66,14 @@ describe("App Component", () => {
     });
   });
 
+  test("Not Found Component is rendered on nonexistent routes", async () => {
+    renderAppComponent("/psps");
+
+    await expect(
+      screen.findByTestId("not-found-component"),
+    ).resolves.toBeInTheDocument();
+  });
+
   describe("Forgot Password Component", () => {
     test("redirects to the main page if the user is already logged in", async () => {
       const { httpTesting } = renderAppComponent("/profil/elfelejtett_jelszo");
@@ -122,7 +130,7 @@ describe("App Component", () => {
     });
   });
 
-  describe("registration", () => {
+  describe("Register Component", () => {
     test("redirects to the main page if the user is already logged in", async () => {
       const { httpTesting } = renderAppComponent("/regisztracio");
 

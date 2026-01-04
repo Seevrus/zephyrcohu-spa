@@ -79,4 +79,13 @@ export const routes: Routes = [
     },
     title: "Regisztráció megerősítése",
   },
+  {
+    path: "**",
+    async loadComponent() {
+      const { NotFoundComponent } =
+        await import("./pages/not-found/not-found.component");
+      return NotFoundComponent;
+    },
+    title: "Oldal nem található",
+  },
 ];
