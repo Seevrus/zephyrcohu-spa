@@ -80,6 +80,16 @@ export const routes: Routes = [
     title: "Regisztráció megerősítése",
   },
   {
+    path: "regisztracio_szukseges",
+    canActivate: [guestGuard],
+    async loadComponent() {
+      const { RegisteredOnlyComponent } =
+        await import("./pages/registered-only/registered-only.component");
+      return RegisteredOnlyComponent;
+    },
+    title: "Regisztráció szükséges",
+  },
+  {
     path: "**",
     async loadComponent() {
       const { NotFoundComponent } =

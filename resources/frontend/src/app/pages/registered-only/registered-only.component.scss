@@ -1,0 +1,14 @@
+@use "../../../shared/mixins";
+@use "../../../shared/variables";
+
+:host(.app-main) {
+  @include mixins.zephyr-main;
+  display: block;
+
+  @media (min-width: variables.$tablet-width) {
+    img {
+      float: left;
+      margin-right: 1rem;
+    }
+  }
+}
