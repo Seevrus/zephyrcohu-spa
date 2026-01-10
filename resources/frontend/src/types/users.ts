@@ -49,9 +49,9 @@ export type UpdateProfileConfirmEmailRequest = {
 };
 
 export type UpdateProfileRequest = {
-  email: string | undefined;
-  password: string | undefined;
-  newsletter: boolean | undefined;
+  email?: string;
+  password?: string;
+  newsletter?: boolean;
 };
 
 export type UserSession = Omit<SessionData, "passwordSetAt"> & {
