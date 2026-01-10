@@ -18,6 +18,8 @@ import {
   type ResetPasswordRequest,
   type SessionData,
   type SessionResponse,
+  type UpdateProfileConfirmEmailRequest,
+  type UpdateProfileRequest,
   type UserSession,
 } from "../../types/users";
 import { throwHttpError } from "../../utils/throwHttpError";
@@ -29,6 +31,27 @@ import { mutationKeys, queryKeys } from "./queryKeys";
 export class UsersQueryService {
   private readonly http = inject(HttpClient);
   private readonly queryClient = inject(QueryClient);
+
+  deleteProfile() {
+    return mutationOptions<void, ZephyrHttpError>({
+      mutationKey: mutationKeys.deleteProfile,
+      mutationFn: () =>
+        lastValueFrom(
+          this.http
+            .delete<void>(`${environment.apiUrl}/users/profile`)
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
+      onSuccess: async () => {
+        await this.queryClient.invalidateQueries({
+          queryKey: queryKeys.session,
+        });
+      },
+    });
+  }
 
   login() {
     return mutationOptions<UserSession, ZephyrHttpError, LoginRequest>({
@@ -246,6 +269,64 @@ export class UsersQueryService {
               map(UsersQueryService.mapSessionResponse),
             ),
         ),
+    });
+  }
+
+  updateProfile() {
+    return mutationOptions<UserSession, ZephyrHttpError, UpdateProfileRequest>({
+      mutationKey: mutationKeys.updateProfile,
+      mutationFn: (request) =>
+        lastValueFrom(
+          this.http
+            .post<SessionResponse>(
+              `${environment.apiUrl}/users/profile/update`,
+              request,
+            )
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+              map<SessionResponse, UserSession>(
+                UsersQueryService.mapSessionResponse,
+              ),
+            ),
+        ),
+      onSuccess: async () => {
+        await this.queryClient.invalidateQueries({
+          queryKey: queryKeys.session,
+        });
+      },
+    });
+  }
+
+  updateProfileConfirmEmail() {
+    return mutationOptions<
+      UserSession,
+      ZephyrHttpError,
+      UpdateProfileConfirmEmailRequest
+    >({
+      mutationKey: mutationKeys.updateProfileConfirmEmail,
+      mutationFn: (request) =>
+        lastValueFrom(
+          this.http
+            .post<SessionResponse>(
+              `${environment.apiUrl}/users/profile/update/confirm_new_email`,
+              request,
+            )
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+              map<SessionResponse, UserSession>(
+                UsersQueryService.mapSessionResponse,
+              ),
+            ),
+        ),
+      onSuccess: async () => {
+        await this.queryClient.invalidateQueries({
+          queryKey: queryKeys.session,
+        });
+      },
     });
   }
 
