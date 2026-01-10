@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from "@angular/common";
-import { Component, computed, inject, signal } from "@angular/core";
+import { Component, computed, inject } from "@angular/core";
 import { MatAnchor, MatButton } from "@angular/material/button";
 import { Router, RouterLink, RouterLinkActive } from "@angular/router";
 import {
