@@ -50,7 +50,7 @@ describe('Login Request', function () {
 describe('Login Controller', function () {
     beforeEach(function () {
         $this->okRequest = [
-            'email' => 'user006@example.com',
+            'email' => 'user007@example.com',
             'password' => 'abc123456',
         ];
 
@@ -127,7 +127,7 @@ describe('Login Controller', function () {
 
     test('returns with 423 is the user is already logged in from another device', function () {
         $response = $this->withServerVariables(['REMOTE_ADDR' => '1.2.3.4'])
-            ->postJson('/api/users/login', $this->okRequest);
+            ->postJson('/api/users/login', [...$this->okRequest, 'email' => 'user006@example.com']);
 
         $response->assertStatus(423)->assertExactJson([
             'status' => 423,
@@ -153,19 +153,19 @@ describe('Login Controller', function () {
             ->postJson('/api/users/login', $this->okRequest);
 
         $this->assertDatabaseHas('users', [
-            'email' => 'user006@example.com',
+            'email' => 'user007@example.com',
             'ip_address' => '127.0.0.1',
             'last_active' => Carbon::now(),
         ]);
 
         $response->assertStatus(200)->assertJson([
             'data' => [
-                'id' => 6,
-                'email' => 'user006@example.com',
+                'id' => 7,
+                'email' => 'user007@example.com',
                 'isAdmin' => false,
                 'confirmed' => true,
                 'cookiesAccepted' => true,
-                'newsletter' => true,
+                'newsletter' => false,
             ],
         ]);
 
@@ -241,6 +241,16 @@ function resetLoginTestData(): void {
             'ip_address' => '127.0.0.1',
             'last_active' => Carbon::now(),
         ],
+        [
+            'id' => 7,
+            'email' => 'user007@example.com',
+            'password' => Hash::make('abc123456'),
+            'confirmed' => 1,
+            'newsletter' => 0,
+            'cookies' => 1,
+            'ip_address' => null,
+            'last_active' => Carbon::now(),
+        ],
     ]);
 
     DB::table('users_login_attempts')->insert([
@@ -255,9 +265,9 @@ function resetLoginTestData(): void {
             'last_attempt' => Carbon::now(),
         ],
         [
-            'user_id' => 3,
-            'attempts' => 4,
-            'last_attempt' => Carbon::now()->subHours(2),
+            'user_id' => 7,
+            'attempts' => 2,
+            'last_attempt' => Carbon::now()->subHours(3),
         ],
     ]);
 }

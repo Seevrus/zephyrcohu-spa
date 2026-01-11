@@ -88,8 +88,8 @@ class UserPolicy {
         }
 
         if (
-            $user->ip_address !== request()->ip() &&
-            $user->last_active?->gt(Carbon::now()->subHour())
+            ! is_null($user->ip_address) && $user->ip_address !== request()->ip() &&
+             $user->last_active?->gt(Carbon::now()->subHour())
         ) {
             return Response::denyWithStatus(423, ErrorCode::USER_ALREADY_LOGGED_IN->value);
         }
