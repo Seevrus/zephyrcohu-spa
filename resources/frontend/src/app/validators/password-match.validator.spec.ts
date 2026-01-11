@@ -51,6 +51,8 @@ describe("passwordMatchValidator", () => {
       passwordAgain: "abv123",
     });
 
+    testGroup.markAllAsDirty();
+
     const validationResult = passwordMatchValidator(testGroup);
 
     expect(validationResult).toStrictEqual({

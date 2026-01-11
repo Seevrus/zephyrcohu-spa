@@ -1,0 +1,15 @@
+@use "../login/shared-register";
+@use "../../../shared/mixins";
+
+:host(.app-profile) {
+  @include mixins.zephyr-main;
+
+  .profile-component {
+    width: 100%;
+
+    .delete-profile,
+    .update-profile {
+      @include shared-register.form-layout;
+    }
+  }
+}

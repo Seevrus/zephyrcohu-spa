@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { render, screen } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
 
-import { allowedPasswordCharacters } from "../../../constants/forms";
+import { passwordValidator } from "../../validators/password.validator";
 import { passwordMatchValidator } from "../../validators/password-match.validator";
 import { PasswordRepeatComponent } from "./password-repeat.component";
 
@@ -103,21 +103,11 @@ describe("PasswordRepeatComponent", () => {
 class TestHostComponent {
   private readonly formBuilder = inject(FormBuilder);
 
-  private readonly passwordPattern = new RegExp(
-    `([${allowedPasswordCharacters}]){8,}`,
-  );
-
   testForm = this.formBuilder.group({
     passwords: this.formBuilder.group(
       {
-        password: [
-          "",
-          [Validators.required, Validators.pattern(this.passwordPattern)],
-        ],
-        passwordAgain: [
-          "",
-          [Validators.required, Validators.pattern(this.passwordPattern)],
-        ],
+        password: ["", [Validators.required, passwordValidator]],
+        passwordAgain: ["", [Validators.required, passwordValidator]],
       },
       { validators: [passwordMatchValidator] },
     ),

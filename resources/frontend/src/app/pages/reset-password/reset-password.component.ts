@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
-import { allowedPasswordCharacters, zephyr } from "../../../constants/forms";
+import { zephyr } from "../../../constants/forms";
 import { type QueryParamsByPath } from "../../app.routes";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
 import { BadCredentialsComponent } from "../../components/form-alerts/bad-credentials/bad-credentials.component";
@@ -13,6 +13,7 @@ import { EmailLinkErrorComponent } from "../../components/form-alerts/email-link
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { PasswordRepeatComponent } from "../../components/password-repeat/password-repeat.component";
 import { UsersQueryService } from "../../services/users.query.service";
+import { passwordValidator } from "../../validators/password.validator";
 import { passwordMatchValidator } from "../../validators/password-match.validator";
 
 @Component({
@@ -52,10 +53,6 @@ export class ResetPasswordComponent implements OnInit {
   protected readonly passwordResetErrorMessage = signal<string>("");
   protected readonly zephyrEmail = zephyr;
 
-  private readonly passwordPattern = new RegExp(
-    `([${allowedPasswordCharacters}]){8,}`,
-  );
-
   protected readonly resetPasswordMutation = injectMutation(() =>
     this.usersQueryService.resetPassword(),
   );
@@ -79,14 +76,8 @@ export class ResetPasswordComponent implements OnInit {
     email: ["", [Validators.required, Validators.email]],
     passwords: this.formBuilder.group(
       {
-        password: [
-          "",
-          [Validators.required, Validators.pattern(this.passwordPattern)],
-        ],
-        passwordAgain: [
-          "",
-          [Validators.required, Validators.pattern(this.passwordPattern)],
-        ],
+        password: ["", [Validators.required, passwordValidator]],
+        passwordAgain: ["", [Validators.required, passwordValidator]],
       },
       { validators: [passwordMatchValidator] },
     ),

@@ -1,3 +1,68 @@
-<div data-testid="profile-component">
-  <p>profile works!</p>
+<div class="profile-component" data-testid="profile-component">
+  <div class="update-profile">
+    <h1>Felhasználói adatok módosítása</h1>
+    <p>
+      Ezen az űrlapon lehetősége van adatainak módosítására. Amelyik mezőt nem
+      kívánja módosítani, kérem hagyja érintetlenül!
+    </p>
+    <form
+      [formGroup]="updateProfileForm"
+      #updateProfile="ngForm"
+      (ngSubmit)="onUpdateProfile(updateProfile)"
+    >
+      <div class="form-elements-container">
+        <mat-form-field data-testid="email">
+          <mat-label>Email cím</mat-label>
+          <input matInput formControlName="email" />
+          @if (newEmail?.hasError("email")) {
+            <mat-error>Email cím formátuma nem megfelelő</mat-error>
+          }
+        </mat-form-field>
+        <app-password-repeat
+          [formGroupName]="'passwords'"
+          [showMessage]="!!newPassword?.value && newPassword?.valid"
+        />
+        <mat-checkbox formControlName="newsletter">
+          Szeretnék hírlevelet kapni a fontosabb újdonságokról.
+        </mat-checkbox>
+        <app-button-loadable
+          data-testid="update-submit-button"
+          type="submit"
+          [loading]="updateProfileMutation.isPending()"
+          [disabled]="
+            !updateProfileForm.valid ||
+            !updateProfileForm.dirty ||
+            !isProfileUpdated()
+          "
+        >
+          Adatmódosítás
+        </app-button-loadable>
+      </div>
+    </form>
+  </div>
+  <mat-divider />
+  <div class="delete-profile">
+    <h1>Regisztráció törlése</h1>
+    <p>
+      Amennyiben törölni szeretné regisztrációját, jelölje be az alábbi
+      jelölőnégyzetet, és kattintson a "Regisztráció törlése" gombra. A törlés
+      <strong>nem fordítható vissza</strong>, de később természetesen lehetősége
+      van újra regisztrálni.
+    </p>
+    <form (submit)="onDeleteProfile()">
+      <div class="form-elements-container">
+        <mat-checkbox [formField]="deleteProfileForm.confirm">
+          Igen, törölni szeretném regisztrációmat.
+        </mat-checkbox>
+        <app-button-loadable
+          data-testid="delete-submit-button"
+          type="submit"
+          [loading]="deleteProfileMutation.isPending()"
+          [disabled]="!deleteProfileForm().valid()"
+        >
+          Regisztráció törlése
+        </app-button-loadable>
+      </div>
+    </form>
+  </div>
 </div>

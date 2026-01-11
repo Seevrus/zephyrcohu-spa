@@ -22,6 +22,7 @@ import { TooManyLoginAttemptsComponent } from "../../components/form-alerts/too-
 import { UserAlreadyLoggedInComponent } from "../../components/form-alerts/user-already-logged-in/user-already-logged-in.component";
 import { ResendConfirmationEmailService } from "../../services/resend-confirmation-email.service";
 import { UsersQueryService } from "../../services/users.query.service";
+import { passwordValidator } from "../../validators/password.validator";
 
 @Component({
   selector: "app-login",
@@ -71,10 +72,7 @@ export class LoginComponent implements OnDestroy {
       validators: [Validators.required, Validators.email],
     }),
     password: new FormControl("", {
-      validators: [
-        Validators.required,
-        Validators.pattern(/^([a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-]){8,}$/),
-      ],
+      validators: [Validators.required, passwordValidator],
     }),
   });
 

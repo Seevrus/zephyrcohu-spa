@@ -3,10 +3,12 @@ import { type AbstractControl, type ValidationErrors } from "@angular/forms";
 export function passwordMatchValidator(
   passwords: AbstractControl,
 ): ValidationErrors | null {
-  const password: unknown = passwords.get("password")?.value;
-  const passwordAgain: unknown = passwords.get("passwordAgain")?.value;
+  const password = passwords.get("password");
+  const passwordAgain = passwords.get("passwordAgain");
 
-  return password && passwordAgain && password !== passwordAgain
+  return password?.dirty &&
+    passwordAgain?.dirty &&
+    password?.value !== passwordAgain?.value
     ? { passwordsDontMatch: true }
     : null;
 }
