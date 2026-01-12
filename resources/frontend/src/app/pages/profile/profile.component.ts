@@ -30,6 +30,7 @@ import { type Subscription } from "rxjs";
 
 import { mapUpdateProfileRequest } from "../../../mappers/mapUpdateProfileRequest";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
+import { ProfileUpdatedComponent } from "../../components/form-alerts/profile-updated/profile-updated.component";
 import { PasswordRepeatComponent } from "../../components/password-repeat/password-repeat.component";
 import { UsersQueryService } from "../../services/users.query.service";
 import { passwordValidator } from "../../validators/password.validator";
@@ -52,6 +53,7 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
     MatInput,
     MatLabel,
     PasswordRepeatComponent,
+    ProfileUpdatedComponent,
     ReactiveFormsModule,
   ],
 })
@@ -201,7 +203,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }),
       );
 
-      // TODO: add these to the form alert
       if (this.isEmailUpdated() && newEmail) {
         this.savedEmail.set(newEmail);
       }

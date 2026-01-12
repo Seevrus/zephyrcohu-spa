@@ -1,6 +1,13 @@
 <div class="profile-component" data-testid="profile-component">
   <div class="update-profile">
     <h1>Felhasználói adatok módosítása</h1>
+    @if (savedEmail() || isPasswordSaved() || savedNewsLetter() !== undefined) {
+      <app-profile-updated
+        [savedEmail]="savedEmail()"
+        [isPasswordSaved]="isPasswordSaved()"
+        [savedNewsletter]="savedNewsLetter()"
+      />
+    }
     <p>
       Ezen az űrlapon lehetősége van adatainak módosítására. Amelyik mezőt nem
       kívánja módosítani, kérem hagyja érintetlenül!

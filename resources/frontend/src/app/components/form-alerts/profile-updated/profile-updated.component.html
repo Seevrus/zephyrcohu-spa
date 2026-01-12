@@ -1,0 +1,27 @@
+<app-success-card
+  data-testid="profile-updated-card"
+  title="Adatmódosítás sikeres"
+>
+  @if (savedEmail()) {
+    <p>
+      Új email cím: <strong>{{ savedEmail() }}</strong
+      >. Jelenleg még a korábbi email címe szerepel az adatbázisunkban. Új email
+      címére elküldtük az aktiváláshoz szükséges emailt, mellyel bármikor
+      aktiválhatja az új e-mail címét. <strong>Fontos:</strong> Amennyiben nem
+      kapta meg, kérjük ellenőrizze levélfiókjának Spam (levélszemét) mappáját,
+      mert egyes levelezőrendszerek levélszemétnek minősíthetik a honlap
+      rendszeréből küldött üzeneteket!
+    </p>
+  }
+  @if (isPasswordSaved()) {
+    <p>
+      Sikeresen megváltoztatta jelszavát! A következő bejelentkezéskor már ezt
+      az új jelszót kell használnia.
+    </p>
+  }
+  @if (savedNewsletter() === true) {
+    <p>Sikeresen feliratkozott hírlevelünkre.</p>
+  } @else if (savedNewsletter() === false) {
+    <p>Sikeresen leiratkozott hírlevelünkről.</p>
+  }
+</app-success-card>

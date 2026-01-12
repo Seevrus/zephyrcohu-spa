@@ -16,16 +16,12 @@
       }
     }
   } @else if (registeredEmail()) {
-    <app-register-success
-      registeredEmail="{{ registeredEmail() }}"
-    ></app-register-success>
+    <app-register-success [registeredEmail]="registeredEmail()" />
   }
   @if (resendConfirmationEmailErrorMessage()) {
     <app-register-resend-email-error></app-register-resend-email-error>
   } @else if (resentEmail()) {
-    <app-register-resend-email-success
-      resentEmail="{{ resentEmail() }}}"
-    ></app-register-resend-email-success>
+    <app-register-resend-email-success [resentEmail]="resentEmail()" />
   }
   <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
     <div class="form-elements-container">
