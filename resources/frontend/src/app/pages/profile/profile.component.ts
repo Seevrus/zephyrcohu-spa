@@ -30,6 +30,7 @@ import { type Subscription } from "rxjs";
 
 import { mapUpdateProfileRequest } from "../../../mappers/mapUpdateProfileRequest";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
+import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { ProfileUpdatedComponent } from "../../components/form-alerts/profile-updated/profile-updated.component";
 import { PasswordRepeatComponent } from "../../components/password-repeat/password-repeat.component";
 import { UsersQueryService } from "../../services/users.query.service";
@@ -46,6 +47,7 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   imports: [
     ButtonLoadableComponent,
     FormField,
+    FormUnexpectedErrorComponent,
     MatCheckbox,
     MatDivider,
     MatError,
@@ -171,9 +173,16 @@ export class ProfileComponent implements OnInit, OnDestroy {
    */
   protected readonly updateErrorMessage = signal("");
 
-  async onDeleteProfile() {
-    await submit(this.deleteProfileForm, async () => {
+  onDeleteProfile(event: Event) {
+    event.preventDefault();
+    submit(this.deleteProfileForm, async () => {
       try {
+        this.savedEmail.set(undefined);
+        this.isPasswordSaved.set(false);
+        this.savedNewsLetter.set(undefined);
+        this.updateErrorMessage.set("");
+        this.deleteErrorMessage.set("");
+
         await this.deleteProfileMutation.mutateAsync();
         this.router.navigate(["/"]);
       } catch {
@@ -188,6 +197,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.isPasswordSaved.set(false);
       this.savedNewsLetter.set(undefined);
       this.updateErrorMessage.set("");
+      this.deleteErrorMessage.set("");
 
       this.updateProfileForm.markAsPristine();
 

@@ -45,8 +45,8 @@ export class UsersQueryService {
               ),
             ),
         ),
-      onSuccess: async () => {
-        await this.queryClient.invalidateQueries({
+      onSuccess: () => {
+        this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
       },
@@ -69,8 +69,8 @@ export class UsersQueryService {
               ),
             ),
         ),
-      onSuccess: async () => {
-        await this.queryClient.invalidateQueries({
+      onSuccess: () => {
+        this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
       },
@@ -86,8 +86,8 @@ export class UsersQueryService {
             .post<void>(`${environment.apiUrl}/users/logout`, null)
             .pipe(catchError(() => of(void 0))),
         ),
-      onSuccess: async () => {
-        await this.queryClient.invalidateQueries({
+      onSuccess: () => {
+        this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
       },

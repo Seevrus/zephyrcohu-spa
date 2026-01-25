@@ -50,22 +50,28 @@
   <mat-divider />
   <div class="delete-profile">
     <h1>Regisztráció törlése</h1>
+    @if (deleteErrorMessage()) {
+      <app-form-unexpected-error />
+    }
     <p>
       Amennyiben törölni szeretné regisztrációját, jelölje be az alábbi
       jelölőnégyzetet, és kattintson a "Regisztráció törlése" gombra. A törlés
       <strong>nem fordítható vissza</strong>, de később természetesen lehetősége
       van újra regisztrálni.
     </p>
-    <form (submit)="onDeleteProfile()">
+    <form (submit)="onDeleteProfile($event)">
       <div class="form-elements-container">
-        <mat-checkbox [formField]="deleteProfileForm.confirm">
+        <mat-checkbox
+          [formField]="deleteProfileForm.confirm"
+          data-testid="delete-confirm-checkbox"
+        >
           Igen, törölni szeretném regisztrációmat.
         </mat-checkbox>
         <app-button-loadable
           data-testid="delete-submit-button"
           type="submit"
           [loading]="deleteProfileMutation.isPending()"
-          [disabled]="!deleteProfileForm().valid()"
+          [disabled]="deleteProfileForm().invalid()"
         >
           Regisztráció törlése
         </app-button-loadable>
