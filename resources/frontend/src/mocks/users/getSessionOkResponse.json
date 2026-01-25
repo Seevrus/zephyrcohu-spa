@@ -4,8 +4,8 @@
     "email": "example@test.com",
     "passwordSetAt": "2025-09-07T19:19:07.000000Z",
     "isAdmin": false,
-    "confirmed": false,
+    "confirmed": true,
     "cookiesAccepted": true,
-    "newsletter": false
+    "newsletter": true
   }
 }

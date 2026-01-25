@@ -1,6 +1,7 @@
 import {
   Component,
   computed,
+  effect,
   inject,
   type OnDestroy,
   type OnInit,
@@ -79,10 +80,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
   );
 
   private readonly originalEmail = computed(
-    () => this.sessionQuery.data()?.email ?? "",
+    () => this.sessionQuery.data()?.email,
   );
   private readonly originalNewsletter = computed(
-    () => this.sessionQuery.data()?.newsletter ?? false,
+    () => this.sessionQuery.data()?.newsletter,
   );
 
   private readonly deleteProfileModel = signal({
@@ -105,8 +106,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     },
   );
 
-  protected readonly updateProfileForm = this.formBuilder.group({
-    email: [this.originalEmail(), [Validators.email]],
+  readonly updateProfileForm = this.formBuilder.group({
+    email: ["", [Validators.email]],
     passwords: this.formBuilder.group(
       {
         password: ["", passwordValidator],
@@ -114,7 +115,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       { validators: [passwordMatchValidator] },
     ),
-    newsletter: this.originalNewsletter(),
+    newsletter: false,
   });
 
   get newEmail() {
@@ -137,15 +138,42 @@ export class ProfileComponent implements OnInit, OnDestroy {
         );
 
         this.isNewsletterUpdated.set(
-          form.newsletter !== this.originalNewsletter(),
+          typeof form.newsletter === "boolean" &&
+            form.newsletter !== this.originalNewsletter(),
         );
 
         this.isPasswordUpdated.set(!!form.passwords?.password);
       });
   }
 
+  private readonly sessionEmailEffect = effect(() => {
+    const originalEmail = this.originalEmail();
+
+    if (
+      this.newEmail?.pristine &&
+      originalEmail !== undefined &&
+      this.newEmail?.value !== originalEmail
+    ) {
+      this.newEmail?.setValue(originalEmail);
+    }
+  });
+
+  private readonly sessionNewsletterEffect = effect(() => {
+    const originalNewsletter = this.originalNewsletter();
+
+    if (
+      this.newNewsLetter?.pristine &&
+      originalNewsletter !== undefined &&
+      this.newNewsLetter?.value !== originalNewsletter
+    ) {
+      this.newNewsLetter?.setValue(originalNewsletter);
+    }
+  });
+
   ngOnDestroy() {
     this.updateProfileSubscription?.unsubscribe();
+    this.sessionEmailEffect.destroy();
+    this.sessionNewsletterEffect.destroy();
   }
 
   private readonly isEmailUpdated = signal(false);
@@ -173,9 +201,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
    */
   protected readonly updateErrorMessage = signal("");
 
-  onDeleteProfile(event: Event) {
+  async onDeleteProfile(event: Event) {
     event.preventDefault();
-    submit(this.deleteProfileForm, async () => {
+    await submit(this.deleteProfileForm, async () => {
       try {
         this.savedEmail.set(undefined);
         this.isPasswordSaved.set(false);

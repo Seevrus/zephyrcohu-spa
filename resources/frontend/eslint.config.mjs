@@ -180,6 +180,7 @@ export default defineConfig(
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
       "sonarjs/no-hardcoded-passwords": "off",
+      "sonarjs/no-nested-functions": "off",
       "vitest/consistent-test-filename": [
         "warn",
         {

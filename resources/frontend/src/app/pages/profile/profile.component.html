@@ -7,6 +7,8 @@
         [isPasswordSaved]="isPasswordSaved()"
         [savedNewsletter]="savedNewsLetter()"
       />
+    } @else if (updateErrorMessage()) {
+      <app-form-unexpected-error />
     }
     <p>
       Ezen az űrlapon lehetősége van adatainak módosítására. Amelyik mezőt nem
