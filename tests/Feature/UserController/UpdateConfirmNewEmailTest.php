@@ -9,16 +9,18 @@ describe('Update Confirm New Email Request', function () {
         $this->okRequest = [
             'email' => 'user002_new_email@example.com',
             'code' => 'some-random-code',
+            'password' => 'abc123456',
         ];
     });
 
     test('checks for required fields', function () {
         $response = $this->postJson('/api/users/profile/update/confirm_new_email', []);
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.required (and 1 more error)',
+            'message' => 'validation.required (and 2 more errors)',
             'errors' => [
                 'email' => ['validation.required'],
                 'code' => ['validation.required'],
+                'password' => ['validation.required'],
             ],
         ]);
     });
@@ -34,6 +36,18 @@ describe('Update Confirm New Email Request', function () {
             ],
         ]);
     });
+
+    test('password should be well-formed', function () {
+        $request = [...$this->okRequest, 'password' => 'no'];
+        $response = $this->postJson('/api/users/login', $request);
+
+        $response->assertStatus(422)->assertExactJson([
+            'message' => 'validation.regex',
+            'errors' => [
+                'password' => ['validation.regex'],
+            ],
+        ]);
+    });
 });
 
 describe('Update Confirm New Email Controller', function () {
@@ -41,6 +55,7 @@ describe('Update Confirm New Email Controller', function () {
         $this->okRequest = [
             'email' => 'user002_new_email@example.com',
             'code' => 'some-random-code',
+            'password' => 'abc123456',
         ];
 
         resetUpdateConfirmNewEmailTestData();
@@ -60,7 +75,19 @@ describe('Update Confirm New Email Controller', function () {
         $request = [...$this->okRequest, 'code' => 'wrong-code'];
         $response = $this->postJson('/api/users/profile/update/confirm_new_email', $request);
 
-        $this->assertDatabaseMissing('users_new_emails', ['user_id' => 2]);
+        $this->assertDatabaseHas('users_new_emails', ['user_id' => 2]);
+
+        $response->assertStatus(400)->assertExactJson([
+            'status' => 400,
+            'code' => 'BAD_CREDENTIALS',
+        ]);
+    });
+
+    test('should fail if the password is incorrect', function () {
+        $request = [...$this->okRequest, 'password' => 'wrong-password'];
+        $response = $this->postJson('/api/users/profile/update/confirm_new_email', $request);
+
+        $this->assertDatabaseHas('users_new_emails', ['user_id' => 2]);
 
         $response->assertStatus(400)->assertExactJson([
             'status' => 400,
@@ -120,14 +147,14 @@ function resetUpdateConfirmNewEmailTestData(): void {
         [
             'id' => 1,
             'email' => 'user001@example.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('abc123456'),
             'confirmed' => 1,
             'newsletter' => 0,
         ],
         [
             'id' => 2,
             'email' => 'user002@example.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('abc123456'),
             'confirmed' => 1,
             'newsletter' => 0,
         ],

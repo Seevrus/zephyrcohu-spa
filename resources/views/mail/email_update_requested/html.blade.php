@@ -9,6 +9,7 @@
                     href="https://zephyr.co.hu/profil/email_frissit?email={{ urlencode($email) }}&code={{ urlencode($code) }}"
                     style="color: rgb(51, 51, 51); text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); background-color: rgba(245, 245, 245, 1);">kattintson
                 ide</a> <strong>az új email cím aktiválásához</strong>.</p>
+        <p>Fontos: a link 30 percig használható fel, később újat kell igényelnie.</p>
         <p>Amennyiben nem Ön módosította az email címét, kérjük válasz emailben jelezze felénk a problémát!</p>
         <p style="margin-bottom: 0;">Tisztelettel,</p>
         <p style="margin-top: 0;">Zephyr Számítástechnikai Fejlesztő és Gazdasági Szolgáltató Bt.</p>

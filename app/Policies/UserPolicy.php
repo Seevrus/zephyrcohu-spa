@@ -29,7 +29,7 @@ class UserPolicy {
         return Response::allow();
     }
 
-    public function confirmNewEmail(?User $sender, ?User $user, string $code): Response {
+    public function confirmNewEmail(?User $sender, ?User $user, string $code, string $password): Response {
         $storedCode = $user?->newEmail?->email_code;
 
         if (is_null($user) || ! $storedCode) {
@@ -38,8 +38,11 @@ class UserPolicy {
 
         $isCodeCorrect = Hash::check($code, $storedCode);
         if (! $isCodeCorrect) {
-            $user->newEmail()->delete();
+            return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
+        }
 
+        $isPasswordCorrect = Hash::check($password, $user->password);
+        if (! $isPasswordCorrect) {
             return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
         }
 

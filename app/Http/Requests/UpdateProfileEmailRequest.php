@@ -22,6 +22,7 @@ class UpdateProfileEmailRequest extends FormRequest {
         return [
             'email' => 'required|email',
             'code' => 'required',
+            'password' => 'required|regex:/^([a-zA-ZíűáéúőóüöÍŰÁÉÚŐÓÜÖ0-9._+#%@-]){8,}$/',
         ];
     }
 }

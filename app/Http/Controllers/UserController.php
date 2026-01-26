@@ -296,10 +296,11 @@ class UserController extends Controller {
 
             $email = $request->email;
             $emailCode = $request->code;
+            $password = $request->password;
 
             $user = User::whereRelation('newEmail', 'new_email', '=', $email)->first();
 
-            $canUpdateEmail = Gate::inspect('confirmNewEmail', [User::class, $user, $emailCode]);
+            $canUpdateEmail = Gate::inspect('confirmNewEmail', [User::class, $user, $emailCode, $password]);
             if ($canUpdateEmail->denied()) {
                 return response(
                     new ErrorResource($canUpdateEmail->status(), ErrorCode::from($canUpdateEmail->message())),
