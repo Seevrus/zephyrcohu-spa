@@ -19,8 +19,8 @@ class EmailUpdateRequested extends Mailable {
      * Create a new message instance.
      */
     public function __construct(string $email, string $code) {
-        $this->email = urlencode($email);
-        $this->code = urlencode($code);
+        $this->email = $email;
+        $this->code = $code;
     }
 
     /**
