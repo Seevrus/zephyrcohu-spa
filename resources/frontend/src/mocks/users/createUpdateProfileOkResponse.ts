@@ -14,7 +14,6 @@ export function createUpdateProfileOkResponse({
       passwordSetAt: new Date().toISOString(),
       isAdmin: false,
       confirmed: true,
-      cookiesAccepted: true,
       newsletter,
     },
   };

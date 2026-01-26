@@ -6,7 +6,6 @@ export type ConfirmOrRevokeEmailRequest = {
 export type CreateUserRequest = {
   email: string;
   password: string;
-  cookiesAccepted: boolean;
   newsletter: boolean;
 };
 
@@ -39,7 +38,6 @@ export type SessionData = {
   passwordSetAt: string;
   isAdmin: boolean;
   confirmed: boolean;
-  cookiesAccepted: boolean;
   newsletter: boolean;
 };
 

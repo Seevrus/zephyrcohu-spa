@@ -31,7 +31,7 @@ describe("Register Component", () => {
       expect(screen.getByTestId("passwords-container")).toBeInTheDocument();
     });
 
-    test("checkboxes are displayed correctly", async () => {
+    test("newsletter checkbox is displayed correctly", async () => {
       const { container } = await renderRegisterComponent();
 
       const newsletterCheckboxContainer = container.querySelector(
@@ -51,24 +51,6 @@ describe("Register Component", () => {
         );
 
       expect(newsletterCheckbox).not.toBeChecked();
-
-      const cookiesCheckboxContainer = container.querySelector(
-        "[formcontrolname='cookies']",
-      );
-
-      const cookiesCheckboxLabel =
-        cookiesCheckboxContainer?.querySelector("label");
-
-      expect(cookiesCheckboxLabel).toHaveTextContent(
-        "* Hozzájárulok a bejelentkezési adatokat tartalmazó cookie-k tárolásához.",
-      );
-
-      const cookiesCheckbox =
-        cookiesCheckboxContainer?.querySelector<HTMLInputElement>(
-          "input[type='checkbox']",
-        );
-
-      expect(cookiesCheckbox).not.toBeChecked();
     });
   });
 
@@ -426,7 +408,6 @@ async function fillForm(
       passwordAgain: "12345678",
     },
     newsletter: false,
-    cookies: true,
   });
   fixture.componentInstance.registerForm.markAsDirty();
 

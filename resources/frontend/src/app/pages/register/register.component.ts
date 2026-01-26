@@ -84,7 +84,6 @@ export class RegisterComponent implements OnDestroy {
       { validators: [passwordMatchValidator] },
     ),
     newsletter: false,
-    cookies: [false, Validators.requiredTrue],
   });
 
   get email() {
@@ -112,13 +111,11 @@ export class RegisterComponent implements OnDestroy {
       const email = this.email?.value ?? "";
       const password = this.password?.value ?? "";
       const newsletter = this.registerForm.get("newsletter")?.value ?? false;
-      const cookiesAccepted = this.registerForm.get("cookies")?.value ?? false;
 
       await this.registerMutation.mutateAsync({
         email,
         password,
         newsletter,
-        cookiesAccepted,
       });
 
       this.registeredEmail.set(email);

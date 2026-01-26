@@ -41,10 +41,6 @@
       <mat-checkbox formControlName="newsletter">
         Szeretnék hírlevelet kapni a fontosabb újdonságokról.
       </mat-checkbox>
-      <mat-checkbox formControlName="cookies">
-        * Hozzájárulok a bejelentkezési adatokat tartalmazó cookie-k
-        tárolásához.
-      </mat-checkbox>
       <app-button-loadable
         data-testid="submit-button"
         type="submit"
@@ -58,11 +54,10 @@
   <div class="form-help">
     <p>A szöveges mezők kitöltése kötelező.</p>
     <p>A hírlevélre feliratkozás opcionális.</p>
-    <p>A regisztrációhoz kötelező a cookie-k használatának elfogadása.</p>
   </div>
   <div class="form-data-privacy-consent">
     <p>
-      A Regisztráció gombra kattintva az adatvédelmi tájékoztatóban foglaltakat
+      A Regisztráció gombra kattintva az <a class="zephyr-link" href="#">adatvédelmi tájékoztatóban</a> foglaltakat
       elfogadom.
     </p>
   </div>
