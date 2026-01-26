@@ -1,0 +1,25 @@
+<mat-card
+  class="cookie-consent-card"
+  appearance="outlined"
+  data-testid="cookie-consent-card"
+>
+  <mat-card-header>
+    <mat-card-title>Az Ön adatainak védelme fontos számunkra</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p>
+      Az oldal biztonságos működése érdekében sütiket használunk. Nem használjuk
+      fel az Ön adatait sem elemzési, sem hirdetési célokra és nem is adjuk
+      tovább azokat semmilyen harmadik fél számára.
+    </p>
+    <p>
+      Bővebb információért kérjük olvassa el
+      <a class="zephyr-link" href="#">adatvédelmi tájékoztatónkat.</a>
+    </p>
+  </mat-card-content>
+  <mat-card-footer class="accept-button-container">
+    <button matButton (click)="accept()" data-testid="accept-cookies-button">
+      Elfogadás
+    </button>
+  </mat-card-footer>
+</mat-card>

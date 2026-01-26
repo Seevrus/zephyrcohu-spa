@@ -8,6 +8,9 @@ import { TestBed } from "@angular/core/testing";
 import { provideRouter } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
+import userEvent from "@testing-library/user-event";
+import { CookieService } from "ngx-cookie-service";
+import { expect } from "vitest";
 
 import { testQueryClient } from "../mocks/testQueryClient";
 import getSessionErrorResponse from "../mocks/users/getSessionErrorResponse.json";
@@ -36,6 +39,47 @@ describe("App Component", () => {
     await expect(
       screen.findByTestId("main-component"),
     ).resolves.toBeInTheDocument();
+  });
+
+  describe("Cookie consent", () => {
+    const user = userEvent.setup();
+
+    test("should render initially", async () => {
+      const { renderResult } = renderAppComponent("/");
+      await renderResult;
+
+      await waitFor(() => {
+        expect(screen.getByTestId("cookie-consent-card")).toBeInTheDocument();
+      });
+    });
+
+    test("clicking on the accept button removes the cookie consent card", async () => {
+      const { renderResult } = renderAppComponent("/");
+      await renderResult;
+
+      const acceptButton = screen.getByTestId("accept-cookies-button");
+
+      await user.click(acceptButton);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByTestId("cookie-consent-card"),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    test("does not render the card if already accepted", async () => {
+      const { renderResult } = renderAppComponent("/");
+
+      const cookieService = TestBed.inject(CookieService);
+      cookieService.set("zephyr-cookies-accepted", "true");
+
+      await renderResult;
+
+      expect(
+        screen.queryByTestId("cookie-consent-card"),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe("Login Component", () => {

@@ -4,4 +4,7 @@
     <router-outlet />
   </div>
   <app-footer />
+  @if (areCookiesAccepted() === false) {
+    <app-cookie-consent (cookiesAccepted)="onCookiesAccepted()" />
+  }
 </div>
