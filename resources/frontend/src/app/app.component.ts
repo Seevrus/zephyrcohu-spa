@@ -2,6 +2,7 @@ import { Component, inject, type OnInit, signal } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { CookieService } from "ngx-cookie-service";
 
+import { cookieConsentCookie } from "../constants/cookie";
 import { environment } from "../environments/environment";
 import { CookieConsentComponent } from "./components/cookie-consent/cookie-consent.component";
 import { FooterComponent } from "./footer/footer.component";
@@ -26,13 +27,11 @@ export class AppComponent implements OnInit {
   );
 
   ngOnInit() {
-    this.areCookiesAccepted.set(
-      this.cookieService.check("zephyr-cookies-accepted"),
-    );
+    this.areCookiesAccepted.set(this.cookieService.check(cookieConsentCookie));
   }
 
   protected onCookiesAccepted() {
-    this.cookieService.set("zephyr-cookies-accepted", "true", {
+    this.cookieService.set(cookieConsentCookie, "true", {
       expires: 365,
       sameSite: "Lax",
       secure: environment.secureCookies,
