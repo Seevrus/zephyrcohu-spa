@@ -9,7 +9,6 @@ describe('Register User Request', function () {
         $this->okRequest = [
             'email' => 'test@example.com',
             'password' => '12345678',
-            'cookiesAccepted' => true,
             'newsletter' => false,
         ];
     });
@@ -17,11 +16,10 @@ describe('Register User Request', function () {
     test('checks for required fields', function () {
         $response = $this->postJson('/api/users/register', []);
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.required (and 3 more errors)',
+            'message' => 'validation.required (and 2 more errors)',
             'errors' => [
                 'email' => ['validation.required'],
                 'password' => ['validation.required'],
-                'cookiesAccepted' => ['validation.required'],
                 'newsletter' => ['validation.required'],
             ],
         ]);
@@ -51,30 +49,6 @@ describe('Register User Request', function () {
         ]);
     })->with(['abc', 'abc1234', 'abc1234!!!']);
 
-    test('cookies should be a boolean', function () {
-        $request = [...$this->okRequest, 'cookiesAccepted' => 'yes'];
-        $response = $this->postJson('/api/users/register', $request);
-
-        $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.boolean',
-            'errors' => [
-                'cookiesAccepted' => ['validation.boolean'],
-            ],
-        ]);
-    });
-
-    test('cookies should be accepted', function () {
-        $request = [...$this->okRequest, 'cookiesAccepted' => false];
-        $response = $this->postJson('/api/users/register', $request);
-
-        $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.accepted',
-            'errors' => [
-                'cookiesAccepted' => ['validation.accepted'],
-            ],
-        ]);
-    });
-
     test('newsletter should be a boolean', function () {
         $request = [...$this->okRequest, 'newsletter' => 'yes'];
         $response = $this->postJson('/api/users/register', $request);
@@ -93,7 +67,6 @@ describe('Register User Controller', function () {
         $this->okRequest = [
             'email' => 'test@example.com',
             'password' => '12345678',
-            'cookiesAccepted' => true,
             'newsletter' => false,
         ];
 
@@ -147,7 +120,6 @@ describe('Register User Controller', function () {
             'email' => 'user005@example.com',
             'confirmed' => 0,
             'newsletter' => 0,
-            'cookies' => 1,
             'ip_address' => null,
             'last_active' => null,
         ]);
@@ -167,7 +139,6 @@ describe('Register User Controller', function () {
                 'email' => 'user005@example.com',
                 'isAdmin' => false,
                 'confirmed' => false,
-                'cookiesAccepted' => true,
                 'newsletter' => false,
             ],
         ]);
@@ -190,7 +161,6 @@ function resetRegisterUserTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
         [
             'id' => 2,
@@ -198,7 +168,6 @@ function resetRegisterUserTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
         [
             'id' => 3,
@@ -206,7 +175,6 @@ function resetRegisterUserTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 0,
             'newsletter' => 1,
-            'cookies' => 1,
         ],
         [
             'id' => 4,
@@ -214,7 +182,6 @@ function resetRegisterUserTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 0,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
     ]);
 

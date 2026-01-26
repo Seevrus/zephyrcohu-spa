@@ -83,7 +83,6 @@ describe('Confirm Email Controller', function () {
             'email' => 'user004@example.com',
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
             'ip_address' => null,
             'last_active' => null,
         ]);
@@ -96,7 +95,6 @@ describe('Confirm Email Controller', function () {
                 'email' => 'user004@example.com',
                 'isAdmin' => false,
                 'confirmed' => true,
-                'cookiesAccepted' => true,
                 'newsletter' => false,
             ],
         ]);
@@ -119,7 +117,6 @@ function resetConfirmEmailTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
         [
             'id' => 2,
@@ -127,7 +124,6 @@ function resetConfirmEmailTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
         [
             'id' => 3,
@@ -135,7 +131,6 @@ function resetConfirmEmailTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 0,
             'newsletter' => 1,
-            'cookies' => 1,
         ],
         [
             'id' => 4,
@@ -143,7 +138,6 @@ function resetConfirmEmailTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 0,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
     ]);
 

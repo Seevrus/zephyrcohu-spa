@@ -31,7 +31,6 @@ describe('Session', function () {
         $response->assertStatus(200)->assertExactJson([
             'data' => [
                 'confirmed' => true,
-                'cookiesAccepted' => true,
                 'email' => 'user001@example.com',
                 'id' => 1,
                 'isAdmin' => false,
@@ -54,7 +53,6 @@ function resetSessionTestData(): void {
             'password_set_at' => Carbon::createFromFormat('Y-m-d H:i:s', '2025-01-11 07:31:09'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
     ]);
 }

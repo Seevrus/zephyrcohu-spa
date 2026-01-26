@@ -142,7 +142,6 @@ class UserController extends Controller {
         try {
             $email = $request->email;
             $password = $request->password;
-            $cookiesAccepted = $request->cookiesAccepted;
             $newsletter = $request->newsletter;
 
             $canCreate = Gate::inspect('registerUser', [User::class, $email]);
@@ -156,7 +155,6 @@ class UserController extends Controller {
 
             $newUser = User::create([
                 'email' => $email,
-                'cookies' => $cookiesAccepted,
                 'newsletter' => $newsletter,
                 'password' => Hash::make($password),
             ]);

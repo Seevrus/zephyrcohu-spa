@@ -127,7 +127,6 @@ describe('Reset Password Controller', function () {
 
         $response->assertStatus(200)->assertJson(['data' => [
             'confirmed' => true,
-            'cookiesAccepted' => true,
             'email' => 'user003@example.com',
             'id' => 3,
             'isAdmin' => false,
@@ -147,7 +146,6 @@ function resetResetPasswordTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
         [
             'id' => 2,
@@ -155,7 +153,6 @@ function resetResetPasswordTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
         [
             'id' => 3,
@@ -163,7 +160,6 @@ function resetResetPasswordTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
     ]);
 

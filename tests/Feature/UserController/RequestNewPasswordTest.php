@@ -106,7 +106,6 @@ function resetRequestNewPasswordTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
         [
             'id' => 2,
@@ -114,7 +113,6 @@ function resetRequestNewPasswordTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 0,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
         [
             'id' => 3,
@@ -122,7 +120,6 @@ function resetRequestNewPasswordTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 1,
-            'cookies' => 1,
         ],
         [
             'id' => 4,
@@ -130,7 +127,6 @@ function resetRequestNewPasswordTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 1,
-            'cookies' => 1,
         ],
     ]);
 

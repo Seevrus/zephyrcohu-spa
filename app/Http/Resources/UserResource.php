@@ -18,7 +18,6 @@ class UserResource extends JsonResource {
             'passwordSetAt' => $this->password_set_at,
             'isAdmin' => (bool) $this->admin,
             'confirmed' => $this->confirmed,
-            'cookiesAccepted' => $this->cookies,
             'newsletter' => $this->newsletter,
         ];
     }

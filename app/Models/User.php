@@ -15,7 +15,6 @@ class User extends Authenticatable {
 
     protected $attributes = [
         'confirmed' => 0,
-        'cookies' => 0,
         'ip_address' => null,
         'last_Active' => null,
         'newsletter' => 0,
@@ -24,7 +23,6 @@ class User extends Authenticatable {
     protected function casts(): array {
         return [
             'confirmed' => 'boolean',
-            'cookies' => 'boolean',
             'last_active' => 'datetime',
             'newsletter' => 'boolean',
             'password_set_at' => 'datetime',
@@ -32,7 +30,7 @@ class User extends Authenticatable {
     }
 
     protected $fillable = [
-        'cookies', 'email', 'newsletter', 'password', 'password_set_at',
+        'email', 'newsletter', 'password', 'password_set_at',
     ];
 
     public function loginAttempts(): HasOne {

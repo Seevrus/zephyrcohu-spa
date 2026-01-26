@@ -99,7 +99,6 @@ function resetRevokeRegistrationTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
         [
             'id' => 2,
@@ -107,7 +106,6 @@ function resetRevokeRegistrationTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
         [
             'id' => 3,
@@ -115,7 +113,6 @@ function resetRevokeRegistrationTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 0,
             'newsletter' => 1,
-            'cookies' => 1,
         ],
         [
             'id' => 4,
@@ -123,7 +120,6 @@ function resetRevokeRegistrationTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 0,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
     ]);
 

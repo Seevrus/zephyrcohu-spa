@@ -61,7 +61,6 @@ function resetLogoutTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
     ]);
 }

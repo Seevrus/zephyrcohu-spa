@@ -123,7 +123,6 @@ function resetUpdateConfirmNewEmailTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
         [
             'id' => 2,
@@ -131,7 +130,6 @@ function resetUpdateConfirmNewEmailTestData(): void {
             'password' => Hash::make('password'),
             'confirmed' => 1,
             'newsletter' => 0,
-            'cookies' => 1,
         ],
     ]);
 
