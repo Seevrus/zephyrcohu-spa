@@ -329,11 +329,14 @@ class UserController extends Controller {
         try {
             $user = $request->user();
 
+            $currentEmail = $user->email;
+            $currentNewsletter = $user->newsletter;
+
             $email = $request->email;
             $password = $request->password;
             $newsletter = $request->newsletter;
 
-            if ($email) {
+            if ($email && $currentEmail != $email) {
                 $emailCode = $this->generate_code();
 
                 $user->newEmail()->upsert([
@@ -350,7 +353,7 @@ class UserController extends Controller {
                 $user->password_set_at = Carbon::now();
             }
 
-            if (! is_null($newsletter)) {
+            if (! is_null($newsletter) && $currentNewsletter != $newsletter) {
                 $user->newsletter = (bool) $newsletter;
             }
 

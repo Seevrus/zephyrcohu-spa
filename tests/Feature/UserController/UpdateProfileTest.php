@@ -81,6 +81,13 @@ describe('Update Profile Controller', function () {
 
         $response->assertStatus(200);
 
+        $this->assertDatabaseHas('users', [
+            'id' => 1,
+            'email' => 'user001@example.com',
+            'confirmed' => 1,
+            'newsletter' => 1,
+        ]);
+
         $this->assertDatabaseHas('users_new_emails', [
             'user_id' => 1,
             'new_email' => 'newemail@example.com',
@@ -89,6 +96,19 @@ describe('Update Profile Controller', function () {
         Mail::assertSent(EmailUpdateRequested::class, function ($mail) {
             return $mail->hasTo('newemail@example.com');
         });
+    });
+
+    test('should not update the email if the request has the same email', function () {
+        Mail::fake();
+        Str::createRandomStringsUsing(fn () => 'fake-random-string');
+
+        $user = User::find(1);
+        $request = ['email' => 'user001@example.com'];
+        $response = $this->actingAs($user)->postJson('/api/users/profile/update', $request);
+
+        $response->assertStatus(200);
+
+        Mail::assertNothingSent();
     });
 
     test('should update the user profile newsletter', function () {
@@ -152,14 +172,14 @@ function resetUpdateProfileTestData(): void {
             'email' => 'user001@example.com',
             'password' => Hash::make('password'),
             'confirmed' => 1,
-            'newsletter' => 0,
+            'newsletter' => 1,
         ],
         [
             'id' => 2,
             'email' => 'user002@example.com',
             'password' => Hash::make('password'),
             'confirmed' => 1,
-            'newsletter' => 1,
+            'newsletter' => 0,
         ],
     ]);
 }
