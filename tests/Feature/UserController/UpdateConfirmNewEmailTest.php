@@ -79,7 +79,7 @@ describe('Update Confirm New Email Controller', function () {
 
         $response->assertStatus(400)->assertExactJson([
             'status' => 400,
-            'code' => 'BAD_CREDENTIALS',
+            'code' => 'BAD_EMAIL_CODE',
         ]);
     });
 

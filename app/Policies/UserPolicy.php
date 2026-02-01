@@ -38,7 +38,7 @@ class UserPolicy {
 
         $isCodeCorrect = Hash::check($code, $storedCode);
         if (! $isCodeCorrect) {
-            return Response::denyWithStatus(400, ErrorCode::BAD_CREDENTIALS->value);
+            return Response::denyWithStatus(400, ErrorCode::BAD_EMAIL_CODE->value);
         }
 
         $isPasswordCorrect = Hash::check($password, $user->password);
