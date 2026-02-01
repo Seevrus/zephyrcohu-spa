@@ -27,7 +27,7 @@ describe("Register Email, Revoke Registration", () => {
 
   describe("revoke errors", () => {
     const expectedMessage =
-      '<p _ngcontent-a-c2841415809=""> A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a <a _ngcontent-a-c2841415809="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c2841415809=""> Regisztrációhoz kérjük <a _ngcontent-a-c2841415809="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container--><!--container--><!--container-->';
+      '<p _ngcontent-a-c3601743371=""> A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a <a _ngcontent-a-c3601743371="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c3601743371=""> Regisztrációhoz kérjük <a _ngcontent-a-c3601743371="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container--><!--container--><!--container-->';
 
     test("bad query parameters", async () => {
       const { httpTesting } = await renderComponent(undefined, TEST_CODE);
@@ -98,7 +98,7 @@ describe("Register Email, Revoke Registration", () => {
       expect(
         (await screen.findByTestId("revoke-error-message")).innerHTML,
       ).toBe(
-        '<!--container--><p _ngcontent-a-c2841415809=""> A megadott e-mail cím már megerősítésre került a rendszerünkben. Regisztrációja törléséhez kérjük jelentkezzen be, ezek után az "Adatok módosítása" menüpontban lehetséges a regisztráció törlése. Bármilyen probléma esetén kérjük, írjon nekünk a <a _ngcontent-a-c2841415809="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c2841415809=""> Bejelentkezéshez kérjük <a _ngcontent-a-c2841415809="" routerlink="/bejelentkezes" class="zephyr-link" href="/bejelentkezes">kattintson ide</a>. </p><!--container--><!--container-->',
+        '<!--container--><p _ngcontent-a-c3601743371=""> A megadott e-mail cím már megerősítésre került a rendszerünkben. Regisztrációja törléséhez kérjük jelentkezzen be, ezek után az "Adatok módosítása" menüpontban lehetséges a regisztráció törlése. Bármilyen probléma esetén kérjük, írjon nekünk a <a _ngcontent-a-c3601743371="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c3601743371=""> Bejelentkezéshez kérjük <a _ngcontent-a-c3601743371="" routerlink="/bejelentkezes" class="zephyr-link" href="/bejelentkezes">kattintson ide</a>. </p><!--container--><!--container-->',
       );
 
       httpTesting.verify();
@@ -122,7 +122,7 @@ describe("Register Email, Revoke Registration", () => {
       expect(
         (await screen.findByTestId("revoke-error-message")).innerHTML,
       ).toBe(
-        '<!--container--><!--container--><p _ngcontent-a-c2841415809=""> Váratlan hiba képett fel a regisztráció elvetése során. Kérjük, írjon nekünk a <a _ngcontent-a-c2841415809="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c2841415809=""> Regisztrációhoz kérjük <a _ngcontent-a-c2841415809="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container-->',
+        '<!--container--><!--container--><p _ngcontent-a-c3601743371=""> Váratlan hiba képett fel a regisztráció elvetése során. Kérjük, írjon nekünk a <a _ngcontent-a-c3601743371="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c3601743371=""> Regisztrációhoz kérjük <a _ngcontent-a-c3601743371="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container-->',
       );
 
       httpTesting.verify();
@@ -141,7 +141,7 @@ describe("Register Email, Revoke Registration", () => {
     expect(
       (await screen.findByTestId("revoke-success-message")).innerHTML,
     ).toBe(
-      '<p _ngcontent-a-c2841415809=""> A(z) abc@example.com e-mail címet és a hozzá tartozó minden adatot véglegesen töröltük az adatbázisunkból. </p><p _ngcontent-a-c2841415809=""> Regisztrációhoz kérjük <a _ngcontent-a-c2841415809="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p>',
+      '<p _ngcontent-a-c3601743371=""> A(z) abc@example.com e-mail címet és a hozzá tartozó minden adatot véglegesen töröltük az adatbázisunkból. </p><p _ngcontent-a-c3601743371=""> Regisztrációhoz kérjük <a _ngcontent-a-c3601743371="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p>',
     );
 
     httpTesting.verify();

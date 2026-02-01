@@ -1,10 +1,12 @@
 import { NgClass } from "@angular/common";
 import {
   Component,
+  computed,
   inject,
   input,
   type OnDestroy,
   type OnInit,
+  type Signal,
   signal,
 } from "@angular/core";
 import {
@@ -20,6 +22,8 @@ import { passwordStrength } from "check-password-strength";
 import { type Subscription } from "rxjs";
 
 import { allowedPasswordCharacters } from "../../../constants/forms";
+
+type PasswordSignal = Signal<AbstractControl<string> | null | undefined>;
 
 @Component({
   selector: "app-password-repeat",
@@ -56,7 +60,7 @@ export class PasswordRepeatComponent implements OnInit, OnDestroy {
   protected readonly passwordStrength = signal<string>("");
 
   ngOnInit(): void {
-    this.passwordChangedSubscription = this.password?.valueChanges.subscribe(
+    this.passwordChangedSubscription = this.password()?.valueChanges.subscribe(
       (password) => password && this.checkPasswordStrength(),
     );
   }
@@ -65,7 +69,7 @@ export class PasswordRepeatComponent implements OnInit, OnDestroy {
     this.passwordChangedSubscription?.unsubscribe();
   }
 
-  protected get passwordsFormGroup() {
+  protected readonly passwordsFormGroup = computed(() => {
     const parentForm = this.parentContainer?.control as FormGroup;
 
     if (!parentForm) {
@@ -73,23 +77,23 @@ export class PasswordRepeatComponent implements OnInit, OnDestroy {
     }
 
     return parentForm.get(this.formGroupName()!) as FormGroup | null;
-  }
+  });
 
-  protected get password(): AbstractControl<string> | null | undefined {
-    return this.passwordsFormGroup?.get("password");
-  }
+  protected readonly password: PasswordSignal = computed(() =>
+    this.passwordsFormGroup()?.get("password"),
+  );
 
-  protected get passwordAgain(): AbstractControl<string> | null | undefined {
-    return this.passwordsFormGroup?.get("passwordAgain");
-  }
+  protected readonly passwordAgain: PasswordSignal = computed(() =>
+    this.passwordsFormGroup()?.get("passwordAgain"),
+  );
 
   private checkPasswordStrength() {
-    if (!this.password?.valid) {
+    if (!this.password()?.valid) {
       this.passwordStrength.set("");
       return;
     }
 
-    const password = this.password?.value ?? "";
+    const password = this.password()?.value ?? "";
 
     const { id: score } = passwordStrength(
       password,

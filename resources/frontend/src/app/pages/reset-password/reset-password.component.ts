@@ -1,7 +1,14 @@
-import { Component, inject, type OnInit, signal } from "@angular/core";
+import {
+  Component,
+  inject,
+  type OnDestroy,
+  type OnInit,
+  signal,
+} from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
+import type { Subscription } from "rxjs";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { zephyr } from "../../../constants/forms";
@@ -33,11 +40,13 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   templateUrl: "./reset-password.component.html",
   styleUrl: "./reset-password.component.scss",
 })
-export class ResetPasswordComponent implements OnInit {
+export class ResetPasswordComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly usersQueryService = inject(UsersQueryService);
+
+  private queryParamsSubscription: Subscription | null = null;
 
   private readonly emailCode = signal<string>("");
   protected readonly isPasswordResetSuccessful = signal<boolean | undefined>(
@@ -58,7 +67,7 @@ export class ResetPasswordComponent implements OnInit {
   );
 
   ngOnInit() {
-    this.route.queryParams.subscribe(
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
       ({ code, email }: QueryParamsByPath["profil/jelszo_helyreallit"]) => {
         if (code === undefined || email === undefined) {
           this.parameterError.set(true);
@@ -72,6 +81,10 @@ export class ResetPasswordComponent implements OnInit {
     );
   }
 
+  ngOnDestroy() {
+    this.queryParamsSubscription?.unsubscribe();
+  }
+
   readonly resetPasswordForm = this.formBuilder.group({
     email: ["", [Validators.required, Validators.email]],
     passwords: this.formBuilder.group(
@@ -83,13 +96,10 @@ export class ResetPasswordComponent implements OnInit {
     ),
   });
 
-  get email() {
-    return this.resetPasswordForm.get("email");
-  }
+  protected readonly email = this.resetPasswordForm.get("email");
 
-  protected get password() {
-    return this.resetPasswordForm.get("passwords.password");
-  }
+  protected readonly password =
+    this.resetPasswordForm.get("passwords.password");
 
   protected async onResetPassword() {
     try {

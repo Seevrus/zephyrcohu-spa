@@ -35,6 +35,7 @@ import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-
 import { ProfileUpdatedComponent } from "../../components/form-alerts/profile-updated/profile-updated.component";
 import { PasswordRepeatComponent } from "../../components/password-repeat/password-repeat.component";
 import { UsersQueryService } from "../../services/users.query.service";
+import { booleanSignalValidator } from "../../validators/booleanSignalValidator";
 import { passwordValidator } from "../../validators/password.validator";
 import { passwordMatchValidator } from "../../validators/password-match.validator";
 
@@ -93,16 +94,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   protected readonly deleteProfileForm = form(
     this.deleteProfileModel,
     (schemaPath) => {
-      validate(schemaPath.confirm, ({ value }) => {
-        if (value()) {
-          return null;
-        }
-
-        return {
-          kind: "boolean",
-          message: "A jelölőnégyzet kijelölése kötelező.",
-        };
-      });
+      validate(schemaPath.confirm, booleanSignalValidator);
     },
   );
 
@@ -118,17 +110,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
     newsletter: false,
   });
 
-  get newEmail() {
-    return this.updateProfileForm.get("email");
-  }
+  readonly newEmail = this.updateProfileForm.get("email");
 
-  get newNewsLetter() {
-    return this.updateProfileForm.get("newsletter");
-  }
+  protected readonly newNewsLetter = this.updateProfileForm.get("newsletter");
 
-  get newPassword() {
-    return this.updateProfileForm.get("passwords.password");
-  }
+  protected readonly newPassword =
+    this.updateProfileForm.get("passwords.password");
 
   ngOnInit() {
     this.updateProfileSubscription =

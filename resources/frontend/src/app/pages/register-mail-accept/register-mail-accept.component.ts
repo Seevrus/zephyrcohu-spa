@@ -1,6 +1,13 @@
-import { Component, inject, type OnInit, signal } from "@angular/core";
+import {
+  Component,
+  inject,
+  type OnDestroy,
+  type OnInit,
+  signal,
+} from "@angular/core";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
+import { type Subscription } from "rxjs";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { zephyr } from "../../../constants/forms";
@@ -16,10 +23,12 @@ import { UsersQueryService } from "../../services/users.query.service";
   styleUrl: "./register-mail-accept.component.scss",
   templateUrl: "./register-mail-accept.component.html",
 })
-export class RegisterMailAcceptComponent implements OnInit {
+export class RegisterMailAcceptComponent implements OnInit, OnDestroy {
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
   private readonly usersQueryService = inject(UsersQueryService);
+
+  private queryParamsSubscription: Subscription | null = null;
 
   readonly confirmEmailMutation = injectMutation(() =>
     this.usersQueryService.registerConfirmEmail(),
@@ -37,7 +46,7 @@ export class RegisterMailAcceptComponent implements OnInit {
   readonly zephyrEmail = zephyr;
 
   ngOnInit() {
-    this.route.queryParams.subscribe(
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
       ({ code, email }: QueryParamsByPath["regisztracio/megerosit"]) => {
         if (code === undefined || email === undefined) {
           this.confirmError.set("BAD_QUERY_PARAMS");
@@ -49,6 +58,10 @@ export class RegisterMailAcceptComponent implements OnInit {
         }
       },
     );
+  }
+
+  ngOnDestroy() {
+    this.queryParamsSubscription?.unsubscribe();
   }
 
   private async confirmEmail(code: string, email: string) {

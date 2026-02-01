@@ -1,6 +1,13 @@
-import { Component, inject, type OnInit, signal } from "@angular/core";
+import {
+  Component,
+  inject,
+  type OnDestroy,
+  type OnInit,
+  signal,
+} from "@angular/core";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
+import type { Subscription } from "rxjs";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { zephyr } from "../../../constants/forms";
@@ -16,10 +23,12 @@ import { UsersQueryService } from "../../services/users.query.service";
   styleUrl: "./register-mail-decline.component.scss",
   templateUrl: "./register-mail-decline.component.html",
 })
-export class RegisterMailDeclineComponent implements OnInit {
+export class RegisterMailDeclineComponent implements OnInit, OnDestroy {
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
   private readonly usersQueryService = inject(UsersQueryService);
+
+  private queryParamsSubscription: Subscription | null = null;
 
   readonly revokeRegistrationMutation = injectMutation(() =>
     this.usersQueryService.registerRevoke(),
@@ -37,7 +46,7 @@ export class RegisterMailDeclineComponent implements OnInit {
   readonly zephyrEmail = zephyr;
 
   ngOnInit() {
-    this.route.queryParams.subscribe(
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
       ({ code, email }: QueryParamsByPath["regisztracio/elvet"]) => {
         if (code === undefined || email === undefined) {
           this.revokeError.set("BAD_QUERY_PARAMS");
@@ -49,6 +58,10 @@ export class RegisterMailDeclineComponent implements OnInit {
         }
       },
     );
+  }
+
+  ngOnDestroy() {
+    this.queryParamsSubscription?.unsubscribe();
   }
 
   private async revokeRegistration(code: string, email: string) {

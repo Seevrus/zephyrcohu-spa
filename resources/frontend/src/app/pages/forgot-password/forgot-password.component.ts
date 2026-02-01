@@ -49,9 +49,7 @@ export class ForgotPasswordComponent {
     email: ["", [Validators.required, Validators.email]],
   });
 
-  protected get email() {
-    return this.forgotPasswordForm.get("email");
-  }
+  protected readonly email = this.forgotPasswordForm.get("email");
 
   protected async onRequestPasswordReset() {
     try {

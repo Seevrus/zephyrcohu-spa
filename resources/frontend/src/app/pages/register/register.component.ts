@@ -86,13 +86,9 @@ export class RegisterComponent implements OnDestroy {
     newsletter: false,
   });
 
-  get email() {
-    return this.registerForm.get("email");
-  }
+  protected readonly email = this.registerForm.get("email");
 
-  get password() {
-    return this.registerForm.get("passwords.password");
-  }
+  protected readonly password = this.registerForm.get("passwords.password");
 
   ngOnDestroy() {
     this.resendConfirmationEmailErrorMessage.set("");
