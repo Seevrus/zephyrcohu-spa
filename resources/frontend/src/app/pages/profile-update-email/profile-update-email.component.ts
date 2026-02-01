@@ -135,11 +135,11 @@ export class ProfileUpdateEmailComponent implements OnInit, OnDestroy {
         this.confirmedNewEmail.set("");
         this.confirmError.set("");
 
-        const newEmail = this.updateEmailForm.emailCode().value();
+        const newEmail = this.updateEmailForm.newEmail().value();
 
         await this.confirmNewEmailMutation.mutateAsync({
-          code: newEmail,
-          email: this.updateEmailForm.newEmail().value(),
+          code: this.updateEmailForm.emailCode().value(),
+          email: newEmail,
           password: this.updateEmailForm.password().value(),
         });
 
@@ -152,7 +152,7 @@ export class ProfileUpdateEmailComponent implements OnInit, OnDestroy {
         }));
       } catch (error) {
         if (error instanceof ZephyrHttpError) {
-          this.confirmError.set(error.message);
+          this.confirmError.set(error.code);
         } else {
           this.confirmError.set("INTERNAL_SERVER_ERROR");
         }

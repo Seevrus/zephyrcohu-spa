@@ -64,7 +64,7 @@
         data-testid="submit-button"
         type="submit"
         [loading]="confirmNewEmailMutation.isPending()"
-        [disabled]="!updateEmailForm().valid || !updateEmailForm().dirty"
+        [disabled]="!updateEmailForm().valid() || !updateEmailForm().dirty()"
       >
         Email cím módosítása
       </app-button-loadable>
