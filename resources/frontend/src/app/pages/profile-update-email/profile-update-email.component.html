@@ -1,0 +1,73 @@
+<div
+  class="profile-update-email-component"
+  data-testid="profile-update-email-component"
+>
+  <h1>Email cím frissítése</h1>
+  <p>Új email címének aktiválásához kérem adja meg a jelszavát:</p>
+
+  @if (confirmError()) {
+    @switch (confirmError()) {
+      @case ("BAD_CREDENTIALS")
+      @case ("BAD_EMAIL_CODE") {
+        <app-bad-credentials />
+      }
+      @case ("BAD_QUERY_PARAMS") {
+        <app-email-link-error />
+      }
+      @case ("CODE_EXPIRED") {
+        <app-email-code-expired />
+      }
+      @default {
+        <app-form-unexpected-error />
+      }
+    }
+  } @else if (confirmedNewEmail()) {
+    <app-profile-email-updated [confirmedNewEmail]="confirmedNewEmail()" />
+  }
+
+  <form (submit)="onConfirmNewEmail($event)">
+    <div class="form-elements-container">
+      <mat-form-field data-testid="new-email">
+        <mat-label>Új email cím</mat-label>
+        <input matInput [formField]="updateEmailForm.newEmail" />
+      </mat-form-field>
+      <div class="password-container">
+        <mat-form-field data-testid="password">
+          <mat-label>Jelszó</mat-label>
+          <input
+            matInput
+            [type]="isPasswordVisible() ? 'text' : 'password'"
+            [formField]="updateEmailForm.password"
+          />
+          @if (
+            updateEmailForm.password().touched() &&
+            updateEmailForm.password().invalid()
+          ) {
+            <mat-error>{{
+              updateEmailForm.password().errors()[0].message
+            }}</mat-error>
+          }
+        </mat-form-field>
+        <button
+          mat-button
+          class="toggle-password"
+          data-testid="toggle-password"
+          type="button"
+          (click)="togglePassword()"
+        >
+          {{
+            isPasswordVisible() ? "Jelszó elrejtése" : "Jelszó megjelenítése"
+          }}
+        </button>
+      </div>
+      <app-button-loadable
+        data-testid="submit-button"
+        type="submit"
+        [loading]="confirmNewEmailMutation.isPending()"
+        [disabled]="!updateEmailForm().valid || !updateEmailForm().dirty"
+      >
+        Email cím módosítása
+      </app-button-loadable>
+    </div>
+  </form>
+</div>

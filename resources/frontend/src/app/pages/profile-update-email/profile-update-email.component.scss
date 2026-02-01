@@ -1,0 +1,17 @@
+@use "../login/shared-register";
+@use "../../../shared/mixins";
+@use "../../../shared/variables";
+
+:host(.app-profile-update-email) {
+  @include mixins.zephyr-main;
+
+  .profile-update-email-component {
+    @include shared-register.form-layout;
+
+    .password-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+}

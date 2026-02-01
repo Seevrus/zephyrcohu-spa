@@ -174,6 +174,14 @@ describe("App Component", () => {
     });
   });
 
+  test("renders the profile update / email confirm component", async () => {
+    renderAppComponent("profil/email_frissit");
+
+    await expect(
+      screen.findByTestId("profile-update-email-component"),
+    ).resolves.toBeInTheDocument();
+  });
+
   describe("Reset Password Component", () => {
     test("redirects to the main page if the user is already logged in", async () => {
       const { httpTesting } = renderAppComponent("/profil/jelszo_helyreallit");

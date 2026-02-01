@@ -12,13 +12,14 @@ import { type Subscription } from "rxjs";
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { zephyr } from "../../../constants/forms";
 import { type QueryParamsByPath } from "../../app.routes";
+import { EmailLinkErrorComponent } from "../../components/form-alerts/email-link-error/email-link-error.component";
 import { UsersQueryService } from "../../services/users.query.service";
 
 @Component({
   host: {
     class: "app-register-mail-accept",
   },
-  imports: [RouterLink],
+  imports: [EmailLinkErrorComponent, RouterLink],
   selector: "app-register-mail-accept",
   styleUrl: "./register-mail-accept.component.scss",
   templateUrl: "./register-mail-accept.component.html",

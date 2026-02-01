@@ -44,6 +44,7 @@ export type SessionData = {
 export type UpdateProfileConfirmEmailRequest = {
   code: string;
   email: string;
+  password: string;
 };
 
 export type UpdateProfileRequest = {

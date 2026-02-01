@@ -4,12 +4,13 @@ import { guestGuard } from "./guards/guest.guard";
 import { userGuard } from "./guards/user.guard";
 
 export type QueryParamsByPath = {
-  "profil/jelszo_helyreallit": {
+  "profil/email_frissit": {
     code?: string;
     email?: string;
   };
-  "regisztracio/elvet": QueryParamsByPath["profil/jelszo_helyreallit"];
-  "regisztracio/megerosit": QueryParamsByPath["profil/jelszo_helyreallit"];
+  "profil/jelszo_helyreallit": QueryParamsByPath["profil/email_frissit"];
+  "regisztracio/elvet": QueryParamsByPath["profil/email_frissit"];
+  "regisztracio/megerosit": QueryParamsByPath["profil/email_frissit"];
 };
 
 export const routes: Routes = [
@@ -49,6 +50,15 @@ export const routes: Routes = [
       return ForgotPasswordComponent;
     },
     title: "Elfelejtett jelszó",
+  },
+  {
+    path: "profil/email_frissit",
+    async loadComponent() {
+      const { ProfileUpdateEmailComponent } =
+        await import("./pages/profile-update-email/profile-update-email.component");
+      return ProfileUpdateEmailComponent;
+    },
+    title: "Email cím frissítése",
   },
   {
     path: "profil/jelszo_helyreallit",

@@ -10,6 +10,12 @@
     margin: 0 auto 1rem auto;
     max-width: 500px;
 
+    .toggle-password {
+      display: block;
+      margin: 0 auto;
+      width: 200px;
+    }
+
     app-button-loadable {
       margin: 0 auto;
       width: 200px;

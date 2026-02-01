@@ -15,6 +15,7 @@ export class BreadcrumbService {
     Adatmódosítás: "Profil - Adatmódosítás",
     Bejelentkezés: "Bejelentkezés",
     "Elfelejtett jelszó": "Profil - Elfelejtett jelszó",
+    "Email cím frissítése": "Profil - Email cím frissítése",
     Főoldal: "Főoldal",
     "Jelszó helyreállítása": "Profil - Jelszó helyreállítása",
     Regisztráció: "Regisztráció",

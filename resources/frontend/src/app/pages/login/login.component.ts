@@ -80,9 +80,7 @@ export class LoginComponent implements OnDestroy {
     this.usersQueryService.login(),
   );
 
-  get email() {
-    return this.loginForm.get("email");
-  }
+  protected readonly email = this.loginForm.get("email");
 
   async onLogin() {
     try {
