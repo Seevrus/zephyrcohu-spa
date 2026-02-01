@@ -12,7 +12,14 @@
               "INVALID_REQUEST_DATA",
             ].includes(confirmError())
           ) {
-            <app-email-link-error />
+            <p>
+              A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a
+              böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a
+              <a class="zephyr-link" href="mailto:{{ zephyrEmail }}">{{
+                zephyrEmail
+              }}</a>
+              címre.
+            </p>
             <p>
               Regisztrációhoz kérjük
               <a class="zephyr-link" routerLink="/regisztracio"

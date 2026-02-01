@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
-import { expect, vi } from "vitest";
 
 import { CookieConsentComponent } from "./cookie-consent.component";
 

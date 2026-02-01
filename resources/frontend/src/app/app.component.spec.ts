@@ -10,7 +10,6 @@ import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
 import { CookieService } from "ngx-cookie-service";
-import { expect } from "vitest";
 
 import { testQueryClient } from "../mocks/testQueryClient";
 import getSessionErrorResponse from "../mocks/users/getSessionErrorResponse.json";
