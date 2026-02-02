@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+
+Route::controller(CaptchaController::class)->prefix('captcha')->group(function () {
+    Route::post('/', 'check_recaptcha_token');
+});
 
 Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::prefix('profile')->group(function () {

@@ -18,6 +18,10 @@ return [
         'token' => env('POSTMARK_TOKEN'),
     ],
 
+    'reCaptcha' => [
+        'secretKey' => env('RECAPTCHA_SECRET_KEY'),
+    ],
+
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],
