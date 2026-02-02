@@ -1,4 +1,5 @@
 export const mutationKeys = {
+  checkRecaptchaToken: ["check_recaptcha_token"],
   deleteProfile: ["delete_profile"],
   login: ["login"],
   logout: ["logout"],

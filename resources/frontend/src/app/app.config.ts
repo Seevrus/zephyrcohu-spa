@@ -5,6 +5,7 @@ import {
 } from "@angular/common/http";
 import {
   type ApplicationConfig,
+  importProvidersFrom,
   provideBrowserGlobalErrorListeners,
 } from "@angular/core";
 import { provideRouter, TitleStrategy } from "@angular/router";
@@ -13,7 +14,9 @@ import {
   QueryClient,
 } from "@tanstack/angular-query-experimental";
 import { withDevtools } from "@tanstack/angular-query-experimental/devtools";
+import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from "ng-recaptcha-2";
 
+import { environment } from "../environments/environment";
 import { routes } from "./app.routes";
 import { AppTitleStrategy } from "./app.title.strategy";
 import { credentialsInterceptor } from "./services/credentialsInterceptor";
@@ -44,6 +47,8 @@ export const appConfig: ApplicationConfig = {
     ),
     provideRouter(routes),
     provideTanStackQuery(queryClient, withDevtools()),
+    importProvidersFrom(RecaptchaV3Module),
     { provide: TitleStrategy, useClass: AppTitleStrategy },
+    { provide: RECAPTCHA_V3_SITE_KEY, useValue: environment.siteKey },
   ],
 };

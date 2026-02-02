@@ -44,6 +44,9 @@ importers:
       check-password-strength:
         specifier: ^3.0.0
         version: 3.0.0
+      ng-recaptcha-2:
+        specifier: ^21.0.1
+        version: 21.0.1(@angular/core@21.1.2(@angular/compiler@21.1.2)(rxjs@7.8.2))
       ngx-cookie-service:
         specifier: ^21.1.0
         version: 21.1.0(@angular/common@21.1.2(@angular/core@21.1.2(@angular/compiler@21.1.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.2(@angular/compiler@21.1.2)(rxjs@7.8.2))
@@ -1542,6 +1545,9 @@ packages:
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
+
+  '@types/grecaptcha@3.0.9':
+    resolution: {integrity: sha512-fFxMtjAvXXMYTzDFK5NpcVB7WHnrHVLl00QzEGpuFxSAC789io6M+vjcn+g5FTEamIJtJr/IHkCDsqvJxeWDyw==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -3047,6 +3053,11 @@ packages:
   negotiator@1.0.0:
     resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
     engines: {node: '>= 0.6'}
+
+  ng-recaptcha-2@21.0.1:
+    resolution: {integrity: sha512-EfnE+grlB6F50Bfe+vY2eg3IYWef4+1O7bqGUCihLMsQWFy5sU7s6YwlTAoa6wMljqutBx8yGyQj7wlm5T1PxQ==}
+    peerDependencies:
+      '@angular/core': ^21.0.0
 
   ngx-cookie-service@21.1.0:
     resolution: {integrity: sha512-W3IsoMImUVNt0ZuMesEuQJUGrEgKJaPkQGGfCg7zjUGM/EaeAIbIkfNktNIgUDmeUYapZQJa2pSg4YuK4v1gVQ==}
@@ -5284,6 +5295,8 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
+  '@types/grecaptcha@3.0.9': {}
+
   '@types/json-schema@7.0.15': {}
 
   '@types/json5@0.0.29': {}
@@ -6974,6 +6987,12 @@ snapshots:
   natural-compare@1.4.0: {}
 
   negotiator@1.0.0: {}
+
+  ng-recaptcha-2@21.0.1(@angular/core@21.1.2(@angular/compiler@21.1.2)(rxjs@7.8.2)):
+    dependencies:
+      '@angular/core': 21.1.2(@angular/compiler@21.1.2)(rxjs@7.8.2)
+      '@types/grecaptcha': 3.0.9
+      tslib: 2.8.1
 
   ngx-cookie-service@21.1.0(@angular/common@21.1.2(@angular/core@21.1.2(@angular/compiler@21.1.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.2(@angular/compiler@21.1.2)(rxjs@7.8.2)):
     dependencies:

@@ -6,7 +6,7 @@ export function mapUpdateProfileRequest(profile: {
   newsletter: boolean | null | undefined;
 }): UpdateProfileRequest {
   return Object.entries(profile).reduce((request, [key, value]) => {
-    if (value === null || value === undefined) {
+    if (value === null || value === undefined || value === "") {
       return request;
     }
 
