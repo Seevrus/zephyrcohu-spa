@@ -98,7 +98,7 @@ export class LoginComponent implements OnDestroy {
 
   protected readonly email = this.loginForm.get("email");
 
-  async onLoginSubmit(token: string | null) {
+  protected async onLoginSubmit(token: string | null) {
     this.isLoginInProgress.set(true);
 
     try {

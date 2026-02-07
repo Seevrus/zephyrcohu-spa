@@ -40,6 +40,7 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   },
   imports: [
     ButtonLoadableComponent,
+    CaptchaFailedComponent,
     FormUnexpectedErrorComponent,
     MatCheckbox,
     MatFormField,
@@ -52,7 +53,6 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
     RegisterResendEmailErrorComponent,
     RegisterResendEmailSuccessComponent,
     RegisterSuccessComponent,
-    CaptchaFailedComponent,
   ],
   selector: "app-register",
   styleUrl: "./register.component.scss",
@@ -104,7 +104,7 @@ export class RegisterComponent implements OnDestroy {
     this.resentEmail.set("");
   }
 
-  async onRegisterSubmit(token: string | null) {
+  protected async onRegisterSubmit(token: string | null) {
     this.isRegisterInProgress.set(true);
 
     try {
