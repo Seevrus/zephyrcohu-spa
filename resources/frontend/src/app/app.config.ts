@@ -14,7 +14,11 @@ import {
   QueryClient,
 } from "@tanstack/angular-query-experimental";
 import { withDevtools } from "@tanstack/angular-query-experimental/devtools";
-import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from "ng-recaptcha-2";
+import {
+  RECAPTCHA_SETTINGS,
+  RecaptchaModule,
+  type RecaptchaSettings,
+} from "ng-recaptcha-2";
 
 import { environment } from "../environments/environment";
 import { routes } from "./app.routes";
@@ -47,8 +51,14 @@ export const appConfig: ApplicationConfig = {
     ),
     provideRouter(routes),
     provideTanStackQuery(queryClient, withDevtools()),
-    importProvidersFrom(RecaptchaV3Module),
+    importProvidersFrom(RecaptchaModule),
     { provide: TitleStrategy, useClass: AppTitleStrategy },
-    { provide: RECAPTCHA_V3_SITE_KEY, useValue: environment.siteKey },
+    {
+      provide: RECAPTCHA_SETTINGS,
+      useValue: {
+        siteKey: environment.siteKey,
+        size: "invisible",
+      } satisfies RecaptchaSettings,
+    },
   ],
 };
