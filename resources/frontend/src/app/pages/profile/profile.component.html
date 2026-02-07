@@ -39,6 +39,7 @@
           type="submit"
           [loading]="updateProfileMutation.isPending()"
           [disabled]="
+            updateProfileMutation.isPending() ||
             !updateProfileForm.valid ||
             !updateProfileForm.dirty ||
             !isProfileUpdated()
@@ -73,7 +74,9 @@
           data-testid="delete-submit-button"
           type="submit"
           [loading]="deleteProfileMutation.isPending()"
-          [disabled]="deleteProfileForm().invalid()"
+          [disabled]="
+            deleteProfileMutation.isPending() || deleteProfileForm().invalid()
+          "
         >
           Regisztráció törlése
         </app-button-loadable>
