@@ -4,10 +4,15 @@ import {
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
+import { By } from "@angular/platform-browser";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
-import userEvent from "@testing-library/user-event";
+import { type UserEvent, userEvent } from "@testing-library/user-event";
+import { RecaptchaComponent } from "ng-recaptcha-2";
 
+import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaTokenErrorResponse.json";
+import checkCaptchaTokenOkResponse from "../../../mocks/captcha/checkCaptchaTokenOkResponse.json";
+import { checkCaptchaTokenRequest } from "../../../mocks/captcha/checkCaptchaTokenRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createPostResendConfirmEmailErrorResponse } from "../../../mocks/users/createPostResendConfirmEmailErrorResponse";
 import { createRegisterErrorResponse } from "../../../mocks/users/createRegisterErrorResponse";
@@ -17,12 +22,40 @@ import { resendConfirmationEmailRequest } from "../../../mocks/users/resendConfi
 import { RegisterComponent } from "./register.component";
 
 describe("Register Component", () => {
-  const user = userEvent.setup();
+  let http: HttpTestingController;
+  let registerContainer: HTMLElement;
+  let registerFixture: ComponentFixture<RegisterComponent>;
+  let user: UserEvent;
+
+  beforeAll(() => {
+    user = userEvent.setup();
+  });
+
+  beforeEach(async () => {
+    const { container, fixture, httpTesting } = await renderRegisterComponent();
+
+    http = httpTesting;
+    registerContainer = container;
+    registerFixture = fixture;
+
+    const captchaDebugElement = fixture.debugElement.query(
+      By.directive(RecaptchaComponent),
+    );
+
+    const captchaComponent: RecaptchaComponent =
+      captchaDebugElement.componentInstance;
+
+    vi.spyOn(captchaComponent, "execute").mockImplementation(() =>
+      captchaComponent.resolved.emit("test-captcha-token"),
+    );
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
+  });
 
   describe("should render the form correctly", () => {
-    test("text fields", async () => {
-      await renderRegisterComponent();
-
+    test("text fields", () => {
       const emailField = screen.getByTestId("email");
 
       expect(emailField.querySelector("label")).toHaveTextContent("Email cím");
@@ -31,10 +64,8 @@ describe("Register Component", () => {
       expect(screen.getByTestId("passwords-container")).toBeInTheDocument();
     });
 
-    test("newsletter checkbox is displayed correctly", async () => {
-      const { container } = await renderRegisterComponent();
-
-      const newsletterCheckboxContainer = container.querySelector(
+    test("newsletter checkbox is displayed correctly", () => {
+      const newsletterCheckboxContainer = registerContainer.querySelector(
         "[formcontrolname='newsletter']",
       );
 
@@ -56,28 +87,24 @@ describe("Register Component", () => {
 
   describe("should validate the form correctly", () => {
     test("validates email correctly", async () => {
-      const { container } = await renderRegisterComponent();
-
       const emailInput = screen.getByTestId("email").querySelector("input")!;
 
       await user.type(emailInput, "invalid-email");
       await user.tab();
 
-      expect(container.querySelector("mat-error")).toHaveTextContent(
+      expect(registerContainer.querySelector("mat-error")).toHaveTextContent(
         "Email cím formátuma nem megfelelő",
       );
 
       await user.clear(emailInput);
       await user.tab();
 
-      expect(container.querySelector("mat-error")).toHaveTextContent(
+      expect(registerContainer.querySelector("mat-error")).toHaveTextContent(
         "Kötelező mező",
       );
     });
 
     test("validates password correctly", async () => {
-      const { container } = await renderRegisterComponent();
-
       const passwordInput = screen
         .getByTestId("password")
         .querySelector("input")!;
@@ -85,21 +112,19 @@ describe("Register Component", () => {
       await user.type(passwordInput, "12");
       await user.tab();
 
-      expect(container.querySelector("mat-error")).toHaveTextContent(
+      expect(registerContainer.querySelector("mat-error")).toHaveTextContent(
         "Jelszó formátuma nem megfelelő",
       );
 
       await user.clear(passwordInput);
       await user.tab();
 
-      expect(container.querySelector("mat-error")).toHaveTextContent(
+      expect(registerContainer.querySelector("mat-error")).toHaveTextContent(
         "Kötelező mező",
       );
     });
 
     test("shows an error if passwords don't match", async () => {
-      const { container } = await renderRegisterComponent();
-
       const passwordInput = screen
         .getByTestId("password")
         .querySelector("input")!;
@@ -112,161 +137,136 @@ describe("Register Component", () => {
       await user.type(passwordAgainInput, "strongpass");
       await user.tab();
 
-      expect(container.querySelector(".custom-error")).toHaveTextContent(
-        "A beírt jelszavak nem egyeznek meg",
-      );
+      expect(
+        registerContainer.querySelector(".custom-error"),
+      ).toHaveTextContent("A beírt jelszavak nem egyeznek meg");
     });
 
     test("can submit if the form is valid", async () => {
-      const { fixture } = await renderRegisterComponent();
-
       const submitButton = screen
         .getByTestId("submit-button")
         .querySelector("button");
 
       expect(submitButton).toBeDisabled();
 
-      await fillForm(fixture);
+      await fillForm(registerFixture);
 
       expect(submitButton).toBeEnabled();
     });
   });
 
   describe("should show the correct API error messages", () => {
-    test("if the user already exists", async () => {
-      const { fixture, httpTesting } = await renderRegisterComponent();
-      await fillForm(fixture);
+    let submitButton: HTMLButtonElement;
 
-      const submitButton = screen
+    beforeEach(async () => {
+      await fillForm(registerFixture);
+
+      submitButton = screen
         .getByTestId("submit-button")
         .querySelector("button")!;
 
       await user.click(submitButton);
+    });
 
-      const request = await waitFor(() =>
-        httpTesting.expectOne(registerRequest),
+    test("in the case of a captcha error", async () => {
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
       );
 
-      request.flush(createRegisterErrorResponse("USER_EXISTS"), {
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenErrorResponse);
+
+      await assertFormMessagePresent("captcha-failed-error");
+
+      http.verify();
+    });
+
+    test("if the user already exists", async () => {
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
+      );
+
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const registerTestRequest = await waitFor(() =>
+        http.expectOne(registerRequest),
+      );
+
+      registerTestRequest.flush(createRegisterErrorResponse("USER_EXISTS"), {
         status: 409,
         statusText: "Conflict",
       });
 
-      await expect(
-        screen.findByTestId("register-already-exists"),
-      ).resolves.toBeInTheDocument();
+      await assertFormMessagePresent("register-already-exists");
 
-      expect(
-        screen.queryByTestId("register-exists-not-confirmed"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-success"),
-      ).not.toBeInTheDocument();
-      expect(screen.queryByTestId("register-success")).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("form-unexpected-error"),
-      ).not.toBeInTheDocument();
-
-      httpTesting.verify();
+      http.verify();
     });
 
     test("if the user is not confirmed", async () => {
-      const { fixture, httpTesting } = await renderRegisterComponent();
-      await fillForm(fixture);
-
-      const submitButton = screen
-        .getByTestId("submit-button")
-        .querySelector("button")!;
-
-      await user.click(submitButton);
-
-      const request = await waitFor(() =>
-        httpTesting.expectOne(registerRequest),
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
       );
 
-      request.flush(createRegisterErrorResponse("USER_NOT_CONFIRMED"), {
-        status: 409,
-        statusText: "Conflict",
-      });
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
 
-      await expect(
-        screen.findByTestId("register-exists-not-confirmed"),
-      ).resolves.toBeInTheDocument();
+      const registerTestRequest = await waitFor(() =>
+        http.expectOne(registerRequest),
+      );
 
-      expect(screen.queryByTestId("register-exists")).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-success"),
-      ).not.toBeInTheDocument();
-      expect(screen.queryByTestId("register-success")).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("form-unexpected-error"),
-      ).not.toBeInTheDocument();
+      registerTestRequest.flush(
+        createRegisterErrorResponse("USER_NOT_CONFIRMED"),
+        {
+          status: 409,
+          statusText: "Conflict",
+        },
+      );
 
-      httpTesting.verify();
+      await assertFormMessagePresent("register-exists-not-confirmed");
+
+      http.verify();
     });
 
     test("in the case of an unknown error", async () => {
-      const { fixture, httpTesting } = await renderRegisterComponent();
-      await fillForm(fixture);
-
-      const submitButton = screen
-        .getByTestId("submit-button")
-        .querySelector("button")!;
-
-      await user.click(submitButton);
-
-      const request = await waitFor(() =>
-        httpTesting.expectOne(registerRequest),
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
       );
 
-      request.flush(createRegisterErrorResponse("INTERNAL_SERVER_ERROR"), {
-        status: 500,
-        statusText: "Internal Server Error",
-      });
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
 
-      await expect(
-        screen.findByTestId("form-unexpected-error"),
-      ).resolves.toBeInTheDocument();
+      const registerTestRequest = await waitFor(() =>
+        http.expectOne(registerRequest),
+      );
 
-      expect(screen.queryByTestId("register-exists")).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-exists-not-confirmed"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-success"),
-      ).not.toBeInTheDocument();
-      expect(screen.queryByTestId("register-success")).not.toBeInTheDocument();
+      registerTestRequest.flush(
+        createRegisterErrorResponse("INTERNAL_SERVER_ERROR"),
+        {
+          status: 500,
+          statusText: "Internal Server Error",
+        },
+      );
 
-      httpTesting.verify();
+      await assertFormMessagePresent("form-unexpected-error");
+
+      http.verify();
     });
 
     test("submit button is disabled until the user modifies something", async () => {
-      const { fixture, httpTesting } = await renderRegisterComponent();
-      await fillForm(fixture);
-
-      const submitButton = screen
-        .getByTestId("submit-button")
-        .querySelector("button")!;
-
-      await user.click(submitButton);
-
-      const request = await waitFor(() =>
-        httpTesting.expectOne(registerRequest),
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
       );
 
-      request.flush(createRegisterErrorResponse("INTERNAL_SERVER_ERROR"), {
-        status: 500,
-        statusText: "Internal Server Error",
-      });
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const registerTestRequest = await waitFor(() =>
+        http.expectOne(registerRequest),
+      );
+
+      registerTestRequest.flush(
+        createRegisterErrorResponse("INTERNAL_SERVER_ERROR"),
+        {
+          status: 500,
+          statusText: "Internal Server Error",
+        },
+      );
 
       await expect(
         screen.findByTestId("form-unexpected-error"),
@@ -274,15 +274,16 @@ describe("Register Component", () => {
 
       expect(submitButton).toBeDisabled();
 
-      await fillForm(fixture, { email: "abc124@gmail.com" });
+      await fillForm(registerFixture, { email: "abc124@gmail.com" });
 
       expect(submitButton).toBeEnabled();
+
+      http.verify();
     });
   });
 
   test("should show the correct API success message", async () => {
-    const { fixture, httpTesting } = await renderRegisterComponent();
-    await fillForm(fixture);
+    await fillForm(registerFixture);
 
     const submitButton = screen
       .getByTestId("submit-button")
@@ -290,37 +291,28 @@ describe("Register Component", () => {
 
     await user.click(submitButton);
 
-    const request = await waitFor(() => httpTesting.expectOne(registerRequest));
-    request.flush(getSessionOkResponse);
+    const checkCaptchaTokenTestRequest = await waitFor(() =>
+      http.expectOne(checkCaptchaTokenRequest),
+    );
 
-    await expect(
-      screen.findByTestId("register-success"),
-    ).resolves.toBeInTheDocument();
+    checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
 
-    expect(
-      screen.queryByTestId("register-already-exists"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("register-exists-not-confirmed"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("register-resend-email-error"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("register-resend-email-success"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("form-unexpected-error"),
-    ).not.toBeInTheDocument();
+    const registerTestRequest = await waitFor(() =>
+      http.expectOne(registerRequest),
+    );
 
-    httpTesting.verify();
+    registerTestRequest.flush(getSessionOkResponse);
+
+    await assertFormMessagePresent("register-success");
+
+    http.verify();
   });
 
   test("should show the correct error message when resending the confirmation email fails", async () => {
-    const { fixture, httpTesting } = await renderRegisterComponent();
-    await fillForm(fixture);
-
-    fixture.componentInstance.registerErrorMessage.set("USER_NOT_CONFIRMED");
+    await fillForm(registerFixture);
+    registerFixture.componentInstance.registerErrorMessage.set(
+      "USER_NOT_CONFIRMED",
+    );
 
     const resendLink = await screen.findByTestId(
       "resend-confirmation-email-link",
@@ -329,7 +321,7 @@ describe("Register Component", () => {
     await user.click(resendLink);
 
     const resendConfirmEmailRequest = await waitFor(() =>
-      httpTesting.expectOne(resendConfirmationEmailRequest),
+      http.expectOne(resendConfirmationEmailRequest),
     );
 
     resendConfirmEmailRequest.flush(
@@ -340,30 +332,17 @@ describe("Register Component", () => {
       },
     );
 
-    await expect(
-      screen.findByTestId("register-resend-email-error"),
-    ).resolves.toBeInTheDocument();
+    await assertFormMessagePresent("register-resend-email-error");
 
-    expect(
-      screen.queryByTestId("register-already-exists"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("register-exists-not-confirmed"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("register-resend-email-success"),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByTestId("register-success")).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("form-unexpected-error"),
-    ).not.toBeInTheDocument();
+    http.verify();
   });
 
   test("should show the correct success message when resending the confirmation email succeeds", async () => {
-    const { fixture, httpTesting } = await renderRegisterComponent();
-    await fillForm(fixture);
+    await fillForm(registerFixture);
 
-    fixture.componentInstance.registerErrorMessage.set("USER_NOT_CONFIRMED");
+    registerFixture.componentInstance.registerErrorMessage.set(
+      "USER_NOT_CONFIRMED",
+    );
 
     const resendLink = await screen.findByTestId(
       "resend-confirmation-email-link",
@@ -372,30 +351,38 @@ describe("Register Component", () => {
     await user.click(resendLink);
 
     const resendConfirmEmailRequest = await waitFor(() =>
-      httpTesting.expectOne(resendConfirmationEmailRequest),
+      http.expectOne(resendConfirmationEmailRequest),
     );
 
     resendConfirmEmailRequest.flush(null);
 
-    await expect(
-      screen.findByTestId("register-resend-email-success"),
-    ).resolves.toBeInTheDocument();
+    await assertFormMessagePresent("register-resend-email-success");
 
-    expect(
-      screen.queryByTestId("register-already-exists"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("register-exists-not-confirmed"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("register-resend-email-error"),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByTestId("register-success")).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("form-unexpected-error"),
-    ).not.toBeInTheDocument();
+    http.verify();
   });
 });
+
+async function assertFormMessagePresent(testId: string) {
+  const formMessages = [
+    "captcha-failed-error",
+    "form-unexpected-error",
+    "register-already-exists",
+    "register-exists-not-confirmed",
+    "register-resend-email-error",
+    "register-resend-email-success",
+    "register-success",
+  ];
+
+  await expect(screen.findByTestId(testId)).resolves.toBeInTheDocument();
+
+  const missingFormMessages = formMessages.filter(
+    (message) => message !== testId,
+  );
+
+  for (const message of missingFormMessages) {
+    expect(screen.queryByTestId(message)).not.toBeInTheDocument();
+  }
+}
 
 async function fillForm(
   fixture: ComponentFixture<RegisterComponent>,

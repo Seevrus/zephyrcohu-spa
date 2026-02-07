@@ -2,28 +2,31 @@
   <h1>Regisztráció</h1>
   @if (registerErrorMessage()) {
     @switch (registerErrorMessage()) {
+      @case ("CAPTCHA_FAILED") {
+        <app-captcha-failed />
+      }
       @case ("USER_EXISTS") {
-        <app-register-already-exists></app-register-already-exists>
+        <app-register-already-exists />
       }
       @case ("USER_NOT_CONFIRMED") {
         <app-register-exists-not-confirmed
           email="{{ email?.value }}"
           (resendConfirmationEmail)="onResendConfirmationEmail()"
-        ></app-register-exists-not-confirmed>
+        />
       }
       @default {
-        <app-form-unexpected-error></app-form-unexpected-error>
+        <app-form-unexpected-error />
       }
     }
   } @else if (registeredEmail()) {
     <app-register-success [registeredEmail]="registeredEmail()" />
   }
   @if (resendConfirmationEmailErrorMessage()) {
-    <app-register-resend-email-error></app-register-resend-email-error>
+    <app-register-resend-email-error />
   } @else if (resentEmail()) {
     <app-register-resend-email-success [resentEmail]="resentEmail()" />
   }
-  <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+  <form [formGroup]="registerForm" (ngSubmit)="captchaRef.execute()">
     <div class="form-elements-container">
       <mat-form-field data-testid="email">
         <mat-label>Email cím</mat-label>
@@ -41,11 +44,17 @@
       <mat-checkbox formControlName="newsletter">
         Szeretnék hírlevelet kapni a fontosabb újdonságokról.
       </mat-checkbox>
+      <re-captcha
+        #captchaRef="reCaptcha"
+        (resolved)="onRegisterSubmit($event)"
+      />
       <app-button-loadable
         data-testid="submit-button"
         type="submit"
-        [loading]="registerMutation.isPending()"
-        [disabled]="!registerForm.valid || !registerForm.dirty"
+        [loading]="isRegisterInProgress()"
+        [disabled]="
+          isRegisterInProgress() || !registerForm.valid || !registerForm.dirty
+        "
       >
         Regisztráció
       </app-button-loadable>

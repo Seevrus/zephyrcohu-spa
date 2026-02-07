@@ -8,7 +8,7 @@ import { By } from "@angular/platform-browser";
 import { provideRouter, Router } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
-import userEvent, { type UserEvent } from "@testing-library/user-event";
+import { type UserEvent, userEvent } from "@testing-library/user-event";
 import { RecaptchaComponent } from "ng-recaptcha-2";
 
 import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaTokenErrorResponse.json";
@@ -35,9 +35,9 @@ describe("Login Component", () => {
   beforeEach(async () => {
     const { container, fixture, httpTesting } = await renderLoginComponent();
 
+    http = httpTesting;
     loginContainer = container;
     loginFixture = fixture;
-    http = httpTesting;
 
     const captchaDebugElement = fixture.debugElement.query(
       By.directive(RecaptchaComponent),
@@ -148,59 +148,31 @@ describe("Login Component", () => {
   });
 
   describe("should show the correct API error messages", () => {
-    test("in the case of a captcha error", async () => {
+    let submitButton: HTMLButtonElement;
+
+    beforeEach(async () => {
       await fillForm(loginFixture);
 
-      const submitButton = screen
+      submitButton = screen
         .getByTestId("submit-button")
         .querySelector("button")!;
 
       await user.click(submitButton);
+    });
 
+    test("in the case of a captcha error", async () => {
       const checkCaptchaTokenTestRequest = await waitFor(() =>
         http.expectOne(checkCaptchaTokenRequest),
       );
 
       checkCaptchaTokenTestRequest.flush(checkCaptchaTokenErrorResponse);
 
-      await expect(
-        screen.findByTestId("captcha-failed-error"),
-      ).resolves.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("bad-credentials-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-exists-not-confirmed"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-success"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("too-many-login-attempts-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("user-already-logged-in-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("form-unexpected-error"),
-      ).not.toBeInTheDocument();
+      await assertFormMessagePresent("captcha-failed-error");
 
       http.verify();
     });
 
     test("if the credentials are bad", async () => {
-      await fillForm(loginFixture);
-
-      const submitButton = screen
-        .getByTestId("submit-button")
-        .querySelector("button")!;
-
-      await user.click(submitButton);
-
       const checkCaptchaTokenTestRequest = await waitFor(() =>
         http.expectOne(checkCaptchaTokenRequest),
       );
@@ -216,44 +188,12 @@ describe("Login Component", () => {
         statusText: "Unauthorized",
       });
 
-      await expect(
-        screen.findByTestId("bad-credentials-error"),
-      ).resolves.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("captcha-failed-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-exists-not-confirmed"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-success"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("too-many-login-attempts-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("user-already-logged-in-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("form-unexpected-error"),
-      ).not.toBeInTheDocument();
+      await assertFormMessagePresent("bad-credentials-error");
 
       http.verify();
     });
 
     test("if the user is not confirmed", async () => {
-      await fillForm(loginFixture);
-
-      const submitButton = screen
-        .getByTestId("submit-button")
-        .querySelector("button")!;
-
-      await user.click(submitButton);
-
       const checkCaptchaTokenTestRequest = await waitFor(() =>
         http.expectOne(checkCaptchaTokenRequest),
       );
@@ -269,44 +209,12 @@ describe("Login Component", () => {
         statusText: "Conflict",
       });
 
-      await expect(
-        screen.findByTestId("register-exists-not-confirmed"),
-      ).resolves.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("captcha-failed-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("bad-credentials-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-success"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("too-many-login-attempts-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("user-already-logged-in-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("form-unexpected-error"),
-      ).not.toBeInTheDocument();
+      await assertFormMessagePresent("register-exists-not-confirmed");
 
       http.verify();
     });
 
     test("if there are too many login attempts", async () => {
-      await fillForm(loginFixture);
-
-      const submitButton = screen
-        .getByTestId("submit-button")
-        .querySelector("button")!;
-
-      await user.click(submitButton);
-
       const checkCaptchaTokenTestRequest = await waitFor(() =>
         http.expectOne(checkCaptchaTokenRequest),
       );
@@ -325,44 +233,12 @@ describe("Login Component", () => {
         },
       );
 
-      await expect(
-        screen.findByTestId("too-many-login-attempts-error"),
-      ).resolves.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("captcha-failed-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("bad-credentials-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-exists-not-confirmed"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-success"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("user-already-logged-in-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("form-unexpected-error"),
-      ).not.toBeInTheDocument();
+      await assertFormMessagePresent("too-many-login-attempts-error");
 
       http.verify();
     });
 
     test("if the user is already logged in", async () => {
-      await fillForm(loginFixture);
-
-      const submitButton = screen
-        .getByTestId("submit-button")
-        .querySelector("button")!;
-
-      await user.click(submitButton);
-
       const checkCaptchaTokenTestRequest = await waitFor(() =>
         http.expectOne(checkCaptchaTokenRequest),
       );
@@ -381,44 +257,12 @@ describe("Login Component", () => {
         },
       );
 
-      await expect(
-        screen.findByTestId("user-already-logged-in-error"),
-      ).resolves.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("captcha-failed-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("bad-credentials-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-exists-not-confirmed"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-success"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("too-many-login-attempts-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("form-unexpected-error"),
-      ).not.toBeInTheDocument();
+      await assertFormMessagePresent("user-already-logged-in-error");
 
       http.verify();
     });
 
     test("in the case of an unknown error", async () => {
-      await fillForm(loginFixture);
-
-      const submitButton = screen
-        .getByTestId("submit-button")
-        .querySelector("button")!;
-
-      await user.click(submitButton);
-
       const checkCaptchaTokenTestRequest = await waitFor(() =>
         http.expectOne(checkCaptchaTokenRequest),
       );
@@ -437,44 +281,12 @@ describe("Login Component", () => {
         },
       );
 
-      await expect(
-        screen.findByTestId("form-unexpected-error"),
-      ).resolves.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("captcha-failed-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("bad-credentials-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-exists-not-confirmed"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("register-resend-email-success"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("too-many-login-attempts-error"),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId("user-already-logged-in-error"),
-      ).not.toBeInTheDocument();
+      await assertFormMessagePresent("form-unexpected-error");
 
       http.verify();
     });
 
     test("submit button is disabled until the user modifies something", async () => {
-      await fillForm(loginFixture);
-
-      const submitButton = screen
-        .getByTestId("submit-button")
-        .querySelector("button")!;
-
-      await user.click(submitButton);
-
       const checkCaptchaTokenTestRequest = await waitFor(() =>
         http.expectOne(checkCaptchaTokenRequest),
       );
@@ -560,31 +372,7 @@ describe("Login Component", () => {
       },
     );
 
-    await expect(
-      screen.findByTestId("register-resend-email-error"),
-    ).resolves.toBeInTheDocument();
-
-    expect(
-      screen.queryByTestId("captcha-failed-error"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("bad-credentials-error"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("register-exists-not-confirmed"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("register-resend-email-success"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("too-many-login-attempts-error"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("user-already-logged-in-error"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("form-unexpected-error"),
-    ).not.toBeInTheDocument();
+    await assertFormMessagePresent("register-resend-email-error");
 
     http.verify();
   });
@@ -635,6 +423,29 @@ describe("Login Component", () => {
     http.verify();
   });
 });
+
+async function assertFormMessagePresent(testId: string) {
+  const formMessages = [
+    "bad-credentials-error",
+    "captcha-failed-error",
+    "form-unexpected-error",
+    "register-exists-not-confirmed",
+    "register-resend-email-error",
+    "register-resend-email-success",
+    "too-many-login-attempts-error",
+    "user-already-logged-in-error",
+  ];
+
+  await expect(screen.findByTestId(testId)).resolves.toBeInTheDocument();
+
+  const missingFormMessages = formMessages.filter(
+    (message) => message !== testId,
+  );
+
+  for (const message of missingFormMessages) {
+    expect(screen.queryByTestId(message)).not.toBeInTheDocument();
+  }
+}
 
 async function fillForm(
   fixture: ComponentFixture<LoginComponent>,

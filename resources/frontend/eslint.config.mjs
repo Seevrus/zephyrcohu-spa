@@ -194,6 +194,10 @@ export default defineConfig(
           withinDescribe: "test",
         },
       ],
+      "vitest/expect-expect": [
+        "warn",
+        { assertFunctionNames: ["assert*", "expect*"] },
+      ],
       "vitest/max-expects": "off",
       "vitest/no-hooks": "off",
       "vitest/prefer-describe-function-title": "off",

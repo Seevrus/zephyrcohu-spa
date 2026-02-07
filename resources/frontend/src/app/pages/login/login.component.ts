@@ -41,6 +41,7 @@ import { passwordValidator } from "../../validators/password.validator";
   imports: [
     BadCredentialsComponent,
     ButtonLoadableComponent,
+    CaptchaFailedComponent,
     FormUnexpectedErrorComponent,
     MatButton,
     MatFormField,
@@ -52,13 +53,12 @@ import { passwordValidator } from "../../validators/password.validator";
     RegisterExistsNotConfirmedComponent,
     TooManyLoginAttemptsComponent,
     UserAlreadyLoggedInComponent,
-    CaptchaFailedComponent,
   ],
   templateUrl: "./login.component.html",
   styleUrl: "./login.component.scss",
 })
 export class LoginComponent implements OnDestroy {
-  @ViewChild("captchaRef") captchaRef!: RecaptchaComponent;
+  @ViewChild("captchaRef") protected captchaRef!: RecaptchaComponent;
 
   private readonly captchaService = inject(CaptchaService);
   private readonly router = inject(Router);
@@ -115,7 +115,7 @@ export class LoginComponent implements OnDestroy {
     }
   }
 
-  async onLogin() {
+  private async onLogin() {
     try {
       this.loginErrorMessage.set("");
       this.resendConfirmationEmailErrorMessage.set("");

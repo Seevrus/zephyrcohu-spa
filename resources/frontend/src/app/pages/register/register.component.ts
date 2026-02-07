@@ -15,10 +15,12 @@ import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { injectMutation } from "@tanstack/angular-query-experimental";
+import { type RecaptchaComponent, RecaptchaModule } from "ng-recaptcha-2";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { zephyr } from "../../../constants/forms";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
+import { CaptchaFailedComponent } from "../../components/form-alerts/captcha-failed/captcha-failed.component";
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { RegisterAlreadyExistsComponent } from "../../components/form-alerts/register-already-exists/register-already-exists.component";
 import { RegisterExistsNotConfirmedComponent } from "../../components/form-alerts/register-exists-not-confirmed/register-exists-not-confirmed.component";
@@ -26,6 +28,7 @@ import { RegisterResendEmailErrorComponent } from "../../components/form-alerts/
 import { RegisterResendEmailSuccessComponent } from "../../components/form-alerts/register-resend-email-success/register-resend-email-success.component";
 import { RegisterSuccessComponent } from "../../components/form-alerts/register-success/register-success.component";
 import { PasswordRepeatComponent } from "../../components/password-repeat/password-repeat.component";
+import { CaptchaService } from "../../services/captcha.service";
 import { ResendConfirmationEmailService } from "../../services/resend-confirmation-email.service";
 import { UsersQueryService } from "../../services/users.query.service";
 import { passwordValidator } from "../../validators/password.validator";
@@ -43,30 +46,36 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
     MatInputModule,
     PasswordRepeatComponent,
     ReactiveFormsModule,
+    RecaptchaModule,
     RegisterAlreadyExistsComponent,
     RegisterExistsNotConfirmedComponent,
     RegisterResendEmailErrorComponent,
     RegisterResendEmailSuccessComponent,
     RegisterSuccessComponent,
+    CaptchaFailedComponent,
   ],
   selector: "app-register",
   styleUrl: "./register.component.scss",
   templateUrl: "./register.component.html",
 })
 export class RegisterComponent implements OnDestroy {
+  @ViewChild("captchaRef") protected captchaRef!: RecaptchaComponent;
   @ViewChild(FormGroupDirective) private formDir?: FormGroupDirective;
 
+  private readonly captchaService = inject(CaptchaService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly resendRegistrationEmailService = inject(
     ResendConfirmationEmailService,
   );
   private readonly usersQueryService = inject(UsersQueryService);
 
-  readonly registeredEmail = signal<string>("");
+  protected readonly isRegisterInProgress = signal(false);
+  protected readonly registeredEmail = signal<string>("");
   readonly registerErrorMessage = signal<string>("");
-  readonly resendConfirmationEmailErrorMessage =
+  protected readonly resendConfirmationEmailErrorMessage =
     this.resendRegistrationEmailService.resendConfirmationEmailErrorMessage;
-  readonly resentEmail = this.resendRegistrationEmailService.resentEmail;
+  protected readonly resentEmail =
+    this.resendRegistrationEmailService.resentEmail;
 
   protected readonly registerMutation = injectMutation(() =>
     this.usersQueryService.register(),
@@ -95,7 +104,24 @@ export class RegisterComponent implements OnDestroy {
     this.resentEmail.set("");
   }
 
-  async onRegister() {
+  async onRegisterSubmit(token: string | null) {
+    this.isRegisterInProgress.set(true);
+
+    try {
+      const { score, success } = await this.captchaService.verifyCaptcha(token);
+
+      if (!success || score < 0.5) {
+        this.registerErrorMessage.set("CAPTCHA_FAILED");
+        this.captchaRef.reset();
+      } else {
+        await this.onRegister();
+      }
+    } finally {
+      this.isRegisterInProgress.set(false);
+    }
+  }
+
+  private async onRegister() {
     try {
       this.registeredEmail.set("");
       this.registerErrorMessage.set("");
