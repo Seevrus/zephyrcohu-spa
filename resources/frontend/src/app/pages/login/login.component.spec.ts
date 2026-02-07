@@ -4,11 +4,16 @@ import {
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
+import { By } from "@angular/platform-browser";
 import { provideRouter, Router } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
-import userEvent from "@testing-library/user-event";
+import userEvent, { type UserEvent } from "@testing-library/user-event";
+import { RecaptchaComponent } from "ng-recaptcha-2";
 
+import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaTokenErrorResponse.json";
+import checkCaptchaTokenOkResponse from "../../../mocks/captcha/checkCaptchaTokenOkResponse.json";
+import { checkCaptchaTokenRequest } from "../../../mocks/captcha/checkCaptchaTokenRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createLoginErrorResponse } from "../../../mocks/users/createLoginErrorResponse";
 import { createPostResendConfirmEmailErrorResponse } from "../../../mocks/users/createPostResendConfirmEmailErrorResponse";
@@ -18,11 +23,39 @@ import { resendConfirmationEmailRequest } from "../../../mocks/users/resendConfi
 import { LoginComponent } from "./login.component";
 
 describe("Login Component", () => {
-  const user = userEvent.setup();
+  let http: HttpTestingController;
+  let loginContainer: HTMLElement;
+  let loginFixture: ComponentFixture<LoginComponent>;
+  let user: UserEvent;
 
-  test("should render the form correctly", async () => {
-    await renderLoginComponent();
+  beforeAll(() => {
+    user = userEvent.setup();
+  });
 
+  beforeEach(async () => {
+    const { container, fixture, httpTesting } = await renderLoginComponent();
+
+    loginContainer = container;
+    loginFixture = fixture;
+    http = httpTesting;
+
+    const captchaDebugElement = fixture.debugElement.query(
+      By.directive(RecaptchaComponent),
+    );
+
+    const captchaComponent: RecaptchaComponent =
+      captchaDebugElement.componentInstance;
+
+    vi.spyOn(captchaComponent, "execute").mockImplementation(() =>
+      captchaComponent.resolved.emit("test-captcha-token"),
+    );
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
+  });
+
+  test("should render the form correctly", () => {
     const emailField = screen.getByTestId("email");
 
     expect(emailField?.querySelector("label")?.textContent).toBe("Email cím");
@@ -47,14 +80,12 @@ describe("Login Component", () => {
 
   describe("should validate the form correctly", () => {
     test("validates email correctly", async () => {
-      const { container } = await renderLoginComponent();
-
       const emailInput = screen.getByTestId("email").querySelector("input")!;
       await user.click(emailInput);
       await user.tab();
 
       await waitFor(() => {
-        expect(container.querySelector("mat-error")).toHaveTextContent(
+        expect(loginContainer.querySelector("mat-error")).toHaveTextContent(
           "Kötelező mező",
         );
       });
@@ -62,14 +93,12 @@ describe("Login Component", () => {
       await user.type(emailInput, "invalid-email");
       await user.tab();
 
-      expect(container.querySelector("mat-error")).toHaveTextContent(
+      expect(loginContainer.querySelector("mat-error")).toHaveTextContent(
         "Email cím formátuma nem megfelelő",
       );
     });
 
     test("validates password correctly", async () => {
-      const { container } = await renderLoginComponent();
-
       const passwordInput = screen
         .getByTestId("password")
         .querySelector("input")!;
@@ -77,7 +106,7 @@ describe("Login Component", () => {
       await user.tab();
 
       await waitFor(() => {
-        expect(container.querySelector("mat-error")).toHaveTextContent(
+        expect(loginContainer.querySelector("mat-error")).toHaveTextContent(
           "Kötelező mező",
         );
       });
@@ -85,14 +114,12 @@ describe("Login Component", () => {
       await user.type(passwordInput, "12");
       await user.tab();
 
-      expect(container.querySelector("mat-error")).toHaveTextContent(
+      expect(loginContainer.querySelector("mat-error")).toHaveTextContent(
         "Jelszó formátuma nem megfelelő",
       );
     });
 
     test("toggle password button changes the type of the password input", async () => {
-      await renderLoginComponent();
-
       const togglePassword = screen.getByTestId("toggle-password");
       await user.click(togglePassword);
 
@@ -104,8 +131,6 @@ describe("Login Component", () => {
     });
 
     test("enables submit if the form is filled correctly", async () => {
-      await renderLoginComponent();
-
       const emailInput = screen.getByTestId("email").querySelector("input")!;
       await user.type(emailInput, "abc123@abc.com");
 
@@ -123,9 +148,8 @@ describe("Login Component", () => {
   });
 
   describe("should show the correct API error messages", () => {
-    test("if the credentials are bad", async () => {
-      const { fixture, httpTesting } = await renderLoginComponent();
-      await fillForm(fixture);
+    test("in the case of a captcha error", async () => {
+      await fillForm(loginFixture);
 
       const submitButton = screen
         .getByTestId("submit-button")
@@ -133,9 +157,61 @@ describe("Login Component", () => {
 
       await user.click(submitButton);
 
-      const request = await waitFor(() => httpTesting.expectOne(loginRequest));
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
+      );
 
-      request.flush(createLoginErrorResponse("BAD_CREDENTIALS"), {
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenErrorResponse);
+
+      await expect(
+        screen.findByTestId("captcha-failed-error"),
+      ).resolves.toBeInTheDocument();
+
+      expect(
+        screen.queryByTestId("bad-credentials-error"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("register-exists-not-confirmed"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("register-resend-email-error"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("register-resend-email-success"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("too-many-login-attempts-error"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("user-already-logged-in-error"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("form-unexpected-error"),
+      ).not.toBeInTheDocument();
+
+      http.verify();
+    });
+
+    test("if the credentials are bad", async () => {
+      await fillForm(loginFixture);
+
+      const submitButton = screen
+        .getByTestId("submit-button")
+        .querySelector("button")!;
+
+      await user.click(submitButton);
+
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
+      );
+
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const loginTestRequest = await waitFor(() =>
+        http.expectOne(loginRequest),
+      );
+
+      loginTestRequest.flush(createLoginErrorResponse("BAD_CREDENTIALS"), {
         status: 401,
         statusText: "Unauthorized",
       });
@@ -145,6 +221,9 @@ describe("Login Component", () => {
       ).resolves.toBeInTheDocument();
 
       expect(
+        screen.queryByTestId("captcha-failed-error"),
+      ).not.toBeInTheDocument();
+      expect(
         screen.queryByTestId("register-exists-not-confirmed"),
       ).not.toBeInTheDocument();
       expect(
@@ -163,12 +242,11 @@ describe("Login Component", () => {
         screen.queryByTestId("form-unexpected-error"),
       ).not.toBeInTheDocument();
 
-      httpTesting.verify();
+      http.verify();
     });
 
     test("if the user is not confirmed", async () => {
-      const { fixture, httpTesting } = await renderLoginComponent();
-      await fillForm(fixture);
+      await fillForm(loginFixture);
 
       const submitButton = screen
         .getByTestId("submit-button")
@@ -176,9 +254,17 @@ describe("Login Component", () => {
 
       await user.click(submitButton);
 
-      const request = await waitFor(() => httpTesting.expectOne(loginRequest));
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
+      );
 
-      request.flush(createLoginErrorResponse("USER_NOT_CONFIRMED"), {
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const loginTestRequest = await waitFor(() =>
+        http.expectOne(loginRequest),
+      );
+
+      loginTestRequest.flush(createLoginErrorResponse("USER_NOT_CONFIRMED"), {
         status: 409,
         statusText: "Conflict",
       });
@@ -188,6 +274,9 @@ describe("Login Component", () => {
       ).resolves.toBeInTheDocument();
 
       expect(
+        screen.queryByTestId("captcha-failed-error"),
+      ).not.toBeInTheDocument();
+      expect(
         screen.queryByTestId("bad-credentials-error"),
       ).not.toBeInTheDocument();
       expect(
@@ -206,12 +295,11 @@ describe("Login Component", () => {
         screen.queryByTestId("form-unexpected-error"),
       ).not.toBeInTheDocument();
 
-      httpTesting.verify();
+      http.verify();
     });
 
     test("if there are too many login attempts", async () => {
-      const { fixture, httpTesting } = await renderLoginComponent();
-      await fillForm(fixture);
+      await fillForm(loginFixture);
 
       const submitButton = screen
         .getByTestId("submit-button")
@@ -219,18 +307,32 @@ describe("Login Component", () => {
 
       await user.click(submitButton);
 
-      const request = await waitFor(() => httpTesting.expectOne(loginRequest));
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
+      );
 
-      request.flush(createLoginErrorResponse("TOO_MANY_LOGIN_ATTEMPTS"), {
-        status: 429,
-        statusText: "Too Many Requests",
-      });
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const loginTestRequest = await waitFor(() =>
+        http.expectOne(loginRequest),
+      );
+
+      loginTestRequest.flush(
+        createLoginErrorResponse("TOO_MANY_LOGIN_ATTEMPTS"),
+        {
+          status: 429,
+          statusText: "Too Many Requests",
+        },
+      );
 
       await expect(
         screen.findByTestId("too-many-login-attempts-error"),
       ).resolves.toBeInTheDocument();
 
       expect(
+        screen.queryByTestId("captcha-failed-error"),
+      ).not.toBeInTheDocument();
+      expect(
         screen.queryByTestId("bad-credentials-error"),
       ).not.toBeInTheDocument();
       expect(
@@ -249,12 +351,11 @@ describe("Login Component", () => {
         screen.queryByTestId("form-unexpected-error"),
       ).not.toBeInTheDocument();
 
-      httpTesting.verify();
+      http.verify();
     });
 
     test("if the user is already logged in", async () => {
-      const { fixture, httpTesting } = await renderLoginComponent();
-      await fillForm(fixture);
+      await fillForm(loginFixture);
 
       const submitButton = screen
         .getByTestId("submit-button")
@@ -262,18 +363,32 @@ describe("Login Component", () => {
 
       await user.click(submitButton);
 
-      const request = await waitFor(() => httpTesting.expectOne(loginRequest));
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
+      );
 
-      request.flush(createLoginErrorResponse("USER_ALREADY_LOGGED_IN"), {
-        status: 409,
-        statusText: "Conflict",
-      });
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const logonTestRequest = await waitFor(() =>
+        http.expectOne(loginRequest),
+      );
+
+      logonTestRequest.flush(
+        createLoginErrorResponse("USER_ALREADY_LOGGED_IN"),
+        {
+          status: 409,
+          statusText: "Conflict",
+        },
+      );
 
       await expect(
         screen.findByTestId("user-already-logged-in-error"),
       ).resolves.toBeInTheDocument();
 
       expect(
+        screen.queryByTestId("captcha-failed-error"),
+      ).not.toBeInTheDocument();
+      expect(
         screen.queryByTestId("bad-credentials-error"),
       ).not.toBeInTheDocument();
       expect(
@@ -292,12 +407,11 @@ describe("Login Component", () => {
         screen.queryByTestId("form-unexpected-error"),
       ).not.toBeInTheDocument();
 
-      httpTesting.verify();
+      http.verify();
     });
 
     test("in the case of an unknown error", async () => {
-      const { fixture, httpTesting } = await renderLoginComponent();
-      await fillForm(fixture);
+      await fillForm(loginFixture);
 
       const submitButton = screen
         .getByTestId("submit-button")
@@ -305,17 +419,31 @@ describe("Login Component", () => {
 
       await user.click(submitButton);
 
-      const request = await waitFor(() => httpTesting.expectOne(loginRequest));
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
+      );
 
-      request.flush(createLoginErrorResponse("INTERNAL_SERVER_ERROR"), {
-        status: 500,
-        statusText: "Internal Server Error",
-      });
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const loginTestRequest = await waitFor(() =>
+        http.expectOne(loginRequest),
+      );
+
+      loginTestRequest.flush(
+        createLoginErrorResponse("INTERNAL_SERVER_ERROR"),
+        {
+          status: 500,
+          statusText: "Internal Server Error",
+        },
+      );
 
       await expect(
         screen.findByTestId("form-unexpected-error"),
       ).resolves.toBeInTheDocument();
 
+      expect(
+        screen.queryByTestId("captcha-failed-error"),
+      ).not.toBeInTheDocument();
       expect(
         screen.queryByTestId("bad-credentials-error"),
       ).not.toBeInTheDocument();
@@ -335,12 +463,11 @@ describe("Login Component", () => {
         screen.queryByTestId("user-already-logged-in-error"),
       ).not.toBeInTheDocument();
 
-      httpTesting.verify();
+      http.verify();
     });
 
     test("submit button is disabled until the user modifies something", async () => {
-      const { fixture, httpTesting } = await renderLoginComponent();
-      await fillForm(fixture);
+      await fillForm(loginFixture);
 
       const submitButton = screen
         .getByTestId("submit-button")
@@ -348,12 +475,23 @@ describe("Login Component", () => {
 
       await user.click(submitButton);
 
-      const request = await waitFor(() => httpTesting.expectOne(loginRequest));
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        http.expectOne(checkCaptchaTokenRequest),
+      );
 
-      request.flush(createLoginErrorResponse("INTERNAL_SERVER_ERROR"), {
-        status: 500,
-        statusText: "Internal Server Error",
-      });
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const loginTestRequest = await waitFor(() =>
+        http.expectOne(loginRequest),
+      );
+
+      loginTestRequest.flush(
+        createLoginErrorResponse("INTERNAL_SERVER_ERROR"),
+        {
+          status: 500,
+          statusText: "Internal Server Error",
+        },
+      );
 
       await expect(
         screen.findByTestId("form-unexpected-error"),
@@ -361,19 +499,19 @@ describe("Login Component", () => {
 
       expect(submitButton).toBeDisabled();
 
-      await fillForm(fixture, { email: "abc124@gmail.com" });
+      await fillForm(loginFixture, { email: "abc124@gmail.com" });
 
       expect(submitButton).toBeEnabled();
+
+      http.verify();
     });
   });
 
   test("should navigate to home on successful login", async () => {
-    const { fixture, httpTesting } = await renderLoginComponent();
-
     const router = TestBed.inject(Router);
     const navigateSpy = vi.spyOn(router, "navigate");
 
-    await fillForm(fixture);
+    await fillForm(loginFixture);
 
     const submitButton = screen
       .getByTestId("submit-button")
@@ -381,8 +519,14 @@ describe("Login Component", () => {
 
     await user.click(submitButton);
 
-    const request = await waitFor(() => httpTesting.expectOne(loginRequest));
-    request.flush(getSessionOkResponse);
+    const checkCaptchaTokenTestRequest = await waitFor(() =>
+      http.expectOne(checkCaptchaTokenRequest),
+    );
+
+    checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+    const loginTestRequest = await waitFor(() => http.expectOne(loginRequest));
+    loginTestRequest.flush(getSessionOkResponse);
 
     await waitFor(() => {
       expect(navigateSpy).toHaveBeenCalledWith(["/"]);
@@ -390,14 +534,13 @@ describe("Login Component", () => {
 
     navigateSpy.mockRestore();
 
-    httpTesting.verify();
+    http.verify();
   });
 
   test("should show the correct error message when resending the confirmation email fails", async () => {
-    const { fixture, httpTesting } = await renderLoginComponent();
-    await fillForm(fixture);
+    await fillForm(loginFixture);
 
-    fixture.componentInstance.loginErrorMessage.set("USER_NOT_CONFIRMED");
+    loginFixture.componentInstance.loginErrorMessage.set("USER_NOT_CONFIRMED");
 
     const resendLink = await screen.findByTestId(
       "resend-confirmation-email-link",
@@ -406,7 +549,7 @@ describe("Login Component", () => {
     await user.click(resendLink);
 
     const resendConfirmEmailRequest = await waitFor(() =>
-      httpTesting.expectOne(resendConfirmationEmailRequest),
+      http.expectOne(resendConfirmationEmailRequest),
     );
 
     resendConfirmEmailRequest.flush(
@@ -421,6 +564,9 @@ describe("Login Component", () => {
       screen.findByTestId("register-resend-email-error"),
     ).resolves.toBeInTheDocument();
 
+    expect(
+      screen.queryByTestId("captcha-failed-error"),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByTestId("bad-credentials-error"),
     ).not.toBeInTheDocument();
@@ -439,13 +585,14 @@ describe("Login Component", () => {
     expect(
       screen.queryByTestId("form-unexpected-error"),
     ).not.toBeInTheDocument();
+
+    http.verify();
   });
 
   test("should show the correct success message when resending the confirmation email succeeds", async () => {
-    const { fixture, httpTesting } = await renderLoginComponent();
-    await fillForm(fixture);
+    await fillForm(loginFixture);
 
-    fixture.componentInstance.loginErrorMessage.set("USER_NOT_CONFIRMED");
+    loginFixture.componentInstance.loginErrorMessage.set("USER_NOT_CONFIRMED");
 
     const resendLink = await screen.findByTestId(
       "resend-confirmation-email-link",
@@ -454,7 +601,7 @@ describe("Login Component", () => {
     await user.click(resendLink);
 
     const resendConfirmEmailRequest = await waitFor(() =>
-      httpTesting.expectOne(resendConfirmationEmailRequest),
+      http.expectOne(resendConfirmationEmailRequest),
     );
 
     resendConfirmEmailRequest.flush(null);
@@ -463,6 +610,9 @@ describe("Login Component", () => {
       screen.findByTestId("register-resend-email-success"),
     ).resolves.toBeInTheDocument();
 
+    expect(
+      screen.queryByTestId("captcha-failed-error"),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByTestId("bad-credentials-error"),
     ).not.toBeInTheDocument();
@@ -481,6 +631,8 @@ describe("Login Component", () => {
     expect(
       screen.queryByTestId("form-unexpected-error"),
     ).not.toBeInTheDocument();
+
+    http.verify();
   });
 });
 

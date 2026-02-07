@@ -1,9 +1,7 @@
 import {
-  type AfterViewInit,
   Component,
   inject,
   type OnDestroy,
-  type OnInit,
   signal,
   ViewChild,
 } from "@angular/core";
@@ -19,7 +17,6 @@ import { MatInputModule } from "@angular/material/input";
 import { Router } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
 import { type RecaptchaComponent, RecaptchaModule } from "ng-recaptcha-2";
-import { type Subscription } from "rxjs";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
