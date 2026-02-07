@@ -4,6 +4,7 @@ import {
   type OnDestroy,
   type OnInit,
   signal,
+  ViewChild,
 } from "@angular/core";
 import {
   disabled,
@@ -23,16 +24,19 @@ import {
 } from "@angular/material/input";
 import { ActivatedRoute } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
+import { type RecaptchaComponent, RecaptchaModule } from "ng-recaptcha-2";
 import { type Subscription } from "rxjs";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { type QueryParamsByPath } from "../../app.routes";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
 import { BadCredentialsComponent } from "../../components/form-alerts/bad-credentials/bad-credentials.component";
+import { CaptchaFailedComponent } from "../../components/form-alerts/captcha-failed/captcha-failed.component";
 import { EmailCodeExpiredComponent } from "../../components/form-alerts/email-code-expired/email-code-expired.component";
 import { EmailLinkErrorComponent } from "../../components/form-alerts/email-link-error/email-link-error.component";
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { ProfileEmailUpdatedComponent } from "../../components/form-alerts/profile-email-updated/profile-email-updated.component";
+import { CaptchaService } from "../../services/captcha.service";
 import { UsersQueryService } from "../../services/users.query.service";
 import { passwordPattern } from "../../validators/password.validator";
 
@@ -46,6 +50,7 @@ import { passwordPattern } from "../../validators/password.validator";
   imports: [
     BadCredentialsComponent,
     ButtonLoadableComponent,
+    CaptchaFailedComponent,
     EmailCodeExpiredComponent,
     EmailLinkErrorComponent,
     FormField,
@@ -56,9 +61,13 @@ import { passwordPattern } from "../../validators/password.validator";
     MatInput,
     MatLabel,
     ProfileEmailUpdatedComponent,
+    RecaptchaModule,
   ],
 })
 export class ProfileUpdateEmailComponent implements OnInit, OnDestroy {
+  @ViewChild("captchaRef") protected captchaRef!: RecaptchaComponent;
+
+  private readonly captchaService = inject(CaptchaService);
   private readonly route = inject(ActivatedRoute);
   private readonly usersQueryService = inject(UsersQueryService);
 
@@ -74,11 +83,13 @@ export class ProfileUpdateEmailComponent implements OnInit, OnDestroy {
    * BAD_CREDENTIALS
    * || BAD_EMAIL_CODE
    * || BAD_QUERY_PARAMS
+   * || CAPTCHA_FAILED
    * || CODE_EXPIRED
    * || INTERNAL_SERVER_ERROR
    */
   protected readonly confirmError = signal<string>("");
 
+  protected readonly isConfirmNewEmailInProgress = signal(false);
   protected readonly isPasswordVisible = signal(false);
 
   private readonly updateEmailModel = signal({
@@ -128,8 +139,29 @@ export class ProfileUpdateEmailComponent implements OnInit, OnDestroy {
     this.queryParamsSubscription?.unsubscribe();
   }
 
-  protected async onConfirmNewEmail(event: Event) {
+  protected onConfirmNewEmailSubmit(event: Event) {
     event.preventDefault();
+    this.captchaRef.execute();
+  }
+
+  protected async onConfirmNewEmailCaptchaResolved(token: string | null) {
+    this.isConfirmNewEmailInProgress.set(true);
+
+    try {
+      const { score, success } = await this.captchaService.verifyCaptcha(token);
+
+      if (!success || score < 0.5) {
+        this.confirmError.set("CAPTCHA_FAILED");
+        this.captchaRef.reset();
+      } else {
+        await this.onConfirmNewEmail();
+      }
+    } finally {
+      this.isConfirmNewEmailInProgress.set(false);
+    }
+  }
+
+  private async onConfirmNewEmail() {
     await submit(this.updateEmailForm, async () => {
       try {
         this.confirmedNewEmail.set("");

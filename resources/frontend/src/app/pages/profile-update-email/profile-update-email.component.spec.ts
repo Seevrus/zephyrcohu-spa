@@ -4,12 +4,17 @@ import {
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
+import { By } from "@angular/platform-browser";
 import { provideRouter } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import { within } from "@testing-library/dom";
-import userEvent from "@testing-library/user-event";
+import { type UserEvent, userEvent } from "@testing-library/user-event";
+import { RecaptchaComponent } from "ng-recaptcha-2";
 
+import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaTokenErrorResponse.json";
+import checkCaptchaTokenOkResponse from "../../../mocks/captcha/checkCaptchaTokenOkResponse.json";
+import { checkCaptchaTokenRequest } from "../../../mocks/captcha/checkCaptchaTokenRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createUpdateProfileConfirmEmailErrorResponse } from "../../../mocks/users/createUpdateProfileConfirmEmailErrorResponse";
 import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
@@ -20,7 +25,15 @@ const TEST_EMAIL = "new@example.com";
 const TEST_CODE = "1234567890abcdef";
 
 describe("ProfileUpdateEmailComponent", () => {
-  const user = userEvent.setup();
+  let user: UserEvent;
+
+  beforeAll(() => {
+    user = userEvent.setup();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   describe("should render the form correctly", () => {
     test("should show error if query params are missing", async () => {
@@ -128,14 +141,34 @@ describe("ProfileUpdateEmailComponent", () => {
   });
 
   describe("API error messages", () => {
+    test("in the case of a captcha error", async () => {
+      const { httpTesting } = await submitWithPassword();
+
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        httpTesting.expectOne(checkCaptchaTokenRequest),
+      );
+
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenErrorResponse);
+
+      await assertFormMessagePresent("captcha-failed-error");
+
+      httpTesting.verify();
+    });
+
     test("BAD_CREDENTIALS - new email or code is not found by the server", async () => {
       const { httpTesting } = await submitWithPassword();
 
-      const request = await waitFor(() =>
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        httpTesting.expectOne(checkCaptchaTokenRequest),
+      );
+
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const updateProfileConfirmEmailTestRequest = await waitFor(() =>
         httpTesting.expectOne(updateProfileConfirmEmailRequest),
       );
 
-      request.flush(
+      updateProfileConfirmEmailTestRequest.flush(
         createUpdateProfileConfirmEmailErrorResponse("BAD_CREDENTIALS"),
         {
           status: 400,
@@ -143,9 +176,7 @@ describe("ProfileUpdateEmailComponent", () => {
         },
       );
 
-      await expect(
-        screen.findByTestId("bad-credentials-error"),
-      ).resolves.toBeInTheDocument();
+      await assertFormMessagePresent("bad-credentials-error");
 
       httpTesting.verify();
     });
@@ -153,11 +184,17 @@ describe("ProfileUpdateEmailComponent", () => {
     test("handles BAD_EMAIL_CODE error", async () => {
       const { httpTesting } = await submitWithPassword();
 
-      const request = await waitFor(() =>
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        httpTesting.expectOne(checkCaptchaTokenRequest),
+      );
+
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const updateProfileConfirmEmailTestRequest = await waitFor(() =>
         httpTesting.expectOne(updateProfileConfirmEmailRequest),
       );
 
-      request.flush(
+      updateProfileConfirmEmailTestRequest.flush(
         createUpdateProfileConfirmEmailErrorResponse("BAD_EMAIL_CODE"),
         {
           status: 400,
@@ -165,23 +202,7 @@ describe("ProfileUpdateEmailComponent", () => {
         },
       );
 
-      await expect(
-        screen.findByTestId("bad-credentials-error"),
-      ).resolves.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("email-code-expired-error"),
-      ).not.toBeInTheDocument();
-
-      expect(screen.queryByTestId("email-link-error")).not.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("form-unexpected-error"),
-      ).not.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("profile-email-updated"),
-      ).not.toBeInTheDocument();
+      await assertFormMessagePresent("bad-credentials-error");
 
       httpTesting.verify();
     });
@@ -189,11 +210,17 @@ describe("ProfileUpdateEmailComponent", () => {
     test("handles CODE_EXPIRED error", async () => {
       const { httpTesting } = await submitWithPassword();
 
-      const request = await waitFor(() =>
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        httpTesting.expectOne(checkCaptchaTokenRequest),
+      );
+
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const updateProfileConfirmEmailTestRequest = await waitFor(() =>
         httpTesting.expectOne(updateProfileConfirmEmailRequest),
       );
 
-      request.flush(
+      updateProfileConfirmEmailTestRequest.flush(
         createUpdateProfileConfirmEmailErrorResponse("CODE_EXPIRED"),
         {
           status: 410,
@@ -201,23 +228,7 @@ describe("ProfileUpdateEmailComponent", () => {
         },
       );
 
-      await expect(
-        screen.findByTestId("email-code-expired-error"),
-      ).resolves.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("bad-credentials-error"),
-      ).not.toBeInTheDocument();
-
-      expect(screen.queryByTestId("email-link-error")).not.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("form-unexpected-error"),
-      ).not.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("profile-email-updated"),
-      ).not.toBeInTheDocument();
+      await assertFormMessagePresent("email-code-expired-error");
 
       httpTesting.verify();
     });
@@ -225,10 +236,17 @@ describe("ProfileUpdateEmailComponent", () => {
     test("handles unexpected submission errors", async () => {
       const { httpTesting } = await submitWithPassword();
 
-      const request = await waitFor(() =>
+      const checkCaptchaTokenTestRequest = await waitFor(() =>
+        httpTesting.expectOne(checkCaptchaTokenRequest),
+      );
+
+      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+      const updateProfileConfirmEmailTestRequest = await waitFor(() =>
         httpTesting.expectOne(updateProfileConfirmEmailRequest),
       );
-      request.flush(
+
+      updateProfileConfirmEmailTestRequest.flush(
         createUpdateProfileConfirmEmailErrorResponse("INTERNAL_SERVER_ERROR"),
         {
           status: 500,
@@ -236,23 +254,7 @@ describe("ProfileUpdateEmailComponent", () => {
         },
       );
 
-      await expect(
-        screen.findByTestId("form-unexpected-error"),
-      ).resolves.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("bad-credentials-error"),
-      ).not.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("email-code-expired-error"),
-      ).not.toBeInTheDocument();
-
-      expect(screen.queryByTestId("email-link-error")).not.toBeInTheDocument();
-
-      expect(
-        screen.queryByTestId("profile-email-updated"),
-      ).not.toBeInTheDocument();
+      await assertFormMessagePresent("form-unexpected-error");
 
       httpTesting.verify();
     });
@@ -261,29 +263,19 @@ describe("ProfileUpdateEmailComponent", () => {
   test("successful submission shows success message and resets form", async () => {
     const { httpTesting } = await submitWithPassword();
 
-    const request = await waitFor(() =>
+    const checkCaptchaTokenTestRequest = await waitFor(() =>
+      httpTesting.expectOne(checkCaptchaTokenRequest),
+    );
+
+    checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
+
+    const updateProfileConfirmEmailTestRequest = await waitFor(() =>
       httpTesting.expectOne(updateProfileConfirmEmailRequest),
     );
 
-    request.flush(getSessionOkResponse);
+    updateProfileConfirmEmailTestRequest.flush(getSessionOkResponse);
 
-    await expect(
-      screen.findByTestId("profile-email-updated"),
-    ).resolves.toBeInTheDocument();
-
-    expect(
-      screen.queryByTestId("bad-credentials-error"),
-    ).not.toBeInTheDocument();
-
-    expect(
-      screen.queryByTestId("email-code-expired-error"),
-    ).not.toBeInTheDocument();
-
-    expect(screen.queryByTestId("email-link-error")).not.toBeInTheDocument();
-
-    expect(
-      screen.queryByTestId("form-unexpected-error"),
-    ).not.toBeInTheDocument();
+    await assertFormMessagePresent("profile-email-updated");
 
     expect(
       within(screen.getByTestId("profile-email-updated")).getByTestId(
@@ -308,6 +300,27 @@ describe("ProfileUpdateEmailComponent", () => {
     httpTesting.verify();
   });
 });
+
+async function assertFormMessagePresent(testId: string) {
+  const formMessages = [
+    "bad-credentials-error",
+    "captcha-failed-error",
+    "email-code-expired-error",
+    "email-link-error",
+    "form-unexpected-error",
+    "profile-email-updated",
+  ];
+
+  await expect(screen.findByTestId(testId)).resolves.toBeInTheDocument();
+
+  const missingFormMessages = formMessages.filter(
+    (message) => message !== testId,
+  );
+
+  for (const message of missingFormMessages) {
+    expect(screen.queryByTestId(message)).not.toBeInTheDocument();
+  }
+}
 
 async function renderComponent(email?: string, code?: string) {
   const queryParams = new URLSearchParams();
@@ -335,6 +348,17 @@ async function renderComponent(email?: string, code?: string) {
   });
 
   const httpTesting = TestBed.inject(HttpTestingController);
+
+  const captchaDebugElement = renderResult.fixture.debugElement.query(
+    By.directive(RecaptchaComponent),
+  );
+
+  const captchaComponent: RecaptchaComponent =
+    captchaDebugElement.componentInstance;
+
+  vi.spyOn(captchaComponent, "execute").mockImplementation(() =>
+    captchaComponent.resolved.emit("test-captcha-token"),
+  );
 
   return {
     ...renderResult,

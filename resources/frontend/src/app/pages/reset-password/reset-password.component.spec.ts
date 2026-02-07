@@ -32,10 +32,6 @@ describe("Reset Password Component", () => {
   });
 
   describe("should render the form correctly", () => {
-    afterEach(() => {
-      vi.restoreAllMocks();
-    });
-
     test("displays an error message if the query parameters are not present", async () => {
       await renderResetPasswordComponent(undefined, undefined);
 

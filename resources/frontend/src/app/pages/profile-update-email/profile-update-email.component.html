@@ -14,6 +14,9 @@
       @case ("BAD_QUERY_PARAMS") {
         <app-email-link-error />
       }
+      @case ("CAPTCHA_FAILED") {
+        <app-captcha-failed />
+      }
       @case ("CODE_EXPIRED") {
         <app-email-code-expired />
       }
@@ -25,7 +28,7 @@
     <app-profile-email-updated [confirmedNewEmail]="confirmedNewEmail()" />
   }
 
-  <form (submit)="onConfirmNewEmail($event)">
+  <form (submit)="onConfirmNewEmailSubmit($event)">
     <div class="form-elements-container">
       <mat-form-field data-testid="new-email">
         <mat-label>Új email cím</mat-label>
@@ -60,11 +63,19 @@
           }}
         </button>
       </div>
+      <re-captcha
+        #captchaRef="reCaptcha"
+        (resolved)="onConfirmNewEmailCaptchaResolved($event)"
+      />
       <app-button-loadable
         data-testid="submit-button"
         type="submit"
-        [loading]="confirmNewEmailMutation.isPending()"
-        [disabled]="!updateEmailForm().valid() || !updateEmailForm().dirty()"
+        [loading]="isConfirmNewEmailInProgress()"
+        [disabled]="
+          isConfirmNewEmailInProgress() ||
+          !updateEmailForm().valid() ||
+          !updateEmailForm().dirty()
+        "
       >
         Email cím módosítása
       </app-button-loadable>
