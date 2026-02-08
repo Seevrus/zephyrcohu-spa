@@ -13,5 +13,8 @@ export const mutationKeys = {
 };
 
 export const queryKeys = {
+  news(page?: number) {
+    return page ? ["news", page] : ["news"];
+  },
   session: ["session"],
 };

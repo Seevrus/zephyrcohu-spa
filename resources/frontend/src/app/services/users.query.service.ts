@@ -47,6 +47,9 @@ export class UsersQueryService {
         ),
       onSuccess: () => {
         this.queryClient.invalidateQueries({
+          queryKey: queryKeys.news(),
+        });
+        this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
       },
@@ -71,6 +74,9 @@ export class UsersQueryService {
         ),
       onSuccess: () => {
         this.queryClient.invalidateQueries({
+          queryKey: queryKeys.news(),
+        });
+        this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
       },
@@ -87,6 +93,9 @@ export class UsersQueryService {
             .pipe(catchError(() => of(void 0))),
         ),
       onSuccess: () => {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.news(),
+        });
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
@@ -233,6 +242,9 @@ export class UsersQueryService {
             ),
         ),
       onSuccess: async () => {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.news(),
+        });
         await this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
@@ -250,8 +262,9 @@ export class UsersQueryService {
             .pipe<SessionResponse<SessionData | null>, UserSession | null>(
               catchError((error: HttpErrorResponse) => {
                 if (error.status === 401) {
-                  // TODO: invalidate some queries as they come in
-                  // this.queryClient.invalidateQueries();
+                  this.queryClient.invalidateQueries({
+                    queryKey: queryKeys.news(),
+                  });
 
                   return of({
                     data: null,
@@ -323,6 +336,9 @@ export class UsersQueryService {
             ),
         ),
       onSuccess: async () => {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.news(),
+        });
         await this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
