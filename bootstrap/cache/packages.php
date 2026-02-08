@@ -34,4 +34,11 @@
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
     ),
   ),
+  'spatie/laravel-csp' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Spatie\\Csp\\CspServiceProvider',
+    ),
+  ),
 );

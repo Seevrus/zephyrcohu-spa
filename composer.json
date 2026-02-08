@@ -13,7 +13,8 @@
     "ext-pdo": "*",
     "laravel/framework": "^12.50.0",
     "laravel/sanctum": "^4.3.0",
-    "laravel/tinker": "^2.11.0"
+    "laravel/tinker": "^2.11.0",
+    "spatie/laravel-csp": "^3.22"
   },
   "require-dev": {
     "laravel/pint": "^1.27.0",
