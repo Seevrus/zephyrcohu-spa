@@ -1,6 +1,9 @@
 import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { queryOptions } from "@tanstack/angular-query-experimental";
+import {
+  injectQuery,
+  queryOptions,
+} from "@tanstack/angular-query-experimental";
 import { catchError, lastValueFrom, map, throwError } from "rxjs";
 
 import { type ZephyrHttpError } from "../../api/ZephyrHttpError";
@@ -11,19 +14,27 @@ import {
 } from "../../types/news";
 import { throwHttpError } from "../../utils/throwHttpError";
 import { queryKeys } from "./queryKeys";
+import { UsersQueryService } from "./users.query.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class NewsQueryService {
   private readonly http = inject(HttpClient);
+  private readonly usersQueryService = inject(UsersQueryService);
 
-  getNews(page: number) {
+  private readonly sessionQuery = injectQuery(() =>
+    this.usersQueryService.session(),
+  );
+
+  getNews(page: number | undefined) {
     return queryOptions<NewsCollection, ZephyrHttpError>({
       queryKey: queryKeys.news(page),
       queryFn: () => {
         const queryParameters = new URLSearchParams();
-        queryParameters.set("page", page.toString());
+        if (page !== undefined) {
+          queryParameters.set("page", page.toString());
+        }
 
         return lastValueFrom(
           this.http
@@ -38,6 +49,10 @@ export class NewsQueryService {
             ),
         );
       },
+      enabled:
+        page !== undefined &&
+        ((this.sessionQuery.isSuccess() && !this.sessionQuery.isStale()) ||
+          this.sessionQuery.isError()),
     });
   }
 

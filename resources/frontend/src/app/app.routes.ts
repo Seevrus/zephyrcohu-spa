@@ -32,6 +32,19 @@ export const routes: Routes = [
     title: "Bejelentkezés",
   },
   {
+    path: "hirek",
+    redirectTo: "hirek/",
+    pathMatch: "full",
+  },
+  {
+    path: "hirek/:page",
+    async loadComponent() {
+      const { NewsComponent } = await import("./pages/news/news.component");
+      return NewsComponent;
+    },
+    title: "Hírek",
+  },
+  {
     path: "profil",
     canActivate: [userGuard],
     async loadComponent() {
