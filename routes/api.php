@@ -1,11 +1,16 @@
 <?php
 
 use App\Http\Controllers\CaptchaController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(CaptchaController::class)->prefix('captcha')->group(function () {
     Route::post('/', 'check_recaptcha_token');
+});
+
+Route::controller(NewsController::class)->prefix('news')->group(function () {
+    Route::get('/', 'get_news');
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function () {

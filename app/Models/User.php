@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
@@ -47,6 +48,12 @@ class User extends Authenticatable {
 
     public function newUser(): HasOne {
         return $this->hasOne(UserNew::class);
+    }
+
+    public function readNews(): BelongsToMany {
+        return $this
+            ->belongsToMany(News::class, 'users_news', 'user_id', 'news_id')
+            ->using(UserNews::class);
     }
 
     public $timestamps = false;
