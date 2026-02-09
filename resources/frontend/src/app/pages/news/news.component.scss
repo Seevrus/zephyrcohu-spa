@@ -1,0 +1,11 @@
+@use "../../../shared/mixins";
+
+:host(.app-news) {
+  @include mixins.zephyr-main;
+
+  background-color: unset;
+
+  .news-component {
+    width: 100%;
+  }
+}

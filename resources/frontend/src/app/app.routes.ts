@@ -4,6 +4,9 @@ import { guestGuard } from "./guards/guest.guard";
 import { userGuard } from "./guards/user.guard";
 
 export type QueryParamsByPath = {
+  hirek: {
+    oldal?: string;
+  };
   "profil/email_frissit": {
     code?: string;
     email?: string;
@@ -33,11 +36,6 @@ export const routes: Routes = [
   },
   {
     path: "hirek",
-    redirectTo: "hirek/",
-    pathMatch: "full",
-  },
-  {
-    path: "hirek/:page",
     async loadComponent() {
       const { NewsComponent } = await import("./pages/news/news.component");
       return NewsComponent;

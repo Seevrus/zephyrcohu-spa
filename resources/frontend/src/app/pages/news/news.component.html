@@ -1,0 +1,27 @@
+<div data-testid="news-component" class="news-component">
+  @if (noNewsAvailable()) {
+    <app-no-news-available />
+  } @else if (noPublicNewsAvailable()) {
+    <app-no-public-news-available
+      [numberOfAdditionalNews]="numberOfAdditionalNews()"
+    />
+  } @else {
+    @if (numberOfAdditionalNews() > 0) {
+      <app-additional-news-available
+        [numberOfAdditionalNews]="numberOfAdditionalNews()"
+      />
+
+      @for (article of news(); track article.id) {
+        <app-news-article
+          [additionalContent]="article.additionalContent"
+          [id]="article.id"
+          [isRead]="showReadStatus() ? article.isRead : null"
+          [mainContent]="article.mainContent"
+          [title]="article.title"
+          [updatedAt]="article.updatedAt"
+          (markedAsRead)="onMarkAsRead($event)"
+        />
+      }
+    }
+  }
+</div>
