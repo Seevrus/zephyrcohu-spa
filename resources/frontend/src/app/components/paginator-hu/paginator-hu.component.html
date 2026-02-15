@@ -1,0 +1,9 @@
+<mat-paginator
+  (page)="pageChanged.emit($event)"
+  [length]="total()"
+  pageSize="10"
+  [disabled]="disabled()"
+  [pageSizeOptions]="[]"
+  [pageIndex]="currentPage() - 1"
+  showFirstLastButtons
+/>

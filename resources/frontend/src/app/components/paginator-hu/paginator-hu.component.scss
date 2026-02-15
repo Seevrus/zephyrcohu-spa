@@ -1,0 +1,10 @@
+@use "@angular/material" as mat;
+
+:host(.app-paginator-hu) {
+  @include mat.paginator-overrides(
+    (
+      container-background-color: var(--mat-sys-primary-container),
+      container-text-size: 1rem,
+    )
+  );
+}
