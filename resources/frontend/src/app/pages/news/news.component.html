@@ -6,11 +6,15 @@
       [numberOfAdditionalNews]="numberOfAdditionalNews()"
     />
   } @else {
-    @if (numberOfAdditionalNews() > 0) {
+    @if (areAdditionalNewsAvailable() && currentPage() === 1) {
       <app-additional-news-available
         [numberOfAdditionalNews]="numberOfAdditionalNews()"
       />
+    }
 
+    @if (areNewsFetching()) {
+      <mat-progress-bar mode="indeterminate" />
+    } @else {
       @for (article of news(); track article.id) {
         <app-news-article
           [additionalContent]="article.additionalContent"
@@ -23,5 +27,12 @@
         />
       }
     }
+
+    <app-paginator-hu
+      [currentPage]="currentPage() ?? 1"
+      [disabled]="areNewsFetching()"
+      [total]="numberOfNewsAvailable()"
+      (pageChanged)="onPaginationModelChange($event)"
+    />
   }
 </div>

@@ -1,0 +1,13 @@
+<div data-testid="news-article">
+  <h2 data-testid="news-article-title">
+    {{title()}}
+  </h2>
+  <div data-testid="news-article-main-content" [innerHTML]="mainContentHtml()"></div>
+  <mat-expansion-panel (opened)="toggleNews(true)" (closed)="toggleNews(false)">
+    <mat-expansion-panel-header>
+      <mat-panel-description [innerHTML]="isNewsExpanded() ? '' : additionalContentHtml()?.substring(0, 100) + '...'">
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div data-testid="news-article-additional-content" [innerHTML]="additionalContentHtml()"></div>
+  </mat-expansion-panel>
+</div>

@@ -6,6 +6,8 @@ import {
   type OnInit,
   signal,
 } from "@angular/core";
+import { type PageEvent } from "@angular/material/paginator";
+import { MatProgressBar } from "@angular/material/progress-bar";
 import { ActivatedRoute } from "@angular/router";
 import { injectQuery } from "@tanstack/angular-query-experimental";
 import type { Subscription } from "rxjs";
@@ -15,6 +17,7 @@ import { AdditionalNewsAvailableComponent } from "../../components/additional-ne
 import { NewsArticleComponent } from "../../components/news-article/news-article.component";
 import { NoNewsAvailableComponent } from "../../components/no-news-available/no-news-available.component";
 import { NoPublicNewsAvailableComponent } from "../../components/no-public-news-available/no-public-news-available.component";
+import { PaginatorHuComponent } from "../../components/paginator-hu/paginator-hu.component";
 import { NewsQueryService } from "../../services/news.query.service";
 import { UsersQueryService } from "../../services/users.query.service";
 
@@ -28,6 +31,8 @@ import { UsersQueryService } from "../../services/users.query.service";
     NewsArticleComponent,
     NoNewsAvailableComponent,
     NoPublicNewsAvailableComponent,
+    MatProgressBar,
+    PaginatorHuComponent,
   ],
   templateUrl: "./news.component.html",
   styleUrl: "./news.component.scss",
@@ -39,6 +44,8 @@ export class NewsComponent implements OnInit, OnDestroy {
 
   private queryParamsSubscription: Subscription | null = null;
 
+  protected readonly currentPage = signal<number | undefined>(undefined);
+
   private readonly newsQuery = injectQuery(() =>
     this.newsQueryService.getNews(this.currentPage()),
   );
@@ -47,9 +54,22 @@ export class NewsComponent implements OnInit, OnDestroy {
     this.usersQueryService.session(),
   );
 
-  private readonly currentPage = signal<number | undefined>(undefined);
+  protected readonly numberOfAdditionalNews = computed(() => {
+    const { count = 0, total = 0 } = this.newsQuery.data()?.meta ?? {};
+    return total - count;
+  });
+
+  protected readonly areAdditionalNewsAvailable = computed(
+    () => !this.newsQuery.isPending() && this.numberOfAdditionalNews() > 0,
+  );
+
+  protected readonly areNewsFetching = this.newsQuery.isFetching;
 
   protected readonly news = computed(() => this.newsQuery.data()?.data ?? []);
+
+  protected readonly numberOfNewsAvailable = computed(
+    () => this.newsQuery.data()?.meta.count ?? 0,
+  );
 
   protected readonly noNewsAvailable = computed(
     () =>
@@ -59,14 +79,9 @@ export class NewsComponent implements OnInit, OnDestroy {
   protected readonly noPublicNewsAvailable = computed(
     () =>
       !this.newsQuery.isPending() &&
-      this.newsQuery.data()?.meta.count === 0 &&
+      this.numberOfNewsAvailable() === 0 &&
       this.numberOfAdditionalNews() > 0,
   );
-
-  protected readonly numberOfAdditionalNews = computed(() => {
-    const { count = 0, total = 0 } = this.newsQuery.data()?.meta ?? {};
-    return total - count;
-  });
 
   protected readonly showReadStatus = computed(
     () => !this.sessionQuery.isPending() && !!this.sessionQuery.data(),
@@ -85,7 +100,11 @@ export class NewsComponent implements OnInit, OnDestroy {
     this.queryParamsSubscription?.unsubscribe();
   }
 
-  onMarkAsRead(id: number) {
+  protected onMarkAsRead(id: number) {
     console.log(id);
+  }
+
+  protected onPaginationModelChange({ pageIndex }: PageEvent) {
+    this.currentPage.set(pageIndex + 1);
   }
 }
