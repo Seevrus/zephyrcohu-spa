@@ -16,14 +16,13 @@
       <mat-progress-bar mode="indeterminate" />
     } @else {
       @for (article of news(); track article.id) {
-        <app-news-article
+        <app-news-article-expandable
           [additionalContent]="article.additionalContent"
           [id]="article.id"
           [isRead]="showReadStatus() ? article.isRead : null"
           [mainContent]="article.mainContent"
           [title]="article.title"
           [updatedAt]="article.updatedAt"
-          (markedAsRead)="onMarkAsRead($event)"
         />
       }
     }

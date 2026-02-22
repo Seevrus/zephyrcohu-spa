@@ -3,7 +3,6 @@ import {
   computed,
   inject,
   input,
-  output,
   SecurityContext,
   signal,
 } from "@angular/core";
@@ -15,19 +14,19 @@ import {
 import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
-  selector: "app-news-article",
+  selector: "app-news-article-expandable",
   host: {
-    class: "app-news-article",
+    class: "app-news-article-expandable",
   },
   imports: [
     MatExpansionPanel,
     MatExpansionPanelDescription,
     MatExpansionPanelHeader,
   ],
-  templateUrl: "./news-article.component.html",
-  styleUrl: "./news-article.component.scss",
+  templateUrl: "./news-article-expandable.component.html",
+  styleUrl: "./news-article-expandable.component.scss",
 })
-export class NewsArticleComponent {
+export class NewsArticleExpandableComponent {
   private readonly sanitizer = inject(DomSanitizer);
 
   additionalContent = input.required<string | null>();
@@ -36,8 +35,6 @@ export class NewsArticleComponent {
   mainContent = input.required<string>();
   title = input.required<string>();
   updatedAt = input.required<Date>();
-
-  markedAsRead = output<number>();
 
   protected readonly isNewsExpanded = signal(false);
 

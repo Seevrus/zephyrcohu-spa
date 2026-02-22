@@ -14,7 +14,7 @@ import type { Subscription } from "rxjs";
 
 import { type QueryParamsByPath } from "../../app.routes";
 import { AdditionalNewsAvailableComponent } from "../../components/additional-news-available/additional-news-available.component";
-import { NewsArticleComponent } from "../../components/news-article/news-article.component";
+import { NewsArticleExpandableComponent } from "../../components/news-article-expandable/news-article-expandable.component";
 import { NoNewsAvailableComponent } from "../../components/no-news-available/no-news-available.component";
 import { NoPublicNewsAvailableComponent } from "../../components/no-public-news-available/no-public-news-available.component";
 import { PaginatorHuComponent } from "../../components/paginator-hu/paginator-hu.component";
@@ -29,7 +29,7 @@ import { UsersQueryService } from "../../services/users.query.service";
   imports: [
     AdditionalNewsAvailableComponent,
     MatProgressBar,
-    NewsArticleComponent,
+    NewsArticleExpandableComponent,
     NoNewsAvailableComponent,
     NoPublicNewsAvailableComponent,
     PaginatorHuComponent,
@@ -98,10 +98,6 @@ export class NewsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.queryParamsSubscription?.unsubscribe();
-  }
-
-  protected onMarkAsRead(id: number) {
-    console.log(id);
   }
 
   protected onPaginationModelChange({ pageIndex }: PageEvent) {

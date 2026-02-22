@@ -1,7 +1,7 @@
 @use "@angular/material" as mat;
 @use "../../../shared/mixins";
 
-:host(.app-news-article) {
+:host(.app-news-article-expandable) {
   @include mixins.zephyr-main;
 
   padding: 0 1rem 1rem 1rem;
