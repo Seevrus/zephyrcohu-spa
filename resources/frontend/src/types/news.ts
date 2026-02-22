@@ -1,7 +1,7 @@
 type NewsResponse = {
   id: number;
   audience: "A" | "P";
-  isRead: boolean;
+  isRead?: boolean;
   title: string;
   mainContent: string;
   additionalContent: string | null;

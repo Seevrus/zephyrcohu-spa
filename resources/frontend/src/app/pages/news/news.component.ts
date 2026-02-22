@@ -19,7 +19,6 @@ import { NoNewsAvailableComponent } from "../../components/no-news-available/no-
 import { NoPublicNewsAvailableComponent } from "../../components/no-public-news-available/no-public-news-available.component";
 import { PaginatorHuComponent } from "../../components/paginator-hu/paginator-hu.component";
 import { NewsQueryService } from "../../services/news.query.service";
-import { UsersQueryService } from "../../services/users.query.service";
 
 @Component({
   selector: "app-news",
@@ -40,7 +39,6 @@ import { UsersQueryService } from "../../services/users.query.service";
 export class NewsComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly newsQueryService = inject(NewsQueryService);
-  private readonly usersQueryService = inject(UsersQueryService);
 
   private queryParamsSubscription: Subscription | null = null;
 
@@ -48,10 +46,6 @@ export class NewsComponent implements OnInit, OnDestroy {
 
   private readonly newsQuery = injectQuery(() =>
     this.newsQueryService.getNews(this.currentPage()),
-  );
-
-  private readonly sessionQuery = injectQuery(() =>
-    this.usersQueryService.session(),
   );
 
   protected readonly numberOfAdditionalNews = computed(() => {
@@ -81,10 +75,6 @@ export class NewsComponent implements OnInit, OnDestroy {
       !this.newsQuery.isPending() &&
       this.numberOfNewsAvailable() === 0 &&
       this.numberOfAdditionalNews() > 0,
-  );
-
-  protected readonly showReadStatus = computed(
-    () => !this.sessionQuery.isPending() && !!this.sessionQuery.data(),
   );
 
   ngOnInit() {

@@ -1,7 +1,15 @@
-<div data-testid="news-article-expandable">
-  <h2 data-testid="news-article-title">
-    {{ title() }}
-  </h2>
+<div class="news-article-expandable" data-testid="news-article-expandable">
+  <div class="news-article-title-container">
+    <div class="news-article-with-chip">
+      <h2 data-testid="news-article-title">
+        {{ title() }}
+      </h2>
+      @if (isRead() === false) {
+        <mat-chip>Új</mat-chip>
+      }
+    </div>
+    <h4>{{ displayUpdatedAt() }}</h4>
+  </div>
   <div
     data-testid="news-article-main-content"
     [innerHTML]="mainContentHtml()"

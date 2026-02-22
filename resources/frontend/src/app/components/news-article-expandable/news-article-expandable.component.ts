@@ -6,6 +6,7 @@ import {
   SecurityContext,
   signal,
 } from "@angular/core";
+import { MatChip } from "@angular/material/chips";
 import {
   MatExpansionPanel,
   MatExpansionPanelDescription,
@@ -13,12 +14,15 @@ import {
 } from "@angular/material/expansion";
 import { DomSanitizer } from "@angular/platform-browser";
 
+import { formatDisplayDate } from "../../../mappers/dates";
+
 @Component({
   selector: "app-news-article-expandable",
   host: {
     class: "app-news-article-expandable",
   },
   imports: [
+    MatChip,
     MatExpansionPanel,
     MatExpansionPanelDescription,
     MatExpansionPanelHeader,
@@ -31,10 +35,14 @@ export class NewsArticleExpandableComponent {
 
   additionalContent = input.required<string | null>();
   id = input.required<number>();
-  isRead = input.required<boolean | null>();
+  isRead = input.required<boolean | undefined>();
   mainContent = input.required<string>();
   title = input.required<string>();
   updatedAt = input.required<Date>();
+
+  protected readonly displayUpdatedAt = computed(() =>
+    formatDisplayDate(this.updatedAt()),
+  );
 
   protected readonly isNewsExpanded = signal(false);
 
