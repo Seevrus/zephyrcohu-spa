@@ -18,7 +18,6 @@ describe('Get News', function () {
                 [
                     'id' => 3,
                     'audience' => 'P',
-                    'isRead' => false,
                     'title' => 'Updated Public 3',
                     'mainContent' => 'Main Content 3',
                     'additionalContent' => 'Additional content 3',
@@ -28,7 +27,6 @@ describe('Get News', function () {
                 [
                     'id' => 9,
                     'audience' => 'P',
-                    'isRead' => false,
                     'title' => 'Updated Public 9',
                     'mainContent' => 'Main Content 9',
                     'additionalContent' => 'Updated Additional content 9',
@@ -38,7 +36,6 @@ describe('Get News', function () {
                 [
                     'id' => 12,
                     'audience' => 'P',
-                    'isRead' => false,
                     'title' => 'Public 12',
                     'mainContent' => 'Main Content 12',
                     'additionalContent' => 'Additional content 12',
@@ -48,7 +45,6 @@ describe('Get News', function () {
                 [
                     'id' => 10,
                     'audience' => 'P',
-                    'isRead' => false,
                     'title' => 'Public 10',
                     'mainContent' => 'Main Content 10',
                     'additionalContent' => 'Additional content 10',
@@ -58,7 +54,6 @@ describe('Get News', function () {
                 [
                     'id' => 2,
                     'audience' => 'P',
-                    'isRead' => false,
                     'title' => 'Public 2',
                     'mainContent' => 'Main Content 2',
                     'additionalContent' => 'Additional content 2',
@@ -68,7 +63,6 @@ describe('Get News', function () {
                 [
                     'id' => 1,
                     'audience' => 'P',
-                    'isRead' => false,
                     'title' => 'Public 1',
                     'mainContent' => 'Main Content 1',
                     'additionalContent' => 'Additional content 1',
@@ -78,7 +72,6 @@ describe('Get News', function () {
                 [
                     'id' => 6,
                     'audience' => 'P',
-                    'isRead' => false,
                     'title' => 'Public 6',
                     'mainContent' => 'Main Content 6',
                     'additionalContent' => null,
@@ -88,7 +81,6 @@ describe('Get News', function () {
                 [
                     'id' => 7,
                     'audience' => 'P',
-                    'isRead' => false,
                     'title' => 'Public 7',
                     'mainContent' => 'Main Content 7',
                     'additionalContent' => 'Additional content 7',
@@ -98,7 +90,6 @@ describe('Get News', function () {
                 [
                     'id' => 4,
                     'audience' => 'P',
-                    'isRead' => false,
                     'title' => 'Public 4',
                     'mainContent' => 'Main Content 4',
                     'additionalContent' => 'Additional content 4',
@@ -108,7 +99,6 @@ describe('Get News', function () {
                 [
                     'id' => 8,
                     'audience' => 'P',
-                    'isRead' => false,
                     'title' => 'Public 8',
                     'mainContent' => 'Main Content 8',
                     'additionalContent' => null,
@@ -131,7 +121,6 @@ describe('Get News', function () {
                 [
                     'id' => 5,
                     'audience' => 'P',
-                    'isRead' => false,
                     'title' => 'Public 5',
                     'mainContent' => 'Main Content 5',
                     'additionalContent' => 'Additional content 5',
@@ -264,11 +253,6 @@ describe('Get News', function () {
 });
 
 function resetGetNewsTestData() {
-    DB::table('news')->delete();
-    DB::table('users')->delete();
-    DB::statement('ALTER TABLE news AUTO_INCREMENT = 1');
-    DB::statement('ALTER TABLE users AUTO_INCREMENT = 1');
-
     DB::table('users')->insert([
         'id' => 1,
         'email' => 'user001@example.com',
