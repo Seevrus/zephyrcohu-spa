@@ -14,6 +14,7 @@ import type { Subscription } from "rxjs";
 
 import { type QueryParamsByPath } from "../../app.routes";
 import { AdditionalNewsAvailableComponent } from "../../components/additional-news-available/additional-news-available.component";
+import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { NewsArticleExpandableComponent } from "../../components/news-article-expandable/news-article-expandable.component";
 import { NoNewsAvailableComponent } from "../../components/no-news-available/no-news-available.component";
 import { NoPublicNewsAvailableComponent } from "../../components/no-public-news-available/no-public-news-available.component";
@@ -27,6 +28,7 @@ import { NewsQueryService } from "../../services/news.query.service";
   },
   imports: [
     AdditionalNewsAvailableComponent,
+    FormUnexpectedErrorComponent,
     MatProgressBar,
     NewsArticleExpandableComponent,
     NoNewsAvailableComponent,
@@ -57,6 +59,7 @@ export class NewsComponent implements OnInit, OnDestroy {
     () => !this.newsQuery.isPending() && this.numberOfAdditionalNews() > 0,
   );
 
+  protected readonly areNewsError = computed(() => this.newsQuery.isError());
   protected readonly areNewsFetching = this.newsQuery.isFetching;
 
   protected readonly news = computed(() => this.newsQuery.data()?.data ?? []);

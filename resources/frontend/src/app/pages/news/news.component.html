@@ -1,37 +1,41 @@
 <div data-testid="news-component" class="news-component">
-  @if (noNewsAvailable()) {
-    <app-no-news-available />
-  } @else if (noPublicNewsAvailable()) {
-    <app-no-public-news-available
-      [numberOfAdditionalNews]="numberOfAdditionalNews()"
-    />
+  @if (areNewsError()) {
+    <app-form-unexpected-error />
   } @else {
-    @if (areAdditionalNewsAvailable() && currentPage() === 1) {
-      <app-additional-news-available
+    @if (noNewsAvailable()) {
+      <app-no-news-available />
+    } @else if (noPublicNewsAvailable()) {
+      <app-no-public-news-available
         [numberOfAdditionalNews]="numberOfAdditionalNews()"
       />
-    }
-
-    @if (areNewsFetching()) {
-      <mat-progress-bar mode="indeterminate" />
     } @else {
-      @for (article of news(); track article.id) {
-        <app-news-article-expandable
-          [additionalContent]="article.additionalContent"
-          [id]="article.id"
-          [isRead]="article.isRead"
-          [mainContent]="article.mainContent"
-          [title]="article.title"
-          [updatedAt]="article.updatedAt"
+      @if (areAdditionalNewsAvailable() && currentPage() === 1) {
+        <app-additional-news-available
+          [numberOfAdditionalNews]="numberOfAdditionalNews()"
         />
       }
-    }
 
-    <app-paginator-hu
-      [currentPage]="currentPage() ?? 1"
-      [disabled]="areNewsFetching()"
-      [total]="numberOfNewsAvailable()"
-      (pageChanged)="onPaginationModelChange($event)"
-    />
+      @if (areNewsFetching()) {
+        <mat-progress-bar mode="indeterminate" />
+      } @else {
+        @for (article of news(); track article.id) {
+          <app-news-article-expandable
+            [additionalContent]="article.additionalContent"
+            [id]="article.id"
+            [isRead]="article.isRead"
+            [mainContent]="article.mainContent"
+            [title]="article.title"
+            [updatedAt]="article.updatedAt"
+          />
+        }
+      }
+
+      <app-paginator-hu
+        [currentPage]="currentPage() ?? 1"
+        [disabled]="areNewsFetching()"
+        [total]="numberOfNewsAvailable()"
+        (pageChanged)="onPaginationModelChange($event)"
+      />
+    }
   }
 </div>
