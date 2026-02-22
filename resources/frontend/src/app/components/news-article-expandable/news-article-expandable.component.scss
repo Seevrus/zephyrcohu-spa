@@ -38,7 +38,8 @@
     }
 
     .news-article-additional-content-container {
-      background-color: #c3ccef;
+      background-color: var(--mat-sys-primary-container);
+      border: 1px solid var(--mat-sys-outline);
 
       @include mat.expansion-overrides(
         (
@@ -48,7 +49,7 @@
       );
 
       &.expanded {
-        background-color: var(--mat-sys-primary-container);
+        border: none;
 
         .news-article-additional-content-header {
           position: absolute;
