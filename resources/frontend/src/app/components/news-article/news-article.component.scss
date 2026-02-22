@@ -1,0 +1,33 @@
+@use "@angular/material" as mat;
+@use "../../../shared/mixins";
+
+:host(.app-news-article) {
+  @include mixins.zephyr-main;
+
+  padding: 0 1rem 1rem 1rem;
+
+  .news-article-additional-content-container {
+    background-color: #c3ccef;
+
+    @include mat.expansion-overrides(
+      (
+        container-elevation-shadow: 0,
+        container-shape: 0,
+      )
+    );
+
+    &.expanded {
+      background-color: var(--mat-sys-primary-container);
+
+      .news-article-additional-content-header {
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+    }
+
+    .news-article-additional-content {
+      margin: 0 -1.5rem -1rem -1.5rem;
+    }
+  }
+}

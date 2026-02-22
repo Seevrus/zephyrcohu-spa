@@ -16,6 +16,9 @@ import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: "app-news-article",
+  host: {
+    class: "app-news-article",
+  },
   imports: [
     MatExpansionPanel,
     MatExpansionPanelDescription,

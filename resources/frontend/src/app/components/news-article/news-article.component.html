@@ -1,13 +1,36 @@
 <div data-testid="news-article">
   <h2 data-testid="news-article-title">
-    {{title()}}
+    {{ title() }}
   </h2>
-  <div data-testid="news-article-main-content" [innerHTML]="mainContentHtml()"></div>
-  <mat-expansion-panel (opened)="toggleNews(true)" (closed)="toggleNews(false)">
-    <mat-expansion-panel-header>
-      <mat-panel-description [innerHTML]="isNewsExpanded() ? '' : additionalContentHtml()?.substring(0, 100) + '...'">
-      </mat-panel-description>
-    </mat-expansion-panel-header>
-    <div data-testid="news-article-additional-content" [innerHTML]="additionalContentHtml()"></div>
-  </mat-expansion-panel>
+  <div
+    data-testid="news-article-main-content"
+    [innerHTML]="mainContentHtml()"
+  ></div>
+  @if (additionalContentHtml()) {
+    <mat-expansion-panel
+      [class]="{
+        'news-article-additional-content-container': true,
+        expanded: isNewsExpanded(),
+      }"
+      (opened)="toggleNews(true)"
+      (closed)="toggleNews(false)"
+    >
+      <mat-expansion-panel-header
+        class="news-article-additional-content-header"
+      >
+        <mat-panel-description
+          [innerHTML]="
+            isNewsExpanded()
+              ? ''
+              : additionalContentHtml()?.substring(0, 100) + '...'
+          "
+        />
+      </mat-expansion-panel-header>
+      <div
+        data-testid="news-article-additional-content"
+        class="news-article-additional-content"
+        [innerHTML]="additionalContentHtml()"
+      ></div>
+    </mat-expansion-panel>
+  }
 </div>

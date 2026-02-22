@@ -28,10 +28,10 @@ import { UsersQueryService } from "../../services/users.query.service";
   },
   imports: [
     AdditionalNewsAvailableComponent,
+    MatProgressBar,
     NewsArticleComponent,
     NoNewsAvailableComponent,
     NoPublicNewsAvailableComponent,
-    MatProgressBar,
     PaginatorHuComponent,
   ],
   templateUrl: "./news.component.html",
