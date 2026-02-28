@@ -1,4 +1,4 @@
-type NewsResponse = {
+export type NewsResponse = {
   id: number;
   audience: "A" | "P";
   isRead?: boolean;

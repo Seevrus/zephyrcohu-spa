@@ -21,11 +21,6 @@ import { UsersQueryService } from "./users.query.service";
 })
 export class NewsQueryService {
   private readonly http = inject(HttpClient);
-  private readonly usersQueryService = inject(UsersQueryService);
-
-  private readonly sessionQuery = injectQuery(() =>
-    this.usersQueryService.session(),
-  );
 
   getNews(page: number | undefined) {
     return queryOptions<NewsCollection, ZephyrHttpError>({
@@ -49,10 +44,7 @@ export class NewsQueryService {
             ),
         );
       },
-      enabled:
-        page !== undefined &&
-        ((this.sessionQuery.isSuccess() && !this.sessionQuery.isStale()) ||
-          this.sessionQuery.isError()),
+      enabled: page !== undefined,
     });
   }
 
