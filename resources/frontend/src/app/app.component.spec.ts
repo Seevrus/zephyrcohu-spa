@@ -109,6 +109,15 @@ describe("App Component", () => {
     });
   });
 
+  test("News Component is rendered on /hirek route", async () => {
+    const { renderResult } = renderAppComponent("/hirek");
+    await renderResult;
+
+    await expect(
+      screen.findByTestId("news-component"),
+    ).resolves.toBeInTheDocument();
+  });
+
   test("Not Found Component is rendered on nonexistent routes", async () => {
     renderAppComponent("/psps");
 

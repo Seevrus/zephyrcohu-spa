@@ -10,7 +10,8 @@ Route::controller(CaptchaController::class)->prefix('captcha')->group(function (
 });
 
 Route::controller(NewsController::class)->prefix('news')->group(function () {
-    Route::get('/', 'get_news');
+    Route::get('/', 'getNews');
+    Route::get('/{id}', 'getNewsItem');
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function () {

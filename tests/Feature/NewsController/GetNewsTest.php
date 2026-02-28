@@ -252,7 +252,7 @@ describe('Get News', function () {
     });
 });
 
-function resetGetNewsTestData() {
+function resetGetNewsTestData(): void {
     DB::table('users')->insert([
         'id' => 1,
         'email' => 'user001@example.com',

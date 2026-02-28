@@ -1,7 +1,7 @@
 import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import {
-  injectQuery,
+  keepPreviousData,
   queryOptions,
 } from "@tanstack/angular-query-experimental";
 import { catchError, lastValueFrom, map, throwError } from "rxjs";
@@ -14,7 +14,6 @@ import {
 } from "../../types/news";
 import { throwHttpError } from "../../utils/throwHttpError";
 import { queryKeys } from "./queryKeys";
-import { UsersQueryService } from "./users.query.service";
 
 @Injectable({
   providedIn: "root",
@@ -45,6 +44,7 @@ export class NewsQueryService {
         );
       },
       enabled: page !== undefined,
+      placeholderData: keepPreviousData,
     });
   }
 
