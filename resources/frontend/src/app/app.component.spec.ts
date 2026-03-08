@@ -118,6 +118,15 @@ describe("App Component", () => {
     ).resolves.toBeInTheDocument();
   });
 
+  test("News Article Component is rendered on /hirek/:id route", async () => {
+    const { renderResult } = renderAppComponent("/hirek/6");
+    await renderResult;
+
+    await expect(
+      screen.findByTestId("news-article"),
+    ).resolves.toBeInTheDocument();
+  });
+
   test("Not Found Component is rendered on nonexistent routes", async () => {
     renderAppComponent("/psps");
 

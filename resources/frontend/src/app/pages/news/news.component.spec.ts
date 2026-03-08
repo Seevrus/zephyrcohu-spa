@@ -117,7 +117,7 @@ describe("NewsComponent", () => {
     );
 
     await expect(
-      screen.findAllByTestId("news-article-expandable"),
+      screen.findAllByTestId("news-article-list-item"),
     ).resolves.toHaveLength(2);
 
     expect(
@@ -157,7 +157,7 @@ describe("NewsComponent", () => {
     );
 
     await expect(
-      screen.findAllByTestId("news-article-expandable"),
+      screen.findAllByTestId("news-article-list-item"),
     ).resolves.toHaveLength(10);
 
     httpTesting.verify();
@@ -177,7 +177,7 @@ describe("NewsComponent", () => {
     );
 
     await expect(
-      screen.findAllByTestId("news-article-expandable"),
+      screen.findAllByTestId("news-article-list-item"),
     ).resolves.toHaveLength(10);
 
     expect(

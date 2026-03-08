@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/angular";
 import { expect } from "vitest";
 
-import { NewsArticleExpandableComponent } from "./news-article-expandable.component";
+import { NewsArticleListItemComponent } from "./news-article-list-item.component";
 
-describe("News Article Expandable Component", () => {
+describe("News Article List Item", () => {
   test("renders with the correct title and date", async () => {
     await renderComponent({
       additionalContent: null,
@@ -62,10 +62,9 @@ describe("News Article Expandable Component", () => {
     ).not.toBeInTheDocument();
   });
 
-  test("shows the additional content", async () => {
+  test("shows a link to the news item if there is additional content", async () => {
     await renderComponent({
-      additionalContent:
-        "Elkészült egy újabb frissítéscsomag, benne:<br /><ul><li>üzemben az új munkaügyi törzsrögzítő (fülek, lapok, automatizmusok, sablonok, testre szabható felület)</li><li>a munkajogviszonyokhoz dokumentumok és egy sor új adat ehhez az előbbi törzsben (szerződéskötéstől a megszüntetésig)</li><li>T34-es (ja, nem, hanem) T1041 és 42, egyenesen a programból az ÁNYK-ba (tank juh)</li><li>a következő ütemben beindulnak a dátumozott jogviszonyváltozatok és a csoportos műveletek (szerrződés, megszüntetés,...)</li><li>erősen átdolgozott ÁFA-analitika, online számlához, XML ÁFA-bevalláshoz</li><li>köbüki, vagyis 3.0 online számla adatkapcsolat</li><li>adatimport-lehetőség a NAV számla-XML formátumra (egyenesen a könyvelésbe) és rövidesen banki kivonatfeldolgozás is</li><li>meg az apró (átdolgozott listakezelés, sok apró reszelgetés a kezelő felületen, hogy még jobban kézre álljon, stb.)</li><li>friss dokumentációk</li></ul>Biztosan kihagytam egy csomó mindent. Ezek egy része fizetős, másik része nem, de a fizetős se túl fájdalmas (sajnos a programozókat is kell etetni, de a rácson benyúlni tilos és veszélyes). Szóval: tessék, lehet jelentkezni a frissítésért.",
+      additionalContent: "Test additional content",
       id: 1,
       isRead: false,
       mainContent: "Some test news",
@@ -76,7 +75,7 @@ describe("News Article Expandable Component", () => {
     expect(
       (await screen.findByTestId("news-article-additional-content")).innerHTML,
     ).toBe(
-      "Elkészült egy újabb frissítéscsomag, benne:<br><ul><li>üzemben az új munkaügyi törzsrögzítő (fülek, lapok, automatizmusok, sablonok, testre szabható felület)</li><li>a munkajogviszonyokhoz dokumentumok és egy sor új adat ehhez az előbbi törzsben (szerződéskötéstől a megszüntetésig)</li><li>T34-es (ja, nem, hanem) T1041 és 42, egyenesen a programból az ÁNYK-ba (tank juh)</li><li>a következő ütemben beindulnak a dátumozott jogviszonyváltozatok és a csoportos műveletek (szerrződés, megszüntetés,...)</li><li>erősen átdolgozott ÁFA-analitika, online számlához, XML ÁFA-bevalláshoz</li><li>köbüki, vagyis 3.0 online számla adatkapcsolat</li><li>adatimport-lehetőség a NAV számla-XML formátumra (egyenesen a könyvelésbe) és rövidesen banki kivonatfeldolgozás is</li><li>meg az apró (átdolgozott listakezelés, sok apró reszelgetés a kezelő felületen, hogy még jobban kézre álljon, stb.)</li><li>friss dokumentációk</li></ul>Biztosan kihagytam egy csomó mindent. Ezek egy része fizetős, másik része nem, de a fizetős se túl fájdalmas (sajnos a programozókat is kell etetni, de a rácson benyúlni tilos és veszélyes). Szóval: tessék, lehet jelentkezni a frissítésért.",
+      '<a _ngcontent-a-c3678655185="" class="zephyr-link" href="/hirek/1">Tovább...</a>',
     );
   });
 });
@@ -96,7 +95,7 @@ async function renderComponent({
   title: string;
   updatedAt: Date;
 }) {
-  return render(NewsArticleExpandableComponent, {
+  return render(NewsArticleListItemComponent, {
     inputs: {
       additionalContent,
       id,

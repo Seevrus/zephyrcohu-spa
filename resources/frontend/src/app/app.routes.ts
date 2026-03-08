@@ -43,6 +43,15 @@ export const routes: Routes = [
     title: "Hírek",
   },
   {
+    path: "hirek/:id",
+    async loadComponent() {
+      const { NewsArticleComponent } =
+        await import("./pages/news-article/news-article.component");
+      return NewsArticleComponent;
+    },
+    title: "Hírek - ",
+  },
+  {
     path: "profil",
     canActivate: [userGuard],
     async loadComponent() {

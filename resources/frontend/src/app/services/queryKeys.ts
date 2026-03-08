@@ -16,5 +16,8 @@ export const queryKeys = {
   news(page?: number) {
     return page ? ["news", page] : ["news"];
   },
+  newsItem(id?: number) {
+    return id ? ["news_item", id] : ["news_item"];
+  },
   session: ["session"],
 };

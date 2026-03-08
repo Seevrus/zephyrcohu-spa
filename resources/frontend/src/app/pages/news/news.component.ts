@@ -15,7 +15,7 @@ import type { Subscription } from "rxjs";
 import { type QueryParamsByPath } from "../../app.routes";
 import { AdditionalNewsAvailableComponent } from "../../components/additional-news-available/additional-news-available.component";
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
-import { NewsArticleExpandableComponent } from "../../components/news-article-expandable/news-article-expandable.component";
+import { NewsArticleListItemComponent } from "../../components/news-article-list-item/news-article-list-item.component";
 import { NoNewsAvailableComponent } from "../../components/no-news-available/no-news-available.component";
 import { NoPublicNewsAvailableComponent } from "../../components/no-public-news-available/no-public-news-available.component";
 import { PaginatorHuComponent } from "../../components/paginator-hu/paginator-hu.component";
@@ -30,7 +30,7 @@ import { NewsQueryService } from "../../services/news.query.service";
     AdditionalNewsAvailableComponent,
     FormUnexpectedErrorComponent,
     MatProgressBar,
-    NewsArticleExpandableComponent,
+    NewsArticleListItemComponent,
     NoNewsAvailableComponent,
     NoPublicNewsAvailableComponent,
     PaginatorHuComponent,

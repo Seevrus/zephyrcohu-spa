@@ -14,7 +14,7 @@ type NewsMetaResponse = {
   total: number;
 };
 
-type News = Omit<NewsResponse, "createdAt" | "updatedAt"> & {
+export type NewsItem = Omit<NewsResponse, "createdAt" | "updatedAt"> & {
   createdAt: Date;
   updatedAt: Date;
 };
@@ -24,7 +24,11 @@ export type NewsCollectionResponse = {
   meta: NewsMetaResponse;
 };
 
+export type NewsItemResponse = {
+  data: NewsResponse;
+};
+
 export type NewsCollection = {
-  data: News[];
+  data: NewsItem[];
   meta: NewsMetaResponse;
 };

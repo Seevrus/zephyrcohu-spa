@@ -1,12 +1,12 @@
 @use "@angular/material" as mat;
 @use "../../../shared/mixins";
 
-:host(.app-news-article-expandable) {
+:host(.app-news-article-list-item) {
   @include mixins.zephyr-main;
 
   padding: 0 1rem 1rem 1rem;
 
-  .news-article-expandable {
+  .news-article-list-item {
     width: 100%;
 
     .news-article-title-container {
@@ -29,6 +29,11 @@
             outline-width: 0,
           )
         );
+
+        a.no-link {
+          color: var(--mat-sys-on-surface);
+          text-decoration: none;
+        }
       }
 
       h2,
@@ -37,30 +42,8 @@
       }
     }
 
-    .news-article-additional-content-container {
-      background-color: var(--mat-sys-primary-container);
-      border: 1px solid var(--mat-sys-outline);
-
-      @include mat.expansion-overrides(
-        (
-          container-elevation-shadow: 0,
-          container-shape: 0,
-        )
-      );
-
-      &.expanded {
-        border: none;
-
-        .news-article-additional-content-header {
-          position: absolute;
-          top: 0;
-          right: 0;
-        }
-      }
-
-      .news-article-additional-content {
-        margin: 0 -1.5rem -1rem -1.5rem;
-      }
+    .news-article-additional-content {
+      margin-top: 1rem;
     }
   }
 }

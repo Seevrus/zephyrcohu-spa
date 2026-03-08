@@ -19,7 +19,7 @@
         <mat-progress-bar mode="indeterminate" />
       } @else {
         @for (article of news(); track article.id) {
-          <app-news-article-expandable
+          <app-news-article-list-item
             [additionalContent]="article.additionalContent"
             [id]="article.id"
             [isRead]="article.isRead"
