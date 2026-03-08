@@ -2,7 +2,18 @@
   "mcpServers": {
     "angular-cli": {
       "command": "npx.cmd",
-      "args": ["-y", "@angular/cli", "mcp"]
+      "args": [
+        "-y",
+        "@angular/cli",
+        "mcp"
+      ]
+    },
+    "laravel-boost": {
+      "command": "php",
+      "args": [
+        "artisan",
+        "boost:mcp"
+      ]
     }
   }
 }
