@@ -123,13 +123,8 @@ export class ProfileUpdateEmailComponent implements OnInit, OnDestroy {
         if (code === undefined || email === undefined) {
           this.confirmError.set("BAD_QUERY_PARAMS");
         } else {
-          this.updateEmailForm
-            .newEmail()
-            .setControlValue(decodeURIComponent(email));
-
-          this.updateEmailForm
-            .emailCode()
-            .setControlValue(decodeURIComponent(code));
+          this.updateEmailForm.newEmail().value.set(decodeURIComponent(email));
+          this.updateEmailForm.emailCode().value.set(decodeURIComponent(code));
         }
       },
     );
