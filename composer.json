@@ -11,18 +11,18 @@
   "require": {
     "php": "^8.3",
     "ext-pdo": "*",
-    "laravel/framework": "^13.0",
-    "laravel/sanctum": "^4.3.1",
-    "laravel/tinker": "^3.0",
-    "spatie/laravel-csp": "^3.23"
+    "laravel/framework": "^13.24",
+    "laravel/sanctum": "^4.3.3",
+    "laravel/tinker": "^3.0.2",
+    "spatie/laravel-csp": "^3.26"
   },
   "require-dev": {
-    "laravel/boost": "^2.4.8",
-    "laravel/pint": "^1.27.1",
+    "laravel/boost": "^2.5.2",
+    "laravel/pint": "^1.30.4",
     "mockery/mockery": "^1.6.12",
-    "nunomaduro/collision": "^8.9.1",
-    "pestphp/pest": "^4.4.1",
-    "phpunit/phpunit": "^12.0"
+    "nunomaduro/collision": "^8.9.5",
+    "pestphp/pest": "^4.7.8",
+    "phpunit/phpunit": "^12.5.33"
   },
   "autoload": {
     "psr-4": {
