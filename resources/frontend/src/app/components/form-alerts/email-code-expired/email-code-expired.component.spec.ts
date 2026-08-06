@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { EmailCodeExpiredComponent } from "./email-code-expired.component";
@@ -15,5 +16,7 @@ describe("Form - Email Code / Link expired - Component", () => {
 });
 
 function renderEmailCodeExpiredComponent() {
-  return render(EmailCodeExpiredComponent);
+  return render(EmailCodeExpiredComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

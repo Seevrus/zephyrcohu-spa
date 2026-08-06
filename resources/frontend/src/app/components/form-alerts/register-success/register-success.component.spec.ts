@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { RegisterSuccessComponent } from "./register-success.component";
@@ -17,5 +18,6 @@ describe("Registered Successfully Component", () => {
 function renderRegisterSuccessComponent() {
   return render(RegisterSuccessComponent, {
     inputs: { registeredEmail: "test@test.com" },
+    providers: [provideZonelessChangeDetection()],
   });
 }

@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { NoPublicNewsAvailableComponent } from "./no-public-news-available.component";
@@ -25,5 +26,6 @@ async function renderComponent(numberOfAdditionalNews: number) {
     inputs: {
       numberOfAdditionalNews,
     },
+    providers: [provideZonelessChangeDetection()],
   });
 }

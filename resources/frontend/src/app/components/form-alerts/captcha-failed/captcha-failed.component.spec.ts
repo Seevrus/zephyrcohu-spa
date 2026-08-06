@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { CaptchaFailedComponent } from "./captcha-failed.component";
@@ -15,5 +16,7 @@ describe("Form - Captcha Failed - Component", () => {
 });
 
 function renderCaptchaFailedComponent() {
-  return render(CaptchaFailedComponent);
+  return render(CaptchaFailedComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

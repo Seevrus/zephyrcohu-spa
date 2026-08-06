@@ -3,7 +3,11 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
-import { Component, inject } from "@angular/core";
+import {
+  Component,
+  inject,
+  provideZonelessChangeDetection,
+} from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
@@ -22,6 +26,7 @@ describe("ResendConfirmationEmailService", () => {
         provideHttpClientTesting(),
         provideTanStackQuery(testQueryClient),
         ResendConfirmationEmailService,
+        provideZonelessChangeDetection(),
       ],
     });
   });

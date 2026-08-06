@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { type PageEvent } from "@angular/material/paginator";
 import { render } from "@testing-library/angular";
 import { type UserEvent, userEvent } from "@testing-library/user-event";
@@ -224,5 +225,6 @@ function renderPaginator({
     on: {
       pageChanged,
     },
+    providers: [provideZonelessChangeDetection()],
   });
 }

@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render } from "@testing-library/angular";
 
 import { FooterComponent } from "./footer.component";
@@ -35,5 +36,7 @@ describe("Footer Component", () => {
 });
 
 async function renderFooter() {
-  return render(FooterComponent);
+  return render(FooterComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

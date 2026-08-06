@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { EmailLinkErrorComponent } from "./email-link-error.component";
@@ -15,5 +16,7 @@ describe("Form - Email Link Error - Component", () => {
 });
 
 function renderEmailLinkErrorComponent() {
-  return render(EmailLinkErrorComponent);
+  return render(EmailLinkErrorComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { ProfileUpdatedComponent } from "./profile-updated.component";
@@ -81,5 +82,6 @@ function renderProfileUpdatedComponent(inputs: {
 }) {
   return render(ProfileUpdatedComponent, {
     inputs,
+    providers: [provideZonelessChangeDetection()],
   });
 }

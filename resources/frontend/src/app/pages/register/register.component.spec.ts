@@ -3,6 +3,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
 import { By } from "@angular/platform-browser";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
@@ -407,6 +408,7 @@ async function renderRegisterComponent() {
       provideHttpClient(withFetch()),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
+      provideZonelessChangeDetection(),
     ],
   });
 

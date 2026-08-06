@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { NoNewsAvailableComponent } from "./no-news-available.component";
@@ -19,5 +20,7 @@ describe("No News Available Component", () => {
 });
 
 async function renderComponent() {
-  await render(NoNewsAvailableComponent);
+  await render(NoNewsAvailableComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

@@ -3,6 +3,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { provideRouter } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
@@ -236,6 +237,7 @@ async function renderNews(page = 1) {
           title: "Hírek",
         },
       ]),
+      provideZonelessChangeDetection(),
     ],
   });
 

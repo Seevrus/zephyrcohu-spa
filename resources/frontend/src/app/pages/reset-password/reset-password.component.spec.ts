@@ -3,6 +3,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
 import { By } from "@angular/platform-browser";
 import { provideRouter, Router } from "@angular/router";
@@ -391,6 +392,7 @@ async function renderResetPasswordComponent(
         },
       ]),
       provideTanStackQuery(testQueryClient),
+      provideZonelessChangeDetection(),
     ],
   });
 

@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { RegisterExistsNotConfirmedComponent } from "./register-exists-not-confirmed.component";
@@ -17,5 +18,6 @@ describe("Registered Not Confirmed Component", () => {
 function renderRegisterExistsNotConfirmedComponent() {
   return render(RegisterExistsNotConfirmedComponent, {
     inputs: { email: "test@test.com" },
+    providers: [provideZonelessChangeDetection()],
   });
 }

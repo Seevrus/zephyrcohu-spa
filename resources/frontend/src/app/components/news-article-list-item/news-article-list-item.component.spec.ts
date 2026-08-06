@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 import { expect } from "vitest";
 
@@ -75,7 +76,7 @@ describe("News Article List Item", () => {
     expect(
       (await screen.findByTestId("news-article-additional-content")).innerHTML,
     ).toBe(
-      '<a _ngcontent-a-c3678655185="" class="zephyr-link" href="/hirek/1">Tovább...</a>',
+      '<a _ngcontent-a-c325374086="" class="zephyr-link" href="/hirek/1">Tovább...</a>',
     );
   });
 });
@@ -104,5 +105,6 @@ async function renderComponent({
       title,
       updatedAt,
     },
+    providers: [provideZonelessChangeDetection()],
   });
 }

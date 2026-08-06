@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { ForgotPasswordEmailSentComponent } from "./forgot-password-email-sent.component";
@@ -19,5 +20,6 @@ function renderForgotPasswordEmailSentComponent() {
     inputs: {
       email: "test@test.com",
     },
+    providers: [provideZonelessChangeDetection()],
   });
 }

@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { TooManyLoginAttemptsComponent } from "./too-many-login-attempts.component";
@@ -15,5 +16,7 @@ describe("Form - Too many login attempts - Component", () => {
 });
 
 function renderTooManyLoginAttemptsComponent() {
-  return render(TooManyLoginAttemptsComponent);
+  return render(TooManyLoginAttemptsComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

@@ -3,6 +3,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideRouter, Router } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
@@ -400,6 +401,7 @@ async function renderProfileComponent() {
           title: "Adatmódosítás",
         },
       ]),
+      provideZonelessChangeDetection(),
     ],
   });
 

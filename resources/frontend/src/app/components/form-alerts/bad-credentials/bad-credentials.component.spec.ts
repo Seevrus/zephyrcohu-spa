@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { BadCredentialsComponent } from "./bad-credentials.component";
@@ -13,5 +14,7 @@ describe("Form - Bad Credentials - Component", () => {
 });
 
 function renderBadCredentialsComponent() {
-  return render(BadCredentialsComponent);
+  return render(BadCredentialsComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

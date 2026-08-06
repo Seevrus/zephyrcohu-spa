@@ -3,6 +3,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { By } from "@angular/platform-browser";
 import { provideRouter } from "@angular/router";
@@ -344,6 +345,7 @@ async function renderComponent(email?: string, code?: string) {
           title: "Email cím megerősítése",
         },
       ]),
+      provideZonelessChangeDetection(),
     ],
   });
 

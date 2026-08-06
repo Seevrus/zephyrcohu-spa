@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { FormUnexpectedErrorComponent } from "./form-unexpected-error.component";
@@ -15,5 +16,7 @@ describe("Form - Unexpected Error - Component", () => {
 });
 
 function renderFormUnexpectedErrorComponent() {
-  return render(FormUnexpectedErrorComponent);
+  return render(FormUnexpectedErrorComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

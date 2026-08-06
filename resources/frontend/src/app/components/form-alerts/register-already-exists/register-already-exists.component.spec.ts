@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { RegisterAlreadyExistsComponent } from "./register-already-exists.component";
@@ -15,5 +16,7 @@ describe("Register - User already exists Component", () => {
 });
 
 function renderRegisterAlreadyExistsComponent() {
-  return render(RegisterAlreadyExistsComponent);
+  return render(RegisterAlreadyExistsComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

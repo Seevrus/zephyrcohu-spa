@@ -1,4 +1,8 @@
-import { Component, inject } from "@angular/core";
+import {
+  Component,
+  inject,
+  provideZonelessChangeDetection,
+} from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { render, screen } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
@@ -115,5 +119,7 @@ class TestHostComponent {
 }
 
 async function renderPasswordRepeatComponent() {
-  return render(TestHostComponent);
+  return render(TestHostComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

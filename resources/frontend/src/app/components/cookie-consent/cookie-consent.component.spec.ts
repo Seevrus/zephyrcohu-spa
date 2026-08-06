@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
 
@@ -39,5 +40,7 @@ describe("CookieConsentComponent", () => {
 });
 
 function renderCookieConsentComponent() {
-  return render(CookieConsentComponent);
+  return render(CookieConsentComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

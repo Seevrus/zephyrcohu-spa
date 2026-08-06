@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { RegisterResendEmailErrorComponent } from "./register-resend-email-error.component";
@@ -15,5 +16,7 @@ describe("Register - Resend Confirmation Email - Error - Component", () => {
 });
 
 function renderRegisterResendEmailErrorComponent() {
-  return render(RegisterResendEmailErrorComponent);
+  return render(RegisterResendEmailErrorComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }

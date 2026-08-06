@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from "@angular/core";
 import { render, screen } from "@testing-library/angular";
 
 import { UserAlreadyLoggedInComponent } from "./user-already-logged-in.component";
@@ -15,5 +16,7 @@ describe("Form - Too many login attempts - Component", () => {
 });
 
 function renderUserAlreadyLoggedInComponent() {
-  return render(UserAlreadyLoggedInComponent);
+  return render(UserAlreadyLoggedInComponent, {
+    providers: [provideZonelessChangeDetection()],
+  });
 }
