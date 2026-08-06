@@ -4,14 +4,10 @@
   <div>
     @if (revokeError()) {
       <div data-testid="revoke-error-message">
-        @switch (true) {
-          @case (
-            [
-              "BAD_EMAIL_CODE",
-              "BAD_QUERY_PARAMS",
-              "INVALID_REQUEST_DATA",
-            ].includes(revokeError())
-          ) {
+        @switch (revokeError()) {
+          @case ("BAD_EMAIL_CODE")
+          @case ("BAD_QUERY_PARAMS")
+          @case ("INVALID_REQUEST_DATA") {
             <p>
               A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a
               böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a
@@ -27,7 +23,7 @@
               >.
             </p>
           }
-          @case (revokeError() === "USER_ALREADY_CONFIRMED") {
+          @case ("USER_ALREADY_CONFIRMED") {
             <p>
               A megadott e-mail cím már megerősítésre került a rendszerünkben.
               Regisztrációja törléséhez kérjük jelentkezzen be, ezek után az

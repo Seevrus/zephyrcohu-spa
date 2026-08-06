@@ -4,14 +4,10 @@
   <div>
     @if (confirmError()) {
       <div data-testid="confirm-error-message">
-        @switch (true) {
-          @case (
-            [
-              "BAD_EMAIL_CODE",
-              "BAD_QUERY_PARAMS",
-              "INVALID_REQUEST_DATA",
-            ].includes(confirmError())
-          ) {
+        @switch (confirmError()) {
+          @case ("BAD_EMAIL_CODE")
+          @case ("BAD_QUERY_PARAMS")
+          @case ("INVALID_REQUEST_DATA") {
             <p>
               A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a
               böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a
@@ -27,7 +23,7 @@
               >.
             </p>
           }
-          @case (confirmError() === "USER_ALREADY_CONFIRMED") {
+          @case ("USER_ALREADY_CONFIRMED") {
             <p>
               Ezt a felhasználót már aktiválták. Bármilyen probléma esetén
               kérjük, írjon nekünk a
