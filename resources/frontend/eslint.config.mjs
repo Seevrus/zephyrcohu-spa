@@ -5,7 +5,8 @@ import vitest from "@vitest/eslint-plugin";
 import angular from "angular-eslint";
 import { defineConfig } from "eslint/config";
 import eslintConfigPrettier from "eslint-config-prettier";
-import importPlugin from "eslint-plugin-import";
+import { createTypeScriptImportResolver } from "eslint-import-resolver-typescript";
+import { importX } from "eslint-plugin-import-x";
 import promisePlugin from "eslint-plugin-promise";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import sonarjs from "eslint-plugin-sonarjs";
@@ -25,13 +26,13 @@ export default defineConfig(
       sourceType: "module",
     },
     settings: {
-      "import/extensions": [".js", ".ts"],
-      "import/resolver": {
-        typescript: {
+      "import-x/extensions": [".js", ".ts"],
+      "import-x/resolver-next": [
+        createTypeScriptImportResolver({
           alwaysTryTypes: true,
           project: ["tsconfig.json"],
-        },
-      },
+        }),
+      ],
     },
   },
   eslintConfigPrettier,
@@ -97,7 +98,7 @@ export default defineConfig(
     extends: [
       ...angular.configs.tsRecommended,
       eslint.configs.recommended,
-      importPlugin.flatConfigs.recommended,
+      importX.flatConfigs.recommended,
       promisePlugin.configs["flat/recommended"],
       sonarjs.configs.recommended,
       ...tseslint.configs.recommendedTypeChecked,
@@ -146,11 +147,16 @@ export default defineConfig(
       "@typescript-eslint/unbound-method": "off",
       "arrow-body-style": ["error", "as-needed"],
       "default-param-last": "error",
-      "import/first": "error",
-      "import/newline-after-import": "error",
-      "import/no-default-export": "error",
-      "import/no-duplicates": "error",
-      "import/no-unused-modules": ["warn", { unusedExports: true }],
+      "import-x/first": "error",
+      "import-x/newline-after-import": "error",
+      "import-x/no-default-export": "error",
+      "import-x/no-duplicates": "error",
+      // TODO: ESLint 10 removed the FileEnumerator API this rule relies on,
+      // making it a no-op until eslint-plugin-import-x ships an alternative.
+      "import-x/no-unused-modules": [
+        "warn",
+        { suppressMissingFileEnumeratorAPIWarning: true, unusedExports: true },
+      ],
       "max-params": "error",
       "no-console": "warn",
       "no-debugger": "error",
