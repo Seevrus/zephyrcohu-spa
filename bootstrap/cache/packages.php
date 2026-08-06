@@ -10,7 +10,7 @@
   array (
     'aliases' => 
     array (
-      'Mcp' => 'Laravel\\Mcp\\Server\\Facades\\Mcp',
+      'Mcp' => 'Laravel\\Mcp\\Facades\\Mcp',
     ),
     'providers' => 
     array (
