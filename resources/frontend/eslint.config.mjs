@@ -151,12 +151,6 @@ export default defineConfig(
       "import-x/newline-after-import": "error",
       "import-x/no-default-export": "error",
       "import-x/no-duplicates": "error",
-      // TODO: ESLint 10 removed the FileEnumerator API this rule relies on,
-      // making it a no-op until eslint-plugin-import-x ships an alternative.
-      "import-x/no-unused-modules": [
-        "warn",
-        { suppressMissingFileEnumeratorAPIWarning: true, unusedExports: true },
-      ],
       "max-params": "error",
       "no-console": "warn",
       "no-debugger": "error",
