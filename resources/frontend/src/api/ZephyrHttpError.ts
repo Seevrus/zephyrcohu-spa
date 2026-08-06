@@ -1,4 +1,4 @@
-import { type ApiError } from "types/errors";
+import { type ApiError } from "../types/errors";
 
 export class ZephyrHttpError extends Error {
   constructor(
