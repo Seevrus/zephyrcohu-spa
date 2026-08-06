@@ -1,4 +1,4 @@
-import { provideHttpClient, withFetch } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -336,7 +336,7 @@ async function renderComponent(email?: string, code?: string) {
     initialRoute: `/profil/email_frissit?${queryParams.toString()}`,
     inputs: { code, email },
     providers: [
-      provideHttpClient(withFetch()),
+      provideHttpClient(),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
       provideRouter(

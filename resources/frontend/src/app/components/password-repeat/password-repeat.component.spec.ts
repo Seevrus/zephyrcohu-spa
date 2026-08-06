@@ -1,3 +1,5 @@
+/* eslint-disable vitest/unbound-method */
+
 import {
   Component,
   inject,

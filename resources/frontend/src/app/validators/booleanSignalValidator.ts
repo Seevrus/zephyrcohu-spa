@@ -6,7 +6,7 @@ import {
 
 export function booleanSignalValidator({
   value,
-}: FieldContext<boolean>): ValidationResult<ValidationError.WithoutField> {
+}: FieldContext<boolean>): ValidationResult<ValidationError.WithoutFieldTree> {
   if (value()) {
     return null;
   }

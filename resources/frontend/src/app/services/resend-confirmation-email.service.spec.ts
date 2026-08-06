@@ -1,4 +1,4 @@
-import { provideHttpClient, withFetch } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -22,7 +22,7 @@ describe("ResendConfirmationEmailService", () => {
   beforeEach(async () => {
     await render(TestComponent, {
       providers: [
-        provideHttpClient(withFetch()),
+        provideHttpClient(),
         provideHttpClientTesting(),
         provideTanStackQuery(testQueryClient),
         ResendConfirmationEmailService,

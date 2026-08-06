@@ -1,4 +1,4 @@
-import { provideHttpClient, withFetch } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -465,7 +465,7 @@ async function renderLoginComponent() {
   const renderResult = await render(LoginComponent, {
     initialRoute: "/bejelentkezes",
     providers: [
-      provideHttpClient(withFetch()),
+      provideHttpClient(),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
       provideRouter([

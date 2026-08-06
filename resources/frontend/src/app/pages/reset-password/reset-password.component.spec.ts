@@ -1,4 +1,4 @@
-import { provideHttpClient, withFetch } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -387,7 +387,7 @@ async function renderResetPasswordComponent(
     initialRoute: `profil/jelszo_helyreallit?${queryParams.toString()}`,
     inputs: { code, email },
     providers: [
-      provideHttpClient(withFetch()),
+      provideHttpClient(),
       provideHttpClientTesting(),
       provideRouter(
         [

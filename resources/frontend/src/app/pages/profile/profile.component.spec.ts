@@ -1,4 +1,4 @@
-import { provideHttpClient, withFetch } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -391,7 +391,7 @@ async function renderProfileComponent() {
   const renderResult = await render(ProfileComponent, {
     initialRoute: "/profil",
     providers: [
-      provideHttpClient(withFetch()),
+      provideHttpClient(),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
       provideRouter([

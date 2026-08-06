@@ -1,4 +1,4 @@
-import { provideHttpClient, withFetch } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -229,47 +229,35 @@ describe("App Component", () => {
   });
 
   describe("Register Component", () => {
-    test("redirects to the main page if the user is already logged in", async () => {
-      const { httpTesting } = renderAppComponent("/regisztracio");
+    test.each([
+      { path: "/regisztracio", label: "registration" },
+      { path: "/regisztracio/elvet", label: "decline registration" },
+      { path: "/regisztracio/megerosit", label: "accept registration" },
+    ])(
+      "redirects to the main page if a logged in user tries to reach $label",
+      async ({ path }) => {
+        const { httpTesting } = renderAppComponent(path);
 
-      const request = await waitFor(() =>
-        httpTesting.expectOne(sessionRequest),
-      );
-      request.flush(getSessionOkResponse);
+        const request = await waitFor(() =>
+          httpTesting.expectOne(sessionRequest),
+        );
+        request.flush(getSessionOkResponse);
 
-      await expect(
-        screen.findByTestId("main-component"),
-      ).resolves.toBeInTheDocument();
-    });
+        await expect(
+          screen.findByTestId("main-component"),
+        ).resolves.toBeInTheDocument();
+      },
+    );
 
-    test("renders the registration form", async () => {
-      const { httpTesting } = renderAppComponent("/regisztracio");
-
-      const request = await waitFor(() =>
-        httpTesting.expectOne(sessionRequest),
-      );
-      request.flush(getSessionErrorResponse);
-
-      await expect(
-        screen.findByTestId("register-component"),
-      ).resolves.toBeInTheDocument();
-    });
-
-    test("redirects to the main page if a logged in user tries to decline registration", async () => {
-      const { httpTesting } = renderAppComponent("/regisztracio/elvet");
-
-      const request = await waitFor(() =>
-        httpTesting.expectOne(sessionRequest),
-      );
-      request.flush(getSessionOkResponse);
-
-      await expect(
-        screen.findByTestId("main-component"),
-      ).resolves.toBeInTheDocument();
-    });
-
-    test("renders the decline registration form", async () => {
-      const { httpTesting } = renderAppComponent("/regisztracio/elvet");
+    test.each([
+      { path: "/regisztracio", testId: "register-component" },
+      { path: "/regisztracio/elvet", testId: "register-mail-decline-component" },
+      {
+        path: "/regisztracio/megerosit",
+        testId: "register-mail-accept-component",
+      },
+    ])("renders the $testId for $path", async ({ path, testId }) => {
+      const { httpTesting } = renderAppComponent(path);
 
       const request = await waitFor(() =>
         httpTesting.expectOne(sessionRequest),
@@ -277,33 +265,7 @@ describe("App Component", () => {
       request.flush(getSessionErrorResponse);
 
       await expect(
-        screen.findByTestId("register-mail-decline-component"),
-      ).resolves.toBeInTheDocument();
-    });
-
-    test("redirects to the main page if a logged in user tries to accept registration", async () => {
-      const { httpTesting } = renderAppComponent("/regisztracio/megerosit");
-
-      const request = await waitFor(() =>
-        httpTesting.expectOne(sessionRequest),
-      );
-      request.flush(getSessionOkResponse);
-
-      await expect(
-        screen.findByTestId("main-component"),
-      ).resolves.toBeInTheDocument();
-    });
-
-    test("renders the accept registration form", async () => {
-      const { httpTesting } = renderAppComponent("/regisztracio/megerosit");
-
-      const request = await waitFor(() =>
-        httpTesting.expectOne(sessionRequest),
-      );
-      request.flush(getSessionErrorResponse);
-
-      await expect(
-        screen.findByTestId("register-mail-accept-component"),
+        screen.findByTestId(testId),
       ).resolves.toBeInTheDocument();
     });
   });
@@ -315,7 +277,7 @@ function renderAppComponent(initialRoute: string) {
   const renderResult = render(AppComponent, {
     initialRoute,
     providers: [
-      provideHttpClient(withFetch()),
+      provideHttpClient(),
       provideTanStackQuery(testQueryClient),
       provideHttpClientTesting(),
       provideRouter(routes, withComponentInputBinding()),

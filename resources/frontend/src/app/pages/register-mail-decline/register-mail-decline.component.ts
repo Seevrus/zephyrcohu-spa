@@ -43,7 +43,10 @@ export class RegisterMailDeclineComponent {
     if (code === undefined || email === undefined) {
       this.revokeError.set("BAD_QUERY_PARAMS");
     } else {
-      this.revokeRegistration(decodeURIComponent(code), decodeURIComponent(email));
+      this.revokeRegistration(
+        decodeURIComponent(code),
+        decodeURIComponent(email),
+      );
     }
   });
 

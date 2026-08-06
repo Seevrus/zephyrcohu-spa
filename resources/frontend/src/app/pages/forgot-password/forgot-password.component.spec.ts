@@ -1,4 +1,4 @@
-import { provideHttpClient, withFetch } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -147,7 +147,7 @@ async function fillForm(
 async function renderForgotPasswordComponent() {
   const renderResult = await render(ForgotPasswordComponent, {
     providers: [
-      provideHttpClient(withFetch()),
+      provideHttpClient(),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
       provideZonelessChangeDetection(),

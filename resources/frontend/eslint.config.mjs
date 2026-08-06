@@ -72,7 +72,7 @@ export default defineConfig(
           checkArguments: false,
         },
       ],
-      "unicorn/prevent-abbreviations": [
+      "unicorn/name-replacements": [
         "error",
         {
           replacements: {

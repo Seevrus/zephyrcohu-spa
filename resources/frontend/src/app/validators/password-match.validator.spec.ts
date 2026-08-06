@@ -12,33 +12,24 @@ describe("passwordMatchValidator", () => {
     testGroup.reset();
   });
 
-  test("returns null if the password is missing", () => {
-    testGroup.setValue({
+  test.each([
+    {
+      label: "the password is missing",
       password: "",
       passwordAgain: "abc123",
-    });
-
-    const validationResult = passwordMatchValidator(testGroup);
-
-    expect(validationResult).toBeNull();
-  });
-
-  test("returns null if the second password is missing", () => {
-    testGroup.setValue({
+    },
+    {
+      label: "the second password is missing",
       password: "abc123",
       passwordAgain: "",
-    });
-
-    const validationResult = passwordMatchValidator(testGroup);
-
-    expect(validationResult).toBeNull();
-  });
-
-  test("returns null if the passwords match", () => {
-    testGroup.setValue({
+    },
+    {
+      label: "the passwords match",
       password: "abc123",
       passwordAgain: "abc123",
-    });
+    },
+  ])("returns null if $label", ({ password, passwordAgain }) => {
+    testGroup.setValue({ password, passwordAgain });
 
     const validationResult = passwordMatchValidator(testGroup);
 
