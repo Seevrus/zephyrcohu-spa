@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Http\Request;
 use Spatie\Csp\AddCspHeaders;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -28,6 +29,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->shouldRenderJsonWhen(
+            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+        );
+
         $exceptions->render(fn (AccessDeniedHttpException $e) => ErrorHandling::forbidden());
         $exceptions->render(fn (AuthenticationException $e) => ErrorHandling::unauthorized());
         $exceptions->render(fn (BadRequestHttpException $e) => ErrorHandling::bad_request());
