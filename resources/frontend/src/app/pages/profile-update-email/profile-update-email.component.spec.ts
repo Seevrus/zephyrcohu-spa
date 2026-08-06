@@ -6,7 +6,7 @@ import {
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { By } from "@angular/platform-browser";
-import { provideRouter } from "@angular/router";
+import { provideRouter, withComponentInputBinding } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import { within } from "@testing-library/dom";
@@ -334,17 +334,21 @@ async function renderComponent(email?: string, code?: string) {
 
   const renderResult = await render(ProfileUpdateEmailComponent, {
     initialRoute: `/profil/email_frissit?${queryParams.toString()}`,
+    inputs: { code, email },
     providers: [
       provideHttpClient(withFetch()),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
-      provideRouter([
-        {
-          path: "profil/email_frissit",
-          component: ProfileUpdateEmailComponent,
-          title: "Email cím megerősítése",
-        },
-      ]),
+      provideRouter(
+        [
+          {
+            path: "profil/email_frissit",
+            component: ProfileUpdateEmailComponent,
+            title: "Email cím megerősítése",
+          },
+        ],
+        withComponentInputBinding(),
+      ),
       provideZonelessChangeDetection(),
     ],
   });

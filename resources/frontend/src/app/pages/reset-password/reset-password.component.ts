@@ -1,20 +1,19 @@
 import {
   Component,
+  computed,
+  effect,
   inject,
-  type OnDestroy,
-  type OnInit,
+  input,
   signal,
   ViewChild,
 } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
 import { type RecaptchaComponent, RecaptchaModule } from "ng-recaptcha-2";
-import type { Subscription } from "rxjs";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { zephyr } from "../../../constants/forms";
-import { type QueryParamsByPath } from "../../app.routes";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
 import { BadCredentialsComponent } from "../../components/form-alerts/bad-credentials/bad-credentials.component";
 import { CaptchaFailedComponent } from "../../components/form-alerts/captcha-failed/captcha-failed.component";
@@ -46,22 +45,24 @@ import { passwordMatchValidator } from "../../validators/password-match.validato
   templateUrl: "./reset-password.component.html",
   styleUrl: "./reset-password.component.scss",
 })
-export class ResetPasswordComponent implements OnInit, OnDestroy {
+export class ResetPasswordComponent {
   @ViewChild("captchaRef") protected captchaRef!: RecaptchaComponent;
 
   private readonly captchaService = inject(CaptchaService);
   private readonly formBuilder = inject(FormBuilder);
-  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly usersQueryService = inject(UsersQueryService);
 
-  private queryParamsSubscription: Subscription | null = null;
+  readonly code = input<string>();
+  readonly email = input<string>();
 
-  private readonly emailCode = signal<string>("");
+  protected readonly parameterError = computed(
+    () => this.code() === undefined || this.email() === undefined,
+  );
+
   protected readonly isPasswordResetSuccessful = signal<boolean | undefined>(
     undefined,
   );
-  protected readonly parameterError = signal<boolean>(false);
 
   protected readonly isPasswordResetInProgress = signal(false);
   /**
@@ -77,24 +78,13 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     this.usersQueryService.resetPassword(),
   );
 
-  ngOnInit() {
-    this.queryParamsSubscription = this.route.queryParams.subscribe(
-      ({ code, email }: QueryParamsByPath["profil/jelszo_helyreallit"]) => {
-        if (code === undefined || email === undefined) {
-          this.parameterError.set(true);
-        } else {
-          this.emailCode.set(decodeURIComponent(code));
-          this.resetPasswordForm.patchValue({
-            email: decodeURIComponent(email),
-          });
-        }
-      },
-    );
-  }
+  private readonly patchEmailEffect = effect(() => {
+    const email = this.email();
 
-  ngOnDestroy() {
-    this.queryParamsSubscription?.unsubscribe();
-  }
+    if (email !== undefined) {
+      this.resetPasswordForm.patchValue({ email: decodeURIComponent(email) });
+    }
+  });
 
   readonly resetPasswordForm = this.formBuilder.group({
     email: ["", [Validators.required, Validators.email]],
@@ -107,7 +97,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     ),
   });
 
-  protected readonly email = this.resetPasswordForm.get("email");
+  protected readonly emailControl = this.resetPasswordForm.get("email");
 
   protected readonly password =
     this.resetPasswordForm.get("passwords.password");
@@ -136,8 +126,9 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
 
       this.resetPasswordForm.markAsPristine();
 
-      const code = this.emailCode();
-      const email = this.email?.value ?? "";
+      const codeParameter = this.code();
+      const code = codeParameter ? decodeURIComponent(codeParameter) : "";
+      const email = this.emailControl?.value ?? "";
       const password = this.password?.value ?? "";
 
       await this.resetPasswordMutation.mutateAsync({

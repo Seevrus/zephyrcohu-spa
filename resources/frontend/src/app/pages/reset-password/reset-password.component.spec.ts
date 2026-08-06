@@ -6,7 +6,11 @@ import {
 import { provideZonelessChangeDetection } from "@angular/core";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
 import { By } from "@angular/platform-browser";
-import { provideRouter, Router } from "@angular/router";
+import {
+  provideRouter,
+  Router,
+  withComponentInputBinding,
+} from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import { type UserEvent, userEvent } from "@testing-library/user-event";
@@ -381,16 +385,20 @@ async function renderResetPasswordComponent(
 
   const renderResult = await render(ResetPasswordComponent, {
     initialRoute: `profil/jelszo_helyreallit?${queryParams.toString()}`,
+    inputs: { code, email },
     providers: [
       provideHttpClient(withFetch()),
       provideHttpClientTesting(),
-      provideRouter([
-        {
-          path: "profil/jelszo_helyreallit",
-          component: ResetPasswordComponent,
-          title: "Jelszó helyreállítása",
-        },
-      ]),
+      provideRouter(
+        [
+          {
+            path: "profil/jelszo_helyreallit",
+            component: ResetPasswordComponent,
+            title: "Jelszó helyreállítása",
+          },
+        ],
+        withComponentInputBinding(),
+      ),
       provideTanStackQuery(testQueryClient),
       provideZonelessChangeDetection(),
     ],

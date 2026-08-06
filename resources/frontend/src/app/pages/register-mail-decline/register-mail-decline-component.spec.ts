@@ -5,7 +5,7 @@ import {
 } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
-import { provideRouter } from "@angular/router";
+import { provideRouter, withComponentInputBinding } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 
@@ -28,7 +28,7 @@ describe("Register Email, Revoke Registration", () => {
 
   describe("revoke errors", () => {
     const expectedMessage =
-      '<p _ngcontent-a-c3601743371=""> A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a <a _ngcontent-a-c3601743371="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c3601743371=""> Regisztrációhoz kérjük <a _ngcontent-a-c3601743371="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container--><!--container--><!--container-->';
+      '<p _ngcontent-a-c1282016595=""> A megadott link hibás. Kérjük, ellenőrizze, jól másolta-e be a böngészőjébe. Bármilyen probléma esetén kérjük, írjon nekünk a <a _ngcontent-a-c1282016595="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c1282016595=""> Regisztrációhoz kérjük <a _ngcontent-a-c1282016595="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container--><!--container--><!--container-->';
 
     test("bad query parameters", async () => {
       const { httpTesting } = await renderComponent(undefined, TEST_CODE);
@@ -99,7 +99,7 @@ describe("Register Email, Revoke Registration", () => {
       expect(
         (await screen.findByTestId("revoke-error-message")).innerHTML,
       ).toBe(
-        '<!--container--><p _ngcontent-a-c3601743371=""> A megadott e-mail cím már megerősítésre került a rendszerünkben. Regisztrációja törléséhez kérjük jelentkezzen be, ezek után az "Adatok módosítása" menüpontban lehetséges a regisztráció törlése. Bármilyen probléma esetén kérjük, írjon nekünk a <a _ngcontent-a-c3601743371="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c3601743371=""> Bejelentkezéshez kérjük <a _ngcontent-a-c3601743371="" routerlink="/bejelentkezes" class="zephyr-link" href="/bejelentkezes">kattintson ide</a>. </p><!--container--><!--container-->',
+        '<!--container--><p _ngcontent-a-c1282016595=""> A megadott e-mail cím már megerősítésre került a rendszerünkben. Regisztrációja törléséhez kérjük jelentkezzen be, ezek után az "Adatok módosítása" menüpontban lehetséges a regisztráció törlése. Bármilyen probléma esetén kérjük, írjon nekünk a <a _ngcontent-a-c1282016595="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c1282016595=""> Bejelentkezéshez kérjük <a _ngcontent-a-c1282016595="" routerlink="/bejelentkezes" class="zephyr-link" href="/bejelentkezes">kattintson ide</a>. </p><!--container--><!--container-->',
       );
 
       httpTesting.verify();
@@ -123,7 +123,7 @@ describe("Register Email, Revoke Registration", () => {
       expect(
         (await screen.findByTestId("revoke-error-message")).innerHTML,
       ).toBe(
-        '<!--container--><!--container--><p _ngcontent-a-c3601743371=""> Váratlan hiba képett fel a regisztráció elvetése során. Kérjük, írjon nekünk a <a _ngcontent-a-c3601743371="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c3601743371=""> Regisztrációhoz kérjük <a _ngcontent-a-c3601743371="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container-->',
+        '<!--container--><!--container--><p _ngcontent-a-c1282016595=""> Váratlan hiba képett fel a regisztráció elvetése során. Kérjük, írjon nekünk a <a _ngcontent-a-c1282016595="" class="zephyr-link" href="mailto:zephyr.bt@gmail.com">zephyr.bt@gmail.com</a> címre. </p><p _ngcontent-a-c1282016595=""> Regisztrációhoz kérjük <a _ngcontent-a-c1282016595="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p><!--container-->',
       );
 
       httpTesting.verify();
@@ -142,7 +142,7 @@ describe("Register Email, Revoke Registration", () => {
     expect(
       (await screen.findByTestId("revoke-success-message")).innerHTML,
     ).toBe(
-      '<p _ngcontent-a-c3601743371=""> A(z) abc@example.com e-mail címet és a hozzá tartozó minden adatot véglegesen töröltük az adatbázisunkból. </p><p _ngcontent-a-c3601743371=""> Regisztrációhoz kérjük <a _ngcontent-a-c3601743371="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p>',
+      '<p _ngcontent-a-c1282016595=""> A(z) abc@example.com e-mail címet és a hozzá tartozó minden adatot véglegesen töröltük az adatbázisunkból. </p><p _ngcontent-a-c1282016595=""> Regisztrációhoz kérjük <a _ngcontent-a-c1282016595="" routerlink="/regisztracio" class="zephyr-link" href="/regisztracio">kattintson ide</a>. </p>',
     );
 
     httpTesting.verify();
@@ -163,17 +163,21 @@ async function renderComponent(
 
   const renderResult = await render(RegisterMailDeclineComponent, {
     initialRoute: `/regisztracio/elvet?${queryParams.toString()}`,
+    inputs: { code, email },
     providers: [
       provideHttpClient(withFetch()),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
-      provideRouter([
-        {
-          path: "regisztracio/elvet",
-          component: RegisterMailDeclineComponent,
-          title: "Regisztráció elvetése",
-        },
-      ]),
+      provideRouter(
+        [
+          {
+            path: "regisztracio/elvet",
+            component: RegisterMailDeclineComponent,
+            title: "Regisztráció elvetése",
+          },
+        ],
+        withComponentInputBinding(),
+      ),
       provideZonelessChangeDetection(),
     ],
   });

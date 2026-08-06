@@ -6,7 +6,7 @@ import {
 import { provideLocationMocks } from "@angular/common/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
-import { provideRouter } from "@angular/router";
+import { provideRouter, withComponentInputBinding } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
@@ -318,7 +318,7 @@ function renderAppComponent(initialRoute: string) {
       provideHttpClient(withFetch()),
       provideTanStackQuery(testQueryClient),
       provideHttpClientTesting(),
-      provideRouter(routes),
+      provideRouter(routes, withComponentInputBinding()),
       provideLocationMocks(),
       provideZonelessChangeDetection(),
     ],

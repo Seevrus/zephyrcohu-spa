@@ -2,17 +2,13 @@ import {
   Component,
   computed,
   inject,
-  type OnDestroy,
-  type OnInit,
-  signal,
+  input,
+  linkedSignal,
 } from "@angular/core";
 import { type PageEvent } from "@angular/material/paginator";
 import { MatProgressBar } from "@angular/material/progress-bar";
-import { ActivatedRoute } from "@angular/router";
 import { injectQuery } from "@tanstack/angular-query-experimental";
-import type { Subscription } from "rxjs";
 
-import { type QueryParamsByPath } from "../../app.routes";
 import { AdditionalNewsAvailableComponent } from "../../components/additional-news-available/additional-news-available.component";
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { NewsArticleListItemComponent } from "../../components/news-article-list-item/news-article-list-item.component";
@@ -38,13 +34,19 @@ import { NewsQueryService } from "../../services/news.query.service";
   templateUrl: "./news.component.html",
   styleUrl: "./news.component.scss",
 })
-export class NewsComponent implements OnInit, OnDestroy {
-  private readonly route = inject(ActivatedRoute);
+export class NewsComponent {
   private readonly newsQueryService = inject(NewsQueryService);
 
-  private queryParamsSubscription: Subscription | null = null;
+  readonly oldal = input<string>();
 
-  protected readonly currentPage = signal<number | undefined>(undefined);
+  private readonly pageFromQueryParam = computed(() => {
+    const pageNumber = this.oldal() ? Number(this.oldal()) : undefined;
+    return Number.isInteger(pageNumber) ? pageNumber : 1;
+  });
+
+  protected readonly currentPage = linkedSignal(() =>
+    this.pageFromQueryParam(),
+  );
 
   private readonly newsQuery = injectQuery(() =>
     this.newsQueryService.getNews(this.currentPage()),
@@ -79,19 +81,6 @@ export class NewsComponent implements OnInit, OnDestroy {
       this.numberOfNewsAvailable() === 0 &&
       this.numberOfAdditionalNews() > 0,
   );
-
-  ngOnInit() {
-    this.queryParamsSubscription = this.route.queryParams.subscribe(
-      ({ oldal }: QueryParamsByPath["hirek"]) => {
-        const pageNumber = oldal ? Number(oldal) : undefined;
-        this.currentPage.set(Number.isInteger(pageNumber) ? pageNumber : 1);
-      },
-    );
-  }
-
-  ngOnDestroy() {
-    this.queryParamsSubscription?.unsubscribe();
-  }
 
   protected onPaginationModelChange({ pageIndex }: PageEvent) {
     this.currentPage.set(pageIndex + 1);

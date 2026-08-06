@@ -3,19 +3,6 @@ import { type Routes } from "@angular/router";
 import { guestGuard } from "./guards/guest.guard";
 import { userGuard } from "./guards/user.guard";
 
-export type QueryParamsByPath = {
-  hirek: {
-    oldal?: string;
-  };
-  "profil/email_frissit": {
-    code?: string;
-    email?: string;
-  };
-  "profil/jelszo_helyreallit": QueryParamsByPath["profil/email_frissit"];
-  "regisztracio/elvet": QueryParamsByPath["profil/email_frissit"];
-  "regisztracio/megerosit": QueryParamsByPath["profil/email_frissit"];
-};
-
 export const routes: Routes = [
   {
     path: "",

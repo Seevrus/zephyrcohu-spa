@@ -8,7 +8,11 @@ import {
   importProvidersFrom,
   provideBrowserGlobalErrorListeners,
 } from "@angular/core";
-import { provideRouter, TitleStrategy } from "@angular/router";
+import {
+  provideRouter,
+  TitleStrategy,
+  withComponentInputBinding,
+} from "@angular/router";
 import {
   provideTanStackQuery,
   QueryClient,
@@ -49,7 +53,7 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([credentialsInterceptor, xsrfInterceptor]),
     ),
-    provideRouter(routes),
+    provideRouter(routes, withComponentInputBinding()),
     provideTanStackQuery(queryClient, withDevtools()),
     importProvidersFrom(RecaptchaModule),
     { provide: TitleStrategy, useClass: AppTitleStrategy },

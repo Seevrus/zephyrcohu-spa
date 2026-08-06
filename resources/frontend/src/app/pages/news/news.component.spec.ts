@@ -5,7 +5,7 @@ import {
 } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
-import { provideRouter } from "@angular/router";
+import { provideRouter, withComponentInputBinding } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor, within } from "@testing-library/angular";
 import { type UserEvent, userEvent } from "@testing-library/user-event";
@@ -226,17 +226,21 @@ describe("NewsComponent", () => {
 async function renderNews(page = 1) {
   const renderResult = await render(NewsComponent, {
     initialRoute: `/hirek?oldal=${page}`,
+    inputs: { oldal: page.toString() },
     providers: [
       provideHttpClient(withFetch()),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
-      provideRouter([
-        {
-          path: "hirek",
-          component: NewsComponent,
-          title: "Hírek",
-        },
-      ]),
+      provideRouter(
+        [
+          {
+            path: "hirek",
+            component: NewsComponent,
+            title: "Hírek",
+          },
+        ],
+        withComponentInputBinding(),
+      ),
       provideZonelessChangeDetection(),
     ],
   });

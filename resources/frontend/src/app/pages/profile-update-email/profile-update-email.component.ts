@@ -1,14 +1,14 @@
 import {
   Component,
+  effect,
   inject,
-  type OnDestroy,
-  type OnInit,
+  input,
   signal,
   ViewChild,
 } from "@angular/core";
 import {
   disabled,
-  email,
+  email as emailValidator,
   form,
   FormField,
   pattern,
@@ -22,13 +22,10 @@ import {
   MatInput,
   MatLabel,
 } from "@angular/material/input";
-import { ActivatedRoute } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
 import { type RecaptchaComponent, RecaptchaModule } from "ng-recaptcha-2";
-import { type Subscription } from "rxjs";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
-import { type QueryParamsByPath } from "../../app.routes";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
 import { BadCredentialsComponent } from "../../components/form-alerts/bad-credentials/bad-credentials.component";
 import { CaptchaFailedComponent } from "../../components/form-alerts/captcha-failed/captcha-failed.component";
@@ -64,14 +61,14 @@ import { passwordPattern } from "../../validators/password.validator";
     RecaptchaModule,
   ],
 })
-export class ProfileUpdateEmailComponent implements OnInit, OnDestroy {
+export class ProfileUpdateEmailComponent {
   @ViewChild("captchaRef") protected captchaRef!: RecaptchaComponent;
 
   private readonly captchaService = inject(CaptchaService);
-  private readonly route = inject(ActivatedRoute);
   private readonly usersQueryService = inject(UsersQueryService);
 
-  private queryParamsSubscription: Subscription | null = null;
+  readonly code = input<string>();
+  readonly email = input<string>();
 
   protected readonly confirmNewEmailMutation = injectMutation(() =>
     this.usersQueryService.updateProfileConfirmEmail(),
@@ -103,7 +100,7 @@ export class ProfileUpdateEmailComponent implements OnInit, OnDestroy {
     (schemaPath) => {
       disabled(schemaPath.newEmail);
       required(schemaPath.newEmail, { message: "Kötelező mező" });
-      email(schemaPath.newEmail, {
+      emailValidator(schemaPath.newEmail, {
         message: "Email cím formátuma nem megfelelő",
       });
 
@@ -117,22 +114,17 @@ export class ProfileUpdateEmailComponent implements OnInit, OnDestroy {
     },
   );
 
-  ngOnInit() {
-    this.queryParamsSubscription = this.route.queryParams.subscribe(
-      ({ code, email }: QueryParamsByPath["profil/email_frissit"]) => {
-        if (code === undefined || email === undefined) {
-          this.confirmError.set("BAD_QUERY_PARAMS");
-        } else {
-          this.updateEmailForm.newEmail().value.set(decodeURIComponent(email));
-          this.updateEmailForm.emailCode().value.set(decodeURIComponent(code));
-        }
-      },
-    );
-  }
+  private readonly populateFormFromQueryParamsEffect = effect(() => {
+    const code = this.code();
+    const email = this.email();
 
-  ngOnDestroy() {
-    this.queryParamsSubscription?.unsubscribe();
-  }
+    if (code === undefined || email === undefined) {
+      this.confirmError.set("BAD_QUERY_PARAMS");
+    } else {
+      this.updateEmailForm.newEmail().value.set(decodeURIComponent(email));
+      this.updateEmailForm.emailCode().value.set(decodeURIComponent(code));
+    }
+  });
 
   protected onConfirmNewEmailSubmit(event: Event) {
     event.preventDefault();
