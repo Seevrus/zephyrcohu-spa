@@ -15,7 +15,6 @@
     "typecheck": "tsc -p tsconfig.app.json"
   },
   "dependencies": {
-    "@angular/animations": "^22.1.0",
     "@angular/cdk": "22.1.1",
     "@angular/common": "^22.1.0",
     "@angular/compiler": "^22.1.0",
@@ -23,7 +22,6 @@
     "@angular/forms": "^22.1.0",
     "@angular/material": "22.1.1",
     "@angular/platform-browser": "^22.1.0",
-    "@angular/platform-browser-dynamic": "^22.1.0",
     "@angular/router": "^22.1.0",
     "@tanstack/angular-query-experimental": "^5.101.4",
     "check-password-strength": "^3.0.0",
