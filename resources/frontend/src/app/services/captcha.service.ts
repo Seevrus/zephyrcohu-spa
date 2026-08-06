@@ -1,11 +1,9 @@
-import { inject, Injectable } from "@angular/core";
+import { inject, Service } from "@angular/core";
 import { injectMutation } from "@tanstack/angular-query-experimental";
 
 import { CaptchaQueryService } from "./captcha.query.service";
 
-@Injectable({
-  providedIn: "root",
-})
+@Service()
 export class CaptchaService {
   private readonly captchaQueryService = inject(CaptchaQueryService);
 

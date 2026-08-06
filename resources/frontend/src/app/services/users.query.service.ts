@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
+import { inject, Service } from "@angular/core";
 import {
   mutationOptions,
   QueryClient,
@@ -25,9 +25,7 @@ import {
 import { throwHttpError } from "../../utils/throwHttpError";
 import { mutationKeys, queryKeys } from "./queryKeys";
 
-@Injectable({
-  providedIn: "root",
-})
+@Service()
 export class UsersQueryService {
   private readonly http = inject(HttpClient);
   private readonly queryClient = inject(QueryClient);

@@ -1,12 +1,10 @@
-import { inject, Injectable, signal } from "@angular/core";
+import { inject, Service, signal } from "@angular/core";
 import { injectMutation } from "@tanstack/angular-query-experimental";
 
 import { ZephyrHttpError } from "../../api/ZephyrHttpError";
 import { UsersQueryService } from "./users.query.service";
 
-@Injectable({
-  providedIn: "root",
-})
+@Service()
 export class ResendConfirmationEmailService {
   private readonly usersQueryService = inject(UsersQueryService);
 

@@ -1,5 +1,5 @@
 import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
+import { inject, Service } from "@angular/core";
 import { mutationOptions } from "@tanstack/angular-query-experimental";
 import { catchError, lastValueFrom, throwError } from "rxjs";
 
@@ -12,9 +12,7 @@ import {
 import { throwHttpError } from "../../utils/throwHttpError";
 import { mutationKeys } from "./queryKeys";
 
-@Injectable({
-  providedIn: "root",
-})
+@Service()
 export class CaptchaQueryService {
   private readonly http = inject(HttpClient);
 

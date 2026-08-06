@@ -1,5 +1,5 @@
 import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
+import { inject, Service } from "@angular/core";
 import {
   keepPreviousData,
   QueryClient,
@@ -18,9 +18,7 @@ import {
 import { throwHttpError } from "../../utils/throwHttpError";
 import { queryKeys } from "./queryKeys";
 
-@Injectable({
-  providedIn: "root",
-})
+@Service()
 export class NewsQueryService {
   private readonly http = inject(HttpClient);
   private readonly queryClient = inject(QueryClient);

@@ -1,10 +1,10 @@
-import { inject, Injectable } from "@angular/core";
+import { inject, Service } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { type RouterStateSnapshot, TitleStrategy } from "@angular/router";
 
 import { BreadcrumbService } from "./services/breadcrumb.service";
 
-@Injectable({ providedIn: "root" })
+@Service()
 export class AppTitleStrategy extends TitleStrategy {
   private readonly breadcrumbService = inject(BreadcrumbService);
   private readonly title = inject(Title);
