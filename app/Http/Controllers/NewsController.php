@@ -81,7 +81,11 @@ class NewsController extends Controller {
                 );
             }
 
-            $user->readNews()->syncWithoutDetaching([$newsItem->id]);
+            UserNews::query()->insertOrIgnore([
+                'user_id' => $user->id,
+                'news_id' => $newsItem->id,
+                'read_at' => Carbon::now(),
+            ]);
 
             return response(null, 204);
         } catch (Throwable $e) {

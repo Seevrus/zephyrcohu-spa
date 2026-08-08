@@ -129,6 +129,7 @@ function resetGetNewsItemTestData(): void {
         [
             'user_id' => 1,
             'news_id' => 1,
+            'read_at' => '2026-02-08 21:40:00',
         ],
     ]);
 }

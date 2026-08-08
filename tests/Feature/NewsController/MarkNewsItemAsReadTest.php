@@ -41,10 +41,11 @@ describe('Mark News Item As Read', function () {
         $this->assertDatabaseHas('users_news', [
             'user_id' => 1,
             'news_id' => 2,
+            'read_at' => '2026-02-28 21:59:40',
         ]);
     });
 
-    test('does not create a duplicate row when marking an already read item as read', function () {
+    test('does not create a duplicate row or change read_at when marking an already read item as read', function () {
         Sanctum::actingAs(
             User::find(1),
         );
@@ -54,6 +55,11 @@ describe('Mark News Item As Read', function () {
         $response->assertStatus(204)->assertNoContent();
 
         $this->assertDatabaseCount('users_news', 1);
+        $this->assertDatabaseHas('users_news', [
+            'user_id' => 1,
+            'news_id' => 1,
+            'read_at' => '2026-02-08 21:40:00',
+        ]);
     });
 });
 
@@ -95,6 +101,7 @@ function resetMarkNewsItemAsReadTestData(): void {
         [
             'user_id' => 1,
             'news_id' => 1,
+            'read_at' => '2026-02-08 21:40:00',
         ],
     ]);
 }
