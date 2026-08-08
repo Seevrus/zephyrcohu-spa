@@ -19,4 +19,12 @@ class NewsPolicy {
 
         return Response::allow();
     }
+
+    public function markNewsItemAsRead(User $sender, ?News $news = null): Response {
+        if (! $news) {
+            return Response::denyWithStatus(404, ErrorCode::GENERIC_NOT_FOUND->value);
+        }
+
+        return Response::allow();
+    }
 }

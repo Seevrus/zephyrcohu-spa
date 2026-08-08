@@ -66,4 +66,26 @@ class NewsController extends Controller {
 
         return new NewsResource($newsItem);
     }
+
+    public function markNewsItemAsRead(Request $request, string $id) {
+        try {
+            $user = $request->user();
+            $newsItem = News::find($id);
+
+            $canMark = Gate::inspect('markNewsItemAsRead', [News::class, $newsItem]);
+
+            if ($canMark->denied()) {
+                return response(
+                    new ErrorResource($canMark->status(), ErrorCode::from($canMark->message())),
+                    $canMark->status()
+                );
+            }
+
+            $user->readNews()->syncWithoutDetaching([$newsItem->id]);
+
+            return response(null, 204);
+        } catch (Throwable $e) {
+            abort(500);
+        }
+    }
 }

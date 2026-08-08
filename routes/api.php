@@ -12,6 +12,7 @@ Route::controller(CaptchaController::class)->prefix('captcha')->group(function (
 Route::controller(NewsController::class)->prefix('news')->group(function () {
     Route::get('/', 'getNews');
     Route::get('/{id}', 'getNewsItem');
+    Route::post('/{id}/read', 'markNewsItemAsRead')->middleware('auth:sanctum');
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function () {
