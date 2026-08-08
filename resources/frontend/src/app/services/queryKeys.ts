@@ -3,6 +3,7 @@ export const mutationKeys = {
   deleteProfile: ["delete_profile"],
   login: ["login"],
   logout: ["logout"],
+  markNewsItemAsRead: ["mark_news_item_as_read"],
   register: ["register"],
   registerConfirmEmail: ["register_confirm_email"],
   registerResendConfirmationEmail: ["register_resend_confirm_email"],

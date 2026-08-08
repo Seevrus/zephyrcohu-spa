@@ -11,7 +11,10 @@ import { MatDivider } from "@angular/material/list";
 import { MatProgressBar } from "@angular/material/progress-bar";
 import { DomSanitizer, Title } from "@angular/platform-browser";
 import { Router } from "@angular/router";
-import { injectQuery } from "@tanstack/angular-query-experimental";
+import {
+  injectMutation,
+  injectQuery,
+} from "@tanstack/angular-query-experimental";
 
 import { formatDisplayDate } from "../../../mappers/dates";
 import { BreadcrumbService } from "../../services/breadcrumb.service";
@@ -39,6 +42,10 @@ export class NewsArticleComponent {
     const numericId = Number(this.id());
     return Number.isInteger(numericId) ? numericId : undefined;
   });
+
+  private readonly markNewsItemAsReadMutation = injectMutation(() =>
+    this.newsQueryService.markNewsItemAsRead(),
+  );
 
   private readonly newsItemQuery = injectQuery(() =>
     this.newsQueryService.getNewsItem(this.newsItemId()),
@@ -79,6 +86,9 @@ export class NewsArticleComponent {
   });
 
   protected onMarkedAsRead() {
-    // Intentionally empty: marking articles as read is not implemented yet.
+    const newsItemId = this.newsItemId();
+    if (newsItemId !== undefined) {
+      this.markNewsItemAsReadMutation.mutate(newsItemId);
+    }
   }
 }

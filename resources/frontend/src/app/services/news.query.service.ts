@@ -2,6 +2,7 @@ import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
 import { inject, Service } from "@angular/core";
 import {
   keepPreviousData,
+  mutationOptions,
   QueryClient,
   queryOptions,
 } from "@tanstack/angular-query-experimental";
@@ -16,7 +17,7 @@ import {
   type NewsItemResponse,
 } from "../../types/news";
 import { throwHttpError } from "../../utils/throwHttpError";
-import { queryKeys } from "./queryKeys";
+import { mutationKeys, queryKeys } from "./queryKeys";
 
 @Service()
 export class NewsQueryService {
@@ -65,6 +66,30 @@ export class NewsQueryService {
             ),
         ),
       enabled: id !== undefined,
+    });
+  }
+
+  markNewsItemAsRead() {
+    return mutationOptions<void, ZephyrHttpError, number>({
+      mutationKey: mutationKeys.markNewsItemAsRead,
+      mutationFn: (id) =>
+        lastValueFrom(
+          this.http
+            .post<void>(`${environment.apiUrl}/news/${id}/read`, null)
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
+      onSuccess: (_data, id) => {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.newsItem(id),
+        });
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.news(),
+        });
+      },
     });
   }
 
