@@ -6,7 +6,7 @@ export class BreadcrumbService {
 
   setBreadcrumb(title: string) {
     const breadcrumb = BreadcrumbService.breadcrumbsByTitle[title];
-    this.breadcrumb.set(breadcrumb);
+    this.breadcrumb.set(breadcrumb ?? title);
   }
 
   private static readonly breadcrumbsByTitle: Record<string, string> = {

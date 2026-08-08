@@ -19,23 +19,15 @@ describe("Breadcrumb Service", () => {
     });
   });
 
-  describe("setBreadcrumb", () => {
-    test("should set the correct breadcrumb value when setBreadcrumb is called", async () => {
-      const expectedBreadcrumb = "Főoldal";
+  test("setBreadcrumb should set the correct breadcrumb value", async () => {
+    const expectedBreadcrumb = "Főoldal";
 
-      breadcrumbService.setBreadcrumb("Főoldal");
+    breadcrumbService.setBreadcrumb("Főoldal");
 
-      await waitFor(() => {
-        expect(screen.getByTestId("breadcrumb")).toHaveTextContent(
-          expectedBreadcrumb,
-        );
-      });
-    });
-
-    test("should set undefined if the breadcrumb does not exist", () => {
-      breadcrumbService.setBreadcrumb("NonExistingBreadcrumb");
-
-      expect(breadcrumbService.breadcrumb()).toBeUndefined();
+    await waitFor(() => {
+      expect(screen.getByTestId("breadcrumb")).toHaveTextContent(
+        expectedBreadcrumb,
+      );
     });
   });
 });

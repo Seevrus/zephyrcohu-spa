@@ -251,7 +251,10 @@ describe("App Component", () => {
 
     test.each([
       { path: "/regisztracio", testId: "register-component" },
-      { path: "/regisztracio/elvet", testId: "register-mail-decline-component" },
+      {
+        path: "/regisztracio/elvet",
+        testId: "register-mail-decline-component",
+      },
       {
         path: "/regisztracio/megerosit",
         testId: "register-mail-accept-component",
@@ -264,9 +267,7 @@ describe("App Component", () => {
       );
       request.flush(getSessionErrorResponse);
 
-      await expect(
-        screen.findByTestId(testId),
-      ).resolves.toBeInTheDocument();
+      await expect(screen.findByTestId(testId)).resolves.toBeInTheDocument();
     });
   });
 });

@@ -29,7 +29,7 @@
         </mat-form-field>
         <app-password-repeat
           [formGroupName]="'passwords'"
-          [showMessage]="!!newPassword?.value && newPassword?.valid"
+          [showMessage]="!!newPassword?.value && newPassword.valid"
         />
         <mat-checkbox formControlName="newsletter">
           Szeretnék hírlevelet kapni a fontosabb újdonságokról.

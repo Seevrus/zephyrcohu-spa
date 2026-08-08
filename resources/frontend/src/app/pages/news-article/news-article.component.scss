@@ -1,0 +1,51 @@
+@use "@angular/material" as mat;
+@use "../../../shared/mixins";
+
+:host(.app-news-article) {
+  @include mixins.zephyr-main;
+
+  .news-article {
+    width: 100%;
+
+    .news-article-title-container {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      margin: 1rem 0;
+
+      .news-article-with-chip {
+        align-items: center;
+        display: flex;
+        gap: 1rem;
+
+        @include mat.chips-overrides(
+          (
+            label-text-color: var(--mat-sys-on-primary),
+            elevated-container-color: var(--mat-sys-on-primary-container),
+            outline-width: 0,
+          )
+        );
+      }
+
+      h2,
+      h4 {
+        margin: 0;
+      }
+    }
+
+    .news-article-additional-content {
+      margin-top: 1rem;
+    }
+
+    .mark-as-read-container {
+      margin-top: 1rem;
+
+      .mark-as-read {
+        display: inline-block;
+        margin-top: 0.5rem;
+      }
+    }
+  }
+}
