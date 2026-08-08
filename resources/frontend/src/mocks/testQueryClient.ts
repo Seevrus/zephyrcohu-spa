@@ -1,5 +1,5 @@
 import { QueryClient } from "@tanstack/angular-query-experimental";
-import { afterEach } from "vitest";
+import { afterEach, beforeEach } from "vitest";
 
 export const testQueryClient = new QueryClient({
   defaultOptions: {
@@ -19,6 +19,10 @@ export const testQueryClient = new QueryClient({
  * query data to leak between tests. Registering the hook in this module means it
  * always runs against the instance the spec file actually uses.
  */
+beforeEach(() => {
+  testQueryClient.clear();
+});
+
 afterEach(() => {
   testQueryClient.clear();
 });

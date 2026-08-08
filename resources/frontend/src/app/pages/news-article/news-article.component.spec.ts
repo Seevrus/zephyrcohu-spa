@@ -288,16 +288,7 @@ describe("NewsArticleComponent", () => {
   test("redirects to /hirek when the id route param is not a valid number", async () => {
     const navigateSpy = vi.spyOn(Router.prototype, "navigate");
 
-    await render(NewsArticleComponent, {
-      inputs: { id: "not-a-number" },
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        provideTanStackQuery(testQueryClient),
-        provideRouter([{ path: "hirek", children: [] }]),
-        provideZonelessChangeDetection(),
-      ],
-    });
+    const { httpTesting } = await renderNewsArticle("not-a-number");
 
     await waitFor(() => {
       expect(navigateSpy).toHaveBeenCalledWith(["/hirek"], {
@@ -306,6 +297,8 @@ describe("NewsArticleComponent", () => {
     });
 
     navigateSpy.mockRestore();
+
+    httpTesting.verify();
   });
 });
 
