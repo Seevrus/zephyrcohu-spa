@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\OfferController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +14,11 @@ Route::controller(NewsController::class)->prefix('news')->group(function () {
     Route::get('/', 'getNews');
     Route::get('/{id}', 'getNewsItem');
     Route::post('/{id}/read', 'markNewsItemAsRead')->middleware('auth:sanctum');
+});
+
+Route::controller(OfferController::class)->prefix('offers')->group(function () {
+    Route::get('/', 'getOffers');
+    Route::get('/{id}', 'getOfferItem');
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function () {
