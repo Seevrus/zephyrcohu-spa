@@ -1,0 +1,40 @@
+<div data-testid="offers-component" class="offers-component">
+  @if (areOffersError()) {
+    <app-form-unexpected-error />
+  } @else {
+    @if (noOffersAvailable()) {
+      <app-no-offers-available />
+    } @else if (noPublicOffersAvailable()) {
+      <app-no-public-offers-available
+        [numberOfAdditionalOffers]="numberOfAdditionalOffers()"
+      />
+    } @else {
+      @if (areAdditionalOffersAvailable() && currentPage() === 1) {
+        <app-additional-offers-available
+          [numberOfAdditionalOffers]="numberOfAdditionalOffers()"
+        />
+      }
+
+      @if (areOffersFetching()) {
+        <mat-progress-bar mode="indeterminate" />
+      } @else {
+        @for (article of offers(); track article.id) {
+          <app-offer-article-list-item
+            [additionalContent]="article.additionalContent"
+            [id]="article.id"
+            [mainContent]="article.mainContent"
+            [title]="article.title"
+            [updatedAt]="article.updatedAt"
+          />
+        }
+      }
+
+      <app-paginator-hu
+        [currentPage]="currentPage() ?? 1"
+        [disabled]="areOffersFetching()"
+        [total]="numberOfOffersAvailable()"
+        (pageChanged)="onPaginationModelChange($event)"
+      />
+    }
+  }
+</div>

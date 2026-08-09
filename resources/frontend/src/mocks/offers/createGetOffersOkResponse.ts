@@ -1,0 +1,253 @@
+import {
+  type OfferCollectionResponse,
+  type OfferResponse,
+} from "../../types/offers";
+
+export function createGetOffersOkResponse({
+  isLoggedIn,
+  numberOfOffers,
+  page = 1,
+  total,
+}: {
+  isLoggedIn: boolean;
+  numberOfOffers?: number;
+  page?: 1 | 2;
+  total?: number;
+}): OfferCollectionResponse {
+  const offers = isLoggedIn ? allOffers : publicOffers;
+
+  const pageSlice = numberOfOffers ?? 10;
+
+  const offersResponse =
+    page === 1 ? offers.slice(0, pageSlice) : offers.slice(pageSlice);
+
+  return {
+    data: offersResponse,
+    meta: {
+      count: numberOfOffers ?? offers.length,
+      total: total ?? offers.length,
+    },
+  };
+}
+
+const allOffers: OfferResponse[] = [
+  {
+    id: 1,
+    audience: "P",
+    title: "Offer 1",
+    mainContent: "Offer 1 main content",
+    additionalContent: null,
+    createdAt: "2026-02-08T18:25:00.000000Z",
+    updatedAt: "2026-02-08T18:25:00.000000Z",
+  },
+  {
+    id: 2,
+    audience: "P",
+    title: "Offer 2",
+    mainContent: "Offer 2 main content",
+    additionalContent: null,
+    createdAt: "2026-02-07T18:25:00.000000Z",
+    updatedAt: "2026-02-07T18:25:00.000000Z",
+  },
+  {
+    id: 3,
+    audience: "A",
+    title: "Offer 3",
+    mainContent: "Offer 3 main content",
+    additionalContent: null,
+    createdAt: "2026-02-06T18:25:00.000000Z",
+    updatedAt: "2026-02-06T18:25:00.000000Z",
+  },
+  {
+    id: 4,
+    audience: "P",
+    title: "Offer 4",
+    mainContent: "Offer 4 main content",
+    additionalContent: null,
+    createdAt: "2026-02-05T18:25:00.000000Z",
+    updatedAt: "2026-02-05T19:25:00.000000Z",
+  },
+  {
+    id: 5,
+    audience: "A",
+    title: "Offer 5",
+    mainContent: "Offer 5 main content",
+    additionalContent: null,
+    createdAt: "2026-02-04T18:25:00.000000Z",
+    updatedAt: "2026-02-04T18:25:00.000000Z",
+  },
+  {
+    id: 6,
+    audience: "P",
+    title: "Offer 6",
+    mainContent: "Offer 6 main content",
+    additionalContent: null,
+    createdAt: "2026-02-03T18:25:00.000000Z",
+    updatedAt: "2026-02-03T19:25:00.000000Z",
+  },
+  {
+    id: 7,
+    audience: "P",
+    title: "Offer 7",
+    mainContent: "Offer 7 main content",
+    additionalContent: null,
+    createdAt: "2026-02-02T18:25:00.000000Z",
+    updatedAt: "2026-02-02T18:25:00.000000Z",
+  },
+  {
+    id: 8,
+    audience: "P",
+    title: "Offer 8",
+    mainContent: "Offer 8 main content",
+    additionalContent: null,
+    createdAt: "2026-02-01T18:25:00.000000Z",
+    updatedAt: "2026-02-01T19:25:00.000000Z",
+  },
+  {
+    id: 9,
+    audience: "P",
+    title: "Offer 9",
+    mainContent: "Offer 9 main content",
+    additionalContent: null,
+    createdAt: "2026-01-31T18:25:00.000000Z",
+    updatedAt: "2026-01-31T18:25:00.000000Z",
+  },
+  {
+    id: 10,
+    audience: "A",
+    title: "Offer 10",
+    mainContent: "Offer 10 main content",
+    additionalContent: null,
+    createdAt: "2026-01-30T18:25:00.000000Z",
+    updatedAt: "2026-01-30T19:25:00.000000Z",
+  },
+  {
+    id: 11,
+    audience: "P",
+    title: "Offer 11",
+    mainContent: "Offer 11 main content",
+    additionalContent: null,
+    createdAt: "2026-01-29T18:25:00.000000Z",
+    updatedAt: "2026-01-29T18:25:00.000000Z",
+  },
+  {
+    id: 12,
+    audience: "A",
+    title: "Offer 12",
+    mainContent: "Offer 12 main content",
+    additionalContent: null,
+    createdAt: "2026-01-28T18:25:00.000000Z",
+    updatedAt: "2026-01-28T18:25:00.000000Z",
+  },
+];
+
+const publicOffers: OfferResponse[] = [
+  {
+    id: 1,
+    audience: "P",
+    title: "Offer 1",
+    mainContent: "Offer 1 main content",
+    additionalContent: null,
+    createdAt: "2026-02-08T18:25:00.000000Z",
+    updatedAt: "2026-02-08T18:25:00.000000Z",
+  },
+  {
+    id: 2,
+    audience: "P",
+    title: "Offer 2",
+    mainContent: "Offer 2 main content",
+    additionalContent: null,
+    createdAt: "2026-02-07T18:25:00.000000Z",
+    updatedAt: "2026-02-07T18:25:00.000000Z",
+  },
+  {
+    id: 3,
+    audience: "P",
+    title: "Offer 3",
+    mainContent: "Offer 3 main content",
+    additionalContent: null,
+    createdAt: "2026-02-06T18:25:00.000000Z",
+    updatedAt: "2026-02-06T18:25:00.000000Z",
+  },
+  {
+    id: 4,
+    audience: "P",
+    title: "Offer 4",
+    mainContent: "Offer 4 main content",
+    additionalContent: null,
+    createdAt: "2026-02-05T18:25:00.000000Z",
+    updatedAt: "2026-02-05T19:25:00.000000Z",
+  },
+  {
+    id: 5,
+    audience: "P",
+    title: "Offer 5",
+    mainContent: "Offer 5 main content",
+    additionalContent: null,
+    createdAt: "2026-02-04T18:25:00.000000Z",
+    updatedAt: "2026-02-04T18:25:00.000000Z",
+  },
+  {
+    id: 6,
+    audience: "P",
+    title: "Offer 6",
+    mainContent: "Offer 6 main content",
+    additionalContent: null,
+    createdAt: "2026-02-03T18:25:00.000000Z",
+    updatedAt: "2026-02-03T19:25:00.000000Z",
+  },
+  {
+    id: 7,
+    audience: "P",
+    title: "Offer 7",
+    mainContent: "Offer 7 main content",
+    additionalContent: null,
+    createdAt: "2026-02-02T18:25:00.000000Z",
+    updatedAt: "2026-02-02T18:25:00.000000Z",
+  },
+  {
+    id: 8,
+    audience: "P",
+    title: "Offer 8",
+    mainContent: "Offer 8 main content",
+    additionalContent: null,
+    createdAt: "2026-02-01T18:25:00.000000Z",
+    updatedAt: "2026-02-01T19:25:00.000000Z",
+  },
+  {
+    id: 9,
+    audience: "P",
+    title: "Offer 9",
+    mainContent: "Offer 9 main content",
+    additionalContent: null,
+    createdAt: "2026-01-31T18:25:00.000000Z",
+    updatedAt: "2026-01-31T18:25:00.000000Z",
+  },
+  {
+    id: 10,
+    audience: "P",
+    title: "Offer 10",
+    mainContent: "Offer 10 main content",
+    additionalContent: null,
+    createdAt: "2026-01-30T18:25:00.000000Z",
+    updatedAt: "2026-01-30T19:25:00.000000Z",
+  },
+  {
+    id: 11,
+    audience: "P",
+    title: "Offer 11",
+    mainContent: "Offer 11 main content",
+    additionalContent: null,
+    createdAt: "2026-01-29T18:25:00.000000Z",
+    updatedAt: "2026-01-29T18:25:00.000000Z",
+  },
+  {
+    id: 12,
+    audience: "P",
+    title: "Offer 12",
+    mainContent: "Offer 12 main content",
+    additionalContent: null,
+    createdAt: "2026-01-28T18:25:00.000000Z",
+    updatedAt: "2026-01-28T18:25:00.000000Z",
+  },
+];

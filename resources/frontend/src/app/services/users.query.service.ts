@@ -48,6 +48,9 @@ export class UsersQueryService {
           queryKey: queryKeys.news(),
         });
         this.queryClient.invalidateQueries({
+          queryKey: queryKeys.offers(),
+        });
+        this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
       },
@@ -75,6 +78,9 @@ export class UsersQueryService {
           queryKey: queryKeys.news(),
         });
         this.queryClient.invalidateQueries({
+          queryKey: queryKeys.offers(),
+        });
+        this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
       },
@@ -93,6 +99,9 @@ export class UsersQueryService {
       onSuccess: () => {
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.news(),
+        });
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.offers(),
         });
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
@@ -243,6 +252,9 @@ export class UsersQueryService {
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.news(),
         });
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.offers(),
+        });
         await this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
@@ -336,6 +348,9 @@ export class UsersQueryService {
       onSuccess: async () => {
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.news(),
+        });
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.offers(),
         });
         await this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,

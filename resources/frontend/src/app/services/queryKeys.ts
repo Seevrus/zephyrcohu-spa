@@ -20,5 +20,11 @@ export const queryKeys = {
   newsItem(id?: number) {
     return id ? ["news_item", id] : ["news_item"];
   },
+  offers(page?: number) {
+    return page ? ["offers", page] : ["offers"];
+  },
+  offerItem(id?: number) {
+    return id ? ["offer_item", id] : ["offer_item"];
+  },
   session: ["session"],
 };

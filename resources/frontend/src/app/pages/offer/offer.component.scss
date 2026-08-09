@@ -1,0 +1,27 @@
+@use "../../../shared/mixins";
+
+:host(.app-offer) {
+  @include mixins.zephyr-main;
+
+  .offer {
+    width: 100%;
+
+    .offer-title-container {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      margin: 1rem 0;
+
+      h2,
+      h4 {
+        margin: 0;
+      }
+    }
+
+    .offer-additional-content {
+      margin-top: 1rem;
+    }
+  }
+}

@@ -39,6 +39,23 @@ export const routes: Routes = [
     title: "Hírek - ",
   },
   {
+    path: "ajanlatok",
+    async loadComponent() {
+      const { OffersComponent } =
+        await import("./pages/offers/offers.component");
+      return OffersComponent;
+    },
+    title: "Ajánlatok",
+  },
+  {
+    path: "ajanlatok/:id",
+    async loadComponent() {
+      const { OfferComponent } = await import("./pages/offer/offer.component");
+      return OfferComponent;
+    },
+    title: "Ajánlatok - ",
+  },
+  {
     path: "profil",
     canActivate: [userGuard],
     async loadComponent() {

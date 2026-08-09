@@ -1,0 +1,5 @@
+@use "../../../shared/mixins";
+
+:host(.app-no-public-offers-available) {
+  @include mixins.zephyr-main;
+}
