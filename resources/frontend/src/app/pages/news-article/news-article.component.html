@@ -1,40 +1,55 @@
 <div class="news-article" data-testid="news-article">
-  @if (isLoading()) {
-    <mat-progress-bar mode="indeterminate" />
-  } @else {
-    <div class="news-article-title-container">
-      <div class="news-article-with-chip">
-        <h2 data-testid="news-article-title">
-          {{ title() }}
-        </h2>
-        @if (isRead() === false) {
-          <mat-chip>Új</mat-chip>
-        }
-      </div>
-      <h4 data-testid="news-article-updated-at">{{ displayUpdatedAt() }}</h4>
-    </div>
-    <div
-      data-testid="news-article-main-content"
-      [innerHTML]="mainContentHtml()"
-    ></div>
-    @if (additionalContentHtml()) {
-      <div
-        data-testid="news-article-additional-content"
-        class="news-article-additional-content"
-        [innerHTML]="additionalContentHtml()"
-      ></div>
+  @if (errorMessage()) {
+    @switch (errorMessage()) {
+      @case ("GENERIC_NOT_FOUND") {
+        <app-not-found />
+      }
+      @case ("GENERIC_UNAUTHORIZED") {
+        <app-registered-only />
+      }
+      @default {
+        <app-form-unexpected-error />
+      }
     }
-    @if (isRead() === false) {
-      <div class="mark-as-read-container">
-        <mat-divider />
-        <a
-          class="zephyr-link mark-as-read"
-          (click)="onMarkedAsRead()"
-          (keydown)="onMarkedAsRead()"
-          tabindex="0"
-          >Erre a hivatkozásra kattintva Ön olvasottnak jelölheti ezt a hírt.</a
-        >
+  } @else {
+    @if (isLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    } @else {
+      <div class="news-article-title-container">
+        <div class="news-article-with-chip">
+          <h2 data-testid="news-article-title">
+            {{ title() }}
+          </h2>
+          @if (isRead() === false) {
+            <mat-chip>Új</mat-chip>
+          }
+        </div>
+        <h4 data-testid="news-article-updated-at">{{ displayUpdatedAt() }}</h4>
       </div>
+      <div
+        data-testid="news-article-main-content"
+        [innerHTML]="mainContentHtml()"
+      ></div>
+      @if (additionalContentHtml()) {
+        <div
+          data-testid="news-article-additional-content"
+          class="news-article-additional-content"
+          [innerHTML]="additionalContentHtml()"
+        ></div>
+      }
+      @if (isRead() === false) {
+        <div class="mark-as-read-container">
+          <mat-divider />
+          <a
+            class="zephyr-link mark-as-read"
+            (click)="onMarkedAsRead()"
+            (keydown)="onMarkedAsRead()"
+            tabindex="0"
+            >Erre a hivatkozásra kattintva Ön olvasottnak jelölheti ezt a
+            hírt.</a
+          >
+        </div>
+      }
     }
   }
 </div>

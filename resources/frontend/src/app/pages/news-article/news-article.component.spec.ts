@@ -11,6 +11,7 @@ import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import { type UserEvent, userEvent } from "@testing-library/user-event";
 
+import { createGetNewsItemErrorResponse } from "../../../mocks/news/createGetNewsItemErrorResponse";
 import { createGetNewsItemOkResponse } from "../../../mocks/news/createGetNewsItemOkResponse";
 import { matchMarkNewsItemAsReadRequest } from "../../../mocks/news/markNewsItemAsReadRequest";
 import { matchNewsItemRequest } from "../../../mocks/news/newsItemRequest";
@@ -38,6 +39,63 @@ describe("NewsArticleComponent", () => {
     await expect(screen.findByRole("progressbar")).resolves.toBeInTheDocument();
 
     newsItemTestRequest.flush(createGetNewsItemOkResponse());
+
+    httpTesting.verify();
+  });
+
+  test("renders an unexpected error message if the news item cannot be loaded", async () => {
+    const { httpTesting } = await renderNewsArticle();
+
+    const newsItemTestRequest = await waitFor(() =>
+      httpTesting.expectOne(matchNewsItemRequest(1)),
+    );
+
+    newsItemTestRequest.flush(
+      createGetNewsItemErrorResponse("INTERNAL_SERVER_ERROR"),
+      { status: 500, statusText: "Internal Server Error" },
+    );
+
+    await expect(
+      screen.findByTestId("form-unexpected-error"),
+    ).resolves.toBeInTheDocument();
+
+    httpTesting.verify();
+  });
+
+  test("renders a not found message if the news item does not exist", async () => {
+    const { httpTesting } = await renderNewsArticle();
+
+    const newsItemTestRequest = await waitFor(() =>
+      httpTesting.expectOne(matchNewsItemRequest(1)),
+    );
+
+    newsItemTestRequest.flush(
+      createGetNewsItemErrorResponse("GENERIC_NOT_FOUND"),
+      { status: 404, statusText: "Not Found" },
+    );
+
+    await expect(
+      screen.findByTestId("not-found-component"),
+    ).resolves.toBeInTheDocument();
+
+    httpTesting.verify();
+  });
+
+  test("renders a registered-only message if the news item requires authentication", async () => {
+    const { httpTesting } = await renderNewsArticle();
+
+    const newsItemTestRequest = await waitFor(() =>
+      httpTesting.expectOne(matchNewsItemRequest(1)),
+    );
+
+    newsItemTestRequest.flush(
+      createGetNewsItemErrorResponse("GENERIC_UNAUTHORIZED"),
+      { status: 401, statusText: "Unauthorized" },
+    );
+
+    await expect(
+      screen.findByTestId("registered-only-component"),
+    ).resolves.toBeInTheDocument();
 
     httpTesting.verify();
   });

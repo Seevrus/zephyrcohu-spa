@@ -17,15 +17,25 @@ import {
 } from "@tanstack/angular-query-experimental";
 
 import { formatDisplayDate } from "../../../mappers/dates";
+import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { BreadcrumbService } from "../../services/breadcrumb.service";
 import { NewsQueryService } from "../../services/news.query.service";
+import { NotFoundComponent } from "../not-found/not-found.component";
+import { RegisteredOnlyComponent } from "../registered-only/registered-only.component";
 
 @Component({
   selector: "app-news-article",
   host: {
     class: "app-news-article",
   },
-  imports: [MatChip, MatDivider, MatProgressBar],
+  imports: [
+    FormUnexpectedErrorComponent,
+    MatChip,
+    MatDivider,
+    MatProgressBar,
+    NotFoundComponent,
+    RegisteredOnlyComponent,
+  ],
   templateUrl: "./news-article.component.html",
   styleUrl: "./news-article.component.scss",
 })
@@ -61,6 +71,16 @@ export class NewsArticleComponent {
     const updatedAt = this.newsItemQuery.data()?.updatedAt;
     return updatedAt ? formatDisplayDate(updatedAt) : "";
   });
+
+  /**
+   * GENERIC_UNAUTHORIZED
+   * || GENERIC_NOT_FOUND
+   * || INTERNAL_SERVER_ERROR
+   */
+  protected readonly errorMessage = computed(
+    () => this.newsItemQuery.error()?.code,
+  );
+
   protected readonly isLoading = computed(() => this.newsItemQuery.isPending());
   protected readonly isRead = computed(() => this.newsItemQuery.data()?.isRead);
   protected readonly mainContentHtml = computed(() => {
