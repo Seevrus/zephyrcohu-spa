@@ -139,6 +139,10 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/yaml" />
       <excludeFolder url="file://$MODULE_DIR$/bootstrap/cache" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-php86" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
+      <excludeFolder url="file://$MODULE_DIR$/public/img" />
+      <excludeFolder url="file://$MODULE_DIR$/resources/frontend/out-tsc" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

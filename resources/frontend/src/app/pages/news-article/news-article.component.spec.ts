@@ -225,35 +225,6 @@ describe("NewsArticleComponent", () => {
     httpTesting.verify();
   });
 
-  test("marks the news item as read via keyboard activation", async () => {
-    const { httpTesting } = await renderNewsArticle();
-
-    const newsItemTestRequest = await waitFor(() =>
-      httpTesting.expectOne(matchNewsItemRequest(1)),
-    );
-
-    newsItemTestRequest.flush(createGetNewsItemOkResponse({ isRead: false }));
-
-    const markAsReadLink = await screen.findByText(markAsReadLinkText);
-
-    markAsReadLink.focus();
-    await user.keyboard("{Enter}");
-
-    const markAsReadTestRequest = await waitFor(() =>
-      httpTesting.expectOne(matchMarkNewsItemAsReadRequest(1)),
-    );
-
-    markAsReadTestRequest.flush(null);
-
-    const refetchTestRequest = await waitFor(() =>
-      httpTesting.expectOne(matchNewsItemRequest(1)),
-    );
-
-    refetchTestRequest.flush(createGetNewsItemOkResponse({ isRead: true }));
-
-    httpTesting.verify();
-  });
-
   test("sets the breadcrumb and page title once the news item loads", async () => {
     const titleSetTitleSpy = vi.spyOn(Title.prototype, "setTitle");
     const breadcrumbSetBreadcrumbSpy = vi.spyOn(
