@@ -110,6 +110,33 @@ describe("App Component", () => {
     });
   });
 
+  describe("Integra Component", () => {
+    test.each([
+      "tajekoztato",
+      "probaverzio",
+      "dokumentacio",
+      "programfrissites",
+      "egyeb",
+    ])(
+      "renders the Integra Component for the %s category",
+      async (kategoria) => {
+        renderAppComponent(`/integra/${kategoria}`);
+
+        await expect(
+          screen.findByTestId("integra-component"),
+        ).resolves.toBeInTheDocument();
+      },
+    );
+
+    test("redirects to the main page for an unknown category", async () => {
+      renderAppComponent("/integra/nemletezik");
+
+      await expect(
+        screen.findByTestId("main-component"),
+      ).resolves.toBeInTheDocument();
+    });
+  });
+
   test("News Component is rendered on /hirek route", async () => {
     const { renderResult } = renderAppComponent("/hirek");
     await renderResult;

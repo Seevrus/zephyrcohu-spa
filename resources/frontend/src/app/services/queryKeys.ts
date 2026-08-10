@@ -1,3 +1,5 @@
+import { type IntegraCategory } from "../../types/integra";
+
 export const mutationKeys = {
   checkRecaptchaToken: ["check_recaptcha_token"],
   deleteProfile: ["delete_profile"],
@@ -14,6 +16,9 @@ export const mutationKeys = {
 };
 
 export const queryKeys = {
+  integra(category?: IntegraCategory) {
+    return category ? ["documents", category] : ["documents"];
+  },
   news(page?: number) {
     return page ? ["news", page] : ["news"];
   },

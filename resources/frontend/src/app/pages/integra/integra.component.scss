@@ -1,0 +1,14 @@
+@use "../../../shared/mixins";
+
+:host(.app-integra) {
+  @include mixins.zephyr-main;
+
+  background-color: unset;
+
+  .integra-component {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+}

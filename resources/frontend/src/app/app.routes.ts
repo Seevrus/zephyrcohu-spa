@@ -1,6 +1,7 @@
 import { type Routes } from "@angular/router";
 
 import { guestGuard } from "./guards/guest.guard";
+import { integraCategoryGuard } from "./guards/integra-category.guard";
 import { userGuard } from "./guards/user.guard";
 
 export const routes: Routes = [
@@ -54,6 +55,16 @@ export const routes: Routes = [
       return OfferComponent;
     },
     title: "Ajánlatok - ",
+  },
+  {
+    path: "integra/:kategoria",
+    canActivate: [integraCategoryGuard],
+    async loadComponent() {
+      const { DocumentsComponent } =
+        await import("./pages/documents/documents.component");
+      return DocumentsComponent;
+    },
+    title: "Integra",
   },
   {
     path: "profil",

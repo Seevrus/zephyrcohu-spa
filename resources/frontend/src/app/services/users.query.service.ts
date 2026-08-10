@@ -9,6 +9,7 @@ import { catchError, lastValueFrom, map, of, throwError } from "rxjs";
 
 import { type ZephyrHttpError } from "../../api/ZephyrHttpError";
 import { environment } from "../../environments/environment";
+import { INTEGRA_CATEGORIES } from "../../types/integra";
 import {
   type ConfirmOrRevokeEmailRequest,
   type CreateUserRequest,
@@ -45,6 +46,9 @@ export class UsersQueryService {
         ),
       onSuccess: () => {
         this.queryClient.invalidateQueries({
+          queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
+        });
+        this.queryClient.invalidateQueries({
           queryKey: queryKeys.news(),
         });
         this.queryClient.invalidateQueries({
@@ -75,6 +79,9 @@ export class UsersQueryService {
         ),
       onSuccess: () => {
         this.queryClient.invalidateQueries({
+          queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
+        });
+        this.queryClient.invalidateQueries({
           queryKey: queryKeys.news(),
         });
         this.queryClient.invalidateQueries({
@@ -97,6 +104,9 @@ export class UsersQueryService {
             .pipe(catchError(() => of(void 0))),
         ),
       onSuccess: () => {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
+        });
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.news(),
         });
@@ -250,6 +260,9 @@ export class UsersQueryService {
         ),
       onSuccess: async () => {
         this.queryClient.invalidateQueries({
+          queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
+        });
+        this.queryClient.invalidateQueries({
           queryKey: queryKeys.news(),
         });
         this.queryClient.invalidateQueries({
@@ -346,6 +359,9 @@ export class UsersQueryService {
             ),
         ),
       onSuccess: async () => {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
+        });
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.news(),
         });
