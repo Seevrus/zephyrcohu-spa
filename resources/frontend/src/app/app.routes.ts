@@ -60,9 +60,9 @@ export const routes: Routes = [
     path: "integra/:kategoria",
     canActivate: [integraCategoryGuard],
     async loadComponent() {
-      const { DocumentsComponent } =
-        await import("./pages/documents/documents.component");
-      return DocumentsComponent;
+      const { IntegraComponent } =
+        await import("./pages/integra/integra.component");
+      return IntegraComponent;
     },
     title: "Integra",
   },

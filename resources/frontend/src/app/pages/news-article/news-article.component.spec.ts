@@ -40,6 +40,10 @@ describe("NewsArticleComponent", () => {
 
     newsItemTestRequest.flush(createGetNewsItemOkResponse());
 
+    await waitFor(() => {
+      expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
     httpTesting.verify();
   });
 

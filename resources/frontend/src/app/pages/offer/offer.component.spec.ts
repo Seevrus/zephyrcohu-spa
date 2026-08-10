@@ -29,6 +29,10 @@ describe("OfferComponent", () => {
 
     offerItemTestRequest.flush(createGetOfferItemOkResponse());
 
+    await waitFor(() => {
+      expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
+
     httpTesting.verify();
   });
 
