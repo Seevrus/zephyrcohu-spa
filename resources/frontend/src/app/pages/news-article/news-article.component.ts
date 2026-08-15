@@ -95,7 +95,7 @@ export class NewsArticleComponent {
     const title = this.title();
     if (title) {
       this.breadcrumbService.setBreadcrumb(`Hírek - ${title}`);
-      this.titleService.setTitle(title);
+      this.titleService.setTitle(`${title} - Zephyr Bt.`);
     }
   });
 

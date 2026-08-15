@@ -1,5 +1,5 @@
 import { AG_GRID_LOCALE_HU } from "@ag-grid-community/locale";
-import { Component, computed, inject, input } from "@angular/core";
+import { Component, computed, effect, inject, input } from "@angular/core";
 import { MatProgressBar } from "@angular/material/progress-bar";
 import { injectQuery } from "@tanstack/angular-query-experimental";
 import { AgGridAngular } from "ag-grid-angular";
@@ -18,6 +18,7 @@ import {
 import { IntegraDocumentLinkCellRendererComponent } from "../../components/ag-grid/integra-document-link-cell-renderer/integra-document-link-cell-renderer.component";
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { NoIntegraDocumentsAvailableComponent } from "../../components/no-integra-documents-available/no-integra-documents-available.component";
+import { BreadcrumbService } from "../../services/breadcrumb.service";
 import { IntegraQueryService } from "../../services/integra.query.service";
 import { RegisteredOnlyComponent } from "../registered-only/registered-only.component";
 
@@ -37,6 +38,7 @@ import { RegisteredOnlyComponent } from "../registered-only/registered-only.comp
   styleUrl: "./integra.component.scss",
 })
 export class IntegraComponent {
+  private readonly breadcrumbService = inject(BreadcrumbService);
   private readonly integraQueryService = inject(IntegraQueryService);
 
   readonly kategoria = input<IntegraCategorySlug>();
@@ -44,6 +46,13 @@ export class IntegraComponent {
   private readonly category = computed(() => {
     const slug = this.kategoria();
     return slug ? INTEGRA_CATEGORIES[slug] : undefined;
+  });
+
+  private readonly breadcrumbEffect = effect(() => {
+    const slug = this.kategoria();
+    if (slug) {
+      this.breadcrumbService.setIntegraBreadcrumb(slug);
+    }
   });
 
   private readonly integraDocumentsQuery = injectQuery(() =>
