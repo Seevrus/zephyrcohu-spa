@@ -59,6 +59,38 @@ describe('Get Documents', function () {
 
         $response->assertStatus(404);
     });
+
+    test('excludes documents that are not published yet', function () {
+        DB::table('documents')->insert([
+            'id' => 4,
+            'category' => 'integra-flyer',
+            'display_name' => 'Flyer 2027',
+            'version' => '3.0',
+            'path' => 'documents/integra-flyer/flyer-2027.pdf',
+            'published_at' => '2099-01-01 00:00:00',
+            'created_at' => '2099-01-01 00:00:00',
+            'updated_at' => '2099-01-01 00:00:00',
+        ]);
+
+        $response = $this->getJson('/api/documents/integra/integra-flyer');
+
+        $response->assertStatus(200)->assertExactJson(['data' => [
+            [
+                'id' => 2,
+                'category' => 'integra-flyer',
+                'displayName' => 'Flyer 2026',
+                'version' => '2.0',
+                'publishedAt' => '2026-02-09T23:00:00.000000Z',
+            ],
+            [
+                'id' => 1,
+                'category' => 'integra-flyer',
+                'displayName' => 'Flyer 2025',
+                'version' => '1.0',
+                'publishedAt' => '2026-01-09T23:00:00.000000Z',
+            ],
+        ]]);
+    });
 });
 
 function resetGetDocumentsTestData(): void {

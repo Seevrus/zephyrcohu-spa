@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\DocumentCategory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Document extends Model {
@@ -19,5 +21,14 @@ class Document extends Model {
 
     public function disk(): string {
         return $this->category === DocumentCategory::IntegraUpdate ? 'local' : 'public';
+    }
+
+    public function isPublished(): bool {
+        return $this->published_at->isPast();
+    }
+
+    #[Scope]
+    protected function published(Builder $query): Builder {
+        return $query->where('published_at', '<=', now());
     }
 }

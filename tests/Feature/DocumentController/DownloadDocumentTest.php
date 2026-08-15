@@ -46,6 +46,27 @@ describe('Download Document', function () {
 
         $response->assertStatus(404);
     });
+
+    test('returns 404 for a document that is not published yet', function () {
+        DB::table('documents')->insert([
+            'id' => 3,
+            'category' => 'integra-flyer',
+            'display_name' => 'Flyer 2027',
+            'version' => '3.0',
+            'path' => 'documents/integra-flyer/flyer-2027.pdf',
+            'published_at' => '2099-01-01 00:00:00',
+            'created_at' => '2099-01-01 00:00:00',
+            'updated_at' => '2099-01-01 00:00:00',
+        ]);
+        Storage::disk('public')->put('documents/integra-flyer/flyer-2027.pdf', 'flyer contents');
+
+        $response = $this->getJson('/api/documents/integra/3/download');
+
+        $response->assertStatus(404)->assertExactJson([
+            'code' => 'GENERIC_NOT_FOUND',
+            'status' => 404,
+        ]);
+    });
 });
 
 function resetDownloadDocumentTestData(): void {

@@ -18,6 +18,10 @@ class DocumentPolicy {
     }
 
     public function download(?User $sender, Document $document): Response {
+        if (! $document->isPublished()) {
+            return Response::denyWithStatus(404, ErrorCode::GENERIC_NOT_FOUND->value);
+        }
+
         if (! $sender && $document->category === DocumentCategory::IntegraUpdate) {
             return Response::denyWithStatus(401, ErrorCode::GENERIC_UNAUTHORIZED->value);
         }

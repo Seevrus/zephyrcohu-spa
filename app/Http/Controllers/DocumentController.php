@@ -24,6 +24,7 @@ class DocumentController extends Controller {
             }
 
             $documents = Document::where('category', $category->value)
+                ->published()
                 ->orderBy('published_at', 'desc')
                 ->get();
 
