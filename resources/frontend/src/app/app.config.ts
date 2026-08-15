@@ -15,6 +15,18 @@ import {
 } from "@tanstack/angular-query-experimental";
 import { withDevtools } from "@tanstack/angular-query-experimental/devtools";
 import {
+  AllCommunityModule,
+  ClientSideRowModelModule,
+  ColumnAutoSizeModule,
+  enableDevValidations,
+  LocaleModule,
+  ModuleRegistry,
+  PaginationModule,
+  PaginationPageNumbersModule,
+  RowAutoHeightModule,
+  ValidationModule,
+} from "ag-grid-community";
+import {
   RECAPTCHA_SETTINGS,
   RecaptchaModule,
   type RecaptchaSettings,
@@ -25,6 +37,20 @@ import { routes } from "./app.routes";
 import { AppTitleStrategy } from "./app.title.strategy";
 import { credentialsInterceptor } from "./services/credentialsInterceptor";
 import { xsrfInterceptor } from "./services/xsrfInterceptor";
+
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  ColumnAutoSizeModule,
+  LocaleModule,
+  PaginationModule,
+  PaginationPageNumbersModule,
+  RowAutoHeightModule,
+  ValidationModule,
+]);
+
+if (environment.gridDevMode) {
+  enableDevValidations();
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {

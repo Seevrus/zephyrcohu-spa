@@ -1,5 +1,12 @@
+import { AG_GRID_LOCALE_HU } from "@ag-grid-community/locale";
 import { Component, computed, inject, input } from "@angular/core";
 import { injectQuery } from "@tanstack/angular-query-experimental";
+import { AgGridAngular } from "ag-grid-angular";
+import {
+  type AutoSizeStrategy,
+  type ColDef,
+  type PaginationPanel,
+} from "ag-grid-community";
 
 import {
   INTEGRA_CATEGORIES,
@@ -12,7 +19,7 @@ import { IntegraQueryService } from "../../services/integra.query.service";
   host: {
     class: "app-integra",
   },
-  imports: [],
+  imports: [AgGridAngular],
   templateUrl: "./integra.component.html",
   styleUrl: "./integra.component.scss",
 })
@@ -33,4 +40,40 @@ export class IntegraComponent {
   protected readonly documents = computed(
     () => this.integraDocumentsQuery.data()?.data ?? [],
   );
+
+  protected readonly autoSizeStrategy: AutoSizeStrategy = {
+    type: "fitGridWidth",
+  };
+
+  protected readonly integraColumnDefinitions: ColDef[] = [
+    {
+      autoHeight: true,
+      headerName: "Dokumentum neve",
+      field: "displayName",
+      wrapText: true,
+    },
+    {
+      autoHeight: true,
+      headerName: "Verzió",
+      field: "version",
+      wrapText: true,
+    },
+    {
+      autoHeight: true,
+      headerName: "Érvényes",
+      field: "publishedAt",
+      wrapText: true,
+    },
+  ];
+
+  protected readonly localeText = AG_GRID_LOCALE_HU;
+
+  protected readonly paginationPanels: PaginationPanel[] = [
+    {
+      type: "pageSummary",
+      suppressPageInput: true,
+    },
+    "rowSummary",
+    { type: "pageSize", paginationPageSize: 10 },
+  ];
 }

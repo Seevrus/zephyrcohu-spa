@@ -6,6 +6,7 @@
   background-color: unset;
 
   .integra-component {
+    background-color: var(--mat-sys-primary-container);
     display: flex;
     flex-direction: column;
     gap: 1rem;
