@@ -1,15 +1,30 @@
 <div data-testid="integra-component" class="integra-component">
-  <div class="integra-grid">
-    <ag-grid-angular
-      [autoSizeStrategy]="autoSizeStrategy"
-      [theme]="theme"
-      domLayout="autoHeight"
-      [rowData]="documents()"
-      [columnDefs]="integraColumnDefinitions"
-      [localeText]="localeText"
-      [pagination]="true"
-      [paginationPanels]="paginationPanels"
-      [paginationPageSizeSelector]="[10, 25, 50, 100]"
-    />
-  </div>
+  @if (errorMessage(); as error) {
+    @switch (error) {
+      @case ("GENERIC_UNAUTHORIZED") {
+        <app-registered-only />
+      }
+      @default {
+        <app-form-unexpected-error />
+      }
+    }
+  } @else if (isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  } @else if (isEmpty()) {
+    <app-no-integra-documents-available />
+  } @else {
+    <div class="integra-grid">
+      <ag-grid-angular
+        [autoSizeStrategy]="autoSizeStrategy"
+        [theme]="theme"
+        domLayout="autoHeight"
+        [rowData]="documents()"
+        [columnDefs]="integraColumnDefinitions"
+        [localeText]="localeText"
+        [pagination]="true"
+        [paginationPanels]="paginationPanels"
+        [paginationPageSizeSelector]="[10, 25, 50, 100]"
+      />
+    </div>
+  }
 </div>

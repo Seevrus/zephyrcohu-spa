@@ -1,5 +1,6 @@
 import { AG_GRID_LOCALE_HU } from "@ag-grid-community/locale";
 import { Component, computed, inject, input } from "@angular/core";
+import { MatProgressBar } from "@angular/material/progress-bar";
 import { injectQuery } from "@tanstack/angular-query-experimental";
 import { AgGridAngular } from "ag-grid-angular";
 import {
@@ -15,14 +16,23 @@ import {
   type IntegraCategorySlug,
 } from "../../../types/integra";
 import { IntegraDocumentLinkCellRendererComponent } from "../../components/ag-grid/integra-document-link-cell-renderer/integra-document-link-cell-renderer.component";
+import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
+import { NoIntegraDocumentsAvailableComponent } from "../../components/no-integra-documents-available/no-integra-documents-available.component";
 import { IntegraQueryService } from "../../services/integra.query.service";
+import { RegisteredOnlyComponent } from "../registered-only/registered-only.component";
 
 @Component({
   selector: "app-integra",
   host: {
     class: "app-integra",
   },
-  imports: [AgGridAngular],
+  imports: [
+    AgGridAngular,
+    FormUnexpectedErrorComponent,
+    MatProgressBar,
+    NoIntegraDocumentsAvailableComponent,
+    RegisteredOnlyComponent,
+  ],
   templateUrl: "./integra.component.html",
   styleUrl: "./integra.component.scss",
 })
@@ -42,6 +52,23 @@ export class IntegraComponent {
 
   protected readonly documents = computed(
     () => this.integraDocumentsQuery.data()?.data ?? [],
+  );
+
+  /**
+   * GENERIC_UNAUTHORIZED
+   * || INTERNAL_SERVER_ERROR
+   */
+  protected readonly errorMessage = computed(
+    () => this.integraDocumentsQuery.error()?.code,
+  );
+
+  protected readonly isEmpty = computed(
+    () =>
+      this.integraDocumentsQuery.isSuccess() && this.documents().length === 0,
+  );
+
+  protected readonly isLoading = computed(() =>
+    this.integraDocumentsQuery.isPending(),
   );
 
   protected readonly autoSizeStrategy: AutoSizeStrategy = {
