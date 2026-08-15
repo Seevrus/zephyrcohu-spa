@@ -5,6 +5,7 @@ export const testQueryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
+      retryDelay: 0,
     },
   },
 });

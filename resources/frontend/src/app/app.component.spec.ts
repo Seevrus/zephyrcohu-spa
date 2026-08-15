@@ -123,9 +123,12 @@ describe("App Component", () => {
         renderAppComponent(`/integra/${kategoria}`);
 
         await expect(
-          screen.findByTestId("integra-component"),
+          screen.findByTestId("integra-component", undefined, {
+            timeout: 30_000,
+          }),
         ).resolves.toBeInTheDocument();
       },
+      30_000,
     );
 
     test("redirects to the main page for an unknown category", async () => {

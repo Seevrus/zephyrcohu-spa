@@ -34,7 +34,7 @@ describe("News Article List Item", () => {
       updatedAt: new Date("2026-02-08T18:23:00.000000Z"),
     });
 
-    const chip = container.querySelector("#mat-mdc-chip-a0");
+    const chip = container.querySelector("mat-chip");
 
     expect(chip).toBeInTheDocument();
 
