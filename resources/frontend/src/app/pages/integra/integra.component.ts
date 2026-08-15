@@ -8,6 +8,7 @@ import {
   type PaginationPanel,
 } from "ag-grid-community";
 
+import { zephyrGridTheme } from "../../../shared/ag-grid-theme";
 import {
   INTEGRA_CATEGORIES,
   type IntegraCategorySlug,
@@ -44,6 +45,8 @@ export class IntegraComponent {
   protected readonly autoSizeStrategy: AutoSizeStrategy = {
     type: "fitGridWidth",
   };
+
+  protected readonly theme = zephyrGridTheme;
 
   protected readonly integraColumnDefinitions: ColDef[] = [
     {

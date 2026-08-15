@@ -9,3 +9,10 @@
   padding: 0 1rem;
   width: 100%;
 }
+
+@mixin zephyr-grid {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-medium, 12px);
+  overflow: hidden;
+  width: 100%;
+}
