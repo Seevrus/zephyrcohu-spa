@@ -13,6 +13,7 @@ import {
   INTEGRA_CATEGORIES,
   type IntegraCategorySlug,
 } from "../../../types/integra";
+import { IntegraDocumentLinkCellRendererComponent } from "../../components/ag-grid/integra-document-link-cell-renderer/integra-document-link-cell-renderer.component";
 import { IntegraQueryService } from "../../services/integra.query.service";
 
 @Component({
@@ -54,6 +55,7 @@ export class IntegraComponent {
       headerName: "Dokumentum neve",
       field: "displayName",
       wrapText: true,
+      cellRenderer: IntegraDocumentLinkCellRendererComponent,
     },
     {
       autoHeight: true,

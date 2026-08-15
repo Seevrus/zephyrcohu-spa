@@ -3,6 +3,7 @@ import { type IntegraCategory } from "../../types/integra";
 export const mutationKeys = {
   checkRecaptchaToken: ["check_recaptcha_token"],
   deleteProfile: ["delete_profile"],
+  downloadIntegraDocument: ["download_integra_document"],
   login: ["login"],
   logout: ["logout"],
   markNewsItemAsRead: ["mark_news_item_as_read"],
