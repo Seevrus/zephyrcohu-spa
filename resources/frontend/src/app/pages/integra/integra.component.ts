@@ -8,6 +8,7 @@ import {
   type PaginationPanel,
 } from "ag-grid-community";
 
+import { formatDisplayDateWithoutDay } from "../../../mappers/dates";
 import { zephyrGridTheme } from "../../../shared/ag-grid-theme";
 import {
   INTEGRA_CATEGORIES,
@@ -65,8 +66,10 @@ export class IntegraComponent {
     },
     {
       autoHeight: true,
+      cellDataType: "date",
       headerName: "Érvényes",
       field: "publishedAt",
+      valueFormatter: ({ value }) => formatDisplayDateWithoutDay(value as Date),
       wrapText: true,
     },
   ];
