@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->string('title');
             $table->text('main_content');
             $table->text('additional_content')->nullable();
+            $table->timestamp('published_at');
             $table->timestamps();
-            $table->timestamp('expires_at')->nullable();
         });
     }
 

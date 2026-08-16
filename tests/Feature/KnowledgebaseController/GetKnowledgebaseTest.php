@@ -22,6 +22,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 3',
                     'additionalContent' => 'Additional content 3',
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:33:00.000000Z',
                     'createdAt' => '2026-02-08T20:33:00.000000Z',
                     'updatedAt' => '2026-02-08T21:35:00.000000Z',
                 ],
@@ -32,6 +33,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 9',
                     'additionalContent' => 'Updated Additional content 9',
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:37:00.000000Z',
                 ],
@@ -42,6 +44,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 12',
                     'additionalContent' => 'Additional content 12',
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:32:12.000000Z',
                     'createdAt' => '2026-02-08T20:32:12.000000Z',
                     'updatedAt' => '2026-02-08T20:32:12.000000Z',
                 ],
@@ -54,6 +57,7 @@ describe('Get Knowledgebase', function () {
                     'tags' => [
                         ['id' => 1, 'name' => 'Billing'],
                     ],
+                    'publishedAt' => '2026-02-08T20:32:11.000000Z',
                     'createdAt' => '2026-02-08T20:32:11.000000Z',
                     'updatedAt' => '2026-02-08T20:32:11.000000Z',
                 ],
@@ -67,6 +71,7 @@ describe('Get Knowledgebase', function () {
                         ['id' => 1, 'name' => 'Billing'],
                         ['id' => 2, 'name' => 'Onboarding'],
                     ],
+                    'publishedAt' => '2026-02-08T20:31:30.000000Z',
                     'createdAt' => '2026-02-08T20:31:30.000000Z',
                     'updatedAt' => '2026-02-08T20:31:30.000000Z',
                 ],
@@ -79,6 +84,7 @@ describe('Get Knowledgebase', function () {
                     'tags' => [
                         ['id' => 2, 'name' => 'Onboarding'],
                     ],
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -89,6 +95,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 6',
                     'additionalContent' => null,
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -99,6 +106,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 7',
                     'additionalContent' => 'Additional content 7',
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -109,6 +117,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 4',
                     'additionalContent' => 'Additional content 4',
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:19:00.000000Z',
                     'createdAt' => '2026-02-08T20:19:00.000000Z',
                     'updatedAt' => '2026-02-08T20:19:00.000000Z',
                 ],
@@ -119,6 +128,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 8',
                     'additionalContent' => null,
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T19:31:00.000000Z',
                     'createdAt' => '2026-02-08T19:31:00.000000Z',
                     'updatedAt' => '2026-02-08T19:31:00.000000Z',
                 ],
@@ -142,6 +152,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 5',
                     'additionalContent' => 'Additional content 5',
                     'tags' => [],
+                    'publishedAt' => '2026-02-06T20:31:00.000000Z',
                     'createdAt' => '2026-02-06T20:31:00.000000Z',
                     'updatedAt' => '2026-02-06T20:31:00.000000Z',
                 ],
@@ -170,6 +181,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 3',
                     'additionalContent' => 'Additional content 3',
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:33:00.000000Z',
                     'createdAt' => '2026-02-08T20:33:00.000000Z',
                     'updatedAt' => '2026-02-08T21:35:00.000000Z',
                 ],
@@ -181,6 +193,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Admin Content 1',
                     'additionalContent' => null,
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:38:00.000000Z',
                     'createdAt' => '2026-02-08T20:38:00.000000Z',
                     'updatedAt' => '2026-02-08T20:38:00.000000Z',
                 ],
@@ -192,6 +205,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 9',
                     'additionalContent' => 'Updated Additional content 9',
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:37:00.000000Z',
                 ],
@@ -203,6 +217,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 12',
                     'additionalContent' => 'Additional content 12',
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:32:12.000000Z',
                     'createdAt' => '2026-02-08T20:32:12.000000Z',
                     'updatedAt' => '2026-02-08T20:32:12.000000Z',
                 ],
@@ -216,6 +231,7 @@ describe('Get Knowledgebase', function () {
                     'tags' => [
                         ['id' => 1, 'name' => 'Billing'],
                     ],
+                    'publishedAt' => '2026-02-08T20:32:11.000000Z',
                     'createdAt' => '2026-02-08T20:32:11.000000Z',
                     'updatedAt' => '2026-02-08T20:32:11.000000Z',
                 ],
@@ -230,6 +246,7 @@ describe('Get Knowledgebase', function () {
                         ['id' => 1, 'name' => 'Billing'],
                         ['id' => 2, 'name' => 'Onboarding'],
                     ],
+                    'publishedAt' => '2026-02-08T20:31:30.000000Z',
                     'createdAt' => '2026-02-08T20:31:30.000000Z',
                     'updatedAt' => '2026-02-08T20:31:30.000000Z',
                 ],
@@ -243,6 +260,7 @@ describe('Get Knowledgebase', function () {
                     'tags' => [
                         ['id' => 2, 'name' => 'Onboarding'],
                     ],
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -254,6 +272,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 6',
                     'additionalContent' => null,
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -265,6 +284,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 7',
                     'additionalContent' => 'Additional content 7',
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -276,6 +296,7 @@ describe('Get Knowledgebase', function () {
                     'mainContent' => 'Main Content 4',
                     'additionalContent' => 'Additional content 4',
                     'tags' => [],
+                    'publishedAt' => '2026-02-08T20:19:00.000000Z',
                     'createdAt' => '2026-02-08T20:19:00.000000Z',
                     'updatedAt' => '2026-02-08T20:19:00.000000Z',
                 ],
@@ -302,6 +323,7 @@ describe('Get Knowledgebase', function () {
                         ['id' => 1, 'name' => 'Billing'],
                         ['id' => 2, 'name' => 'Onboarding'],
                     ],
+                    'publishedAt' => '2026-02-08T20:31:30.000000Z',
                     'createdAt' => '2026-02-08T20:31:30.000000Z',
                     'updatedAt' => '2026-02-08T20:31:30.000000Z',
                 ],
@@ -314,6 +336,7 @@ describe('Get Knowledgebase', function () {
                     'tags' => [
                         ['id' => 2, 'name' => 'Onboarding'],
                     ],
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -341,6 +364,23 @@ describe('Get Knowledgebase', function () {
         $response = $this->getJson('/api/knowledgebase?tag=999');
 
         $response->assertStatus(422);
+    });
+
+    test('excludes knowledgebase articles that are not published yet', function () {
+        DB::table('knowledgebase')->insert([
+            'id' => 14,
+            'audience' => 'P',
+            'title' => 'Public 14',
+            'main_content' => 'Main Content 14',
+            'additional_content' => null,
+            'published_at' => '2099-01-01 00:00:00',
+            'created_at' => '2099-01-01 00:00:00',
+            'updated_at' => '2099-01-01 00:00:00',
+        ]);
+
+        $response = $this->getJson('/api/knowledgebase');
+
+        $response->assertJsonMissing(['id' => 14])->assertJsonPath('meta.total', 12);
     });
 });
 
@@ -370,7 +410,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => 'Additional content 1',
             'created_at' => '2026-02-08 21:31:00',
             'updated_at' => '2026-02-08 21:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:00',
         ],
         [
             'id' => 2,
@@ -380,7 +420,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => 'Additional content 2',
             'created_at' => '2026-02-08 21:31:30',
             'updated_at' => '2026-02-08 21:31:30',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:30',
         ],
         [
             'id' => 3,
@@ -390,7 +430,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => 'Additional content 3',
             'created_at' => '2026-02-08 21:33:00',
             'updated_at' => '2026-02-08 22:35:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:33:00',
         ],
         [
             'id' => 4,
@@ -400,7 +440,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => 'Additional content 4',
             'created_at' => '2026-02-08 21:19:00',
             'updated_at' => '2026-02-08 21:19:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:19:00',
         ],
         [
             'id' => 5,
@@ -410,7 +450,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => 'Additional content 5',
             'created_at' => '2026-02-06 21:31:00',
             'updated_at' => '2026-02-06 21:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-06 21:31:00',
         ],
         [
             'id' => 6,
@@ -420,7 +460,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => null,
             'created_at' => '2026-02-08 21:31:00',
             'updated_at' => '2026-02-08 21:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:00',
         ],
         [
             'id' => 7,
@@ -430,7 +470,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => 'Additional content 7',
             'created_at' => '2026-02-08 21:31:00',
             'updated_at' => '2026-02-08 21:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:00',
         ],
         [
             'id' => 8,
@@ -440,7 +480,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => null,
             'created_at' => '2026-02-08 20:31:00',
             'updated_at' => '2026-02-08 20:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 20:31:00',
         ],
         [
             'id' => 9,
@@ -450,7 +490,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => 'Updated Additional content 9',
             'created_at' => '2026-02-08 21:31:00',
             'updated_at' => '2026-02-08 21:37:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:00',
         ],
         [
             'id' => 10,
@@ -460,7 +500,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => 'Additional content 10',
             'created_at' => '2026-02-08 21:32:11',
             'updated_at' => '2026-02-08 21:32:11',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:32:11',
         ],
         [
             'id' => 11,
@@ -470,7 +510,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => 'Additional content 11',
             'created_at' => '2026-02-01 09:11:00',
             'updated_at' => '2026-02-01 09:11:00',
-            'expires_at' => '2026-02-08 21:35:00',
+            'published_at' => '2099-01-01 00:00:00',
         ],
         [
             'id' => 12,
@@ -480,7 +520,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => 'Additional content 12',
             'created_at' => '2026-02-08 21:32:12',
             'updated_at' => '2026-02-08 21:32:12',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:32:12',
         ],
         [
             'id' => 13,
@@ -490,7 +530,7 @@ function resetGetKnowledgebaseTestData(): void {
             'additional_content' => null,
             'created_at' => '2026-02-08 21:38:00',
             'updated_at' => '2026-02-08 21:38:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:38:00',
         ],
     ]);
 

@@ -29,6 +29,19 @@ describe('Mark Knowledgebase Item As Read', function () {
         ]);
     });
 
+    test('returns 404 if the knowledgebase item is not published yet', function () {
+        Sanctum::actingAs(
+            User::find(1),
+        );
+
+        $response = $this->postJson('/api/knowledgebase/3/read');
+
+        $response->assertStatus(404)->assertExactJson([
+            'code' => 'GENERIC_NOT_FOUND',
+            'status' => 404,
+        ]);
+    });
+
     test('marks an unread knowledgebase item as read', function () {
         Sanctum::actingAs(
             User::find(1),
@@ -83,7 +96,7 @@ function resetMarkKnowledgebaseItemAsReadTestData(): void {
             'additional_content' => 'Additional content 1',
             'created_at' => '2026-02-08 21:31:00',
             'updated_at' => '2026-02-08 21:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:00',
         ],
         [
             'id' => 2,
@@ -93,7 +106,17 @@ function resetMarkKnowledgebaseItemAsReadTestData(): void {
             'additional_content' => 'Additional content 2',
             'created_at' => '2026-02-08 21:31:30',
             'updated_at' => '2026-02-08 21:31:30',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:30',
+        ],
+        [
+            'id' => 3,
+            'audience' => 'P',
+            'title' => 'Public 3',
+            'main_content' => 'Main Content 3',
+            'additional_content' => 'Additional content 3',
+            'created_at' => '2026-02-08 21:32:00',
+            'updated_at' => '2026-02-08 21:32:00',
+            'published_at' => '2099-01-01 00:00:00',
         ],
     ]);
 

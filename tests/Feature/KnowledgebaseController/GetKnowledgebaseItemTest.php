@@ -10,7 +10,7 @@ describe('Get Knowledgebase Item', function () {
         resetGetKnowledgebaseItemTestData();
     });
 
-    test('retrieves public item if it is not expired', function () {
+    test('retrieves public item if it is published', function () {
         $response = $this->getJson('/api/knowledgebase/1');
 
         $response->assertStatus(200)->assertExactJson(['data' => [
@@ -22,12 +22,13 @@ describe('Get Knowledgebase Item', function () {
             'tags' => [
                 ['id' => 1, 'name' => 'Billing'],
             ],
+            'publishedAt' => '2026-02-08T20:31:00.000000Z',
             'createdAt' => '2026-02-08T20:31:00.000000Z',
             'updatedAt' => '2026-02-08T20:31:00.000000Z',
         ]]);
     });
 
-    test('returns 404 for expired knowledgebase item', function () {
+    test('returns 404 for a knowledgebase item that is not published yet', function () {
         $response = $this->getJson('/api/knowledgebase/2');
 
         $response->assertStatus(404)->assertExactJson([
@@ -60,6 +61,7 @@ describe('Get Knowledgebase Item', function () {
             'mainContent' => 'Main Content 3',
             'additionalContent' => 'Additional content 3',
             'tags' => [],
+            'publishedAt' => '2026-02-08T20:33:00.000000Z',
             'createdAt' => '2026-02-08T20:33:00.000000Z',
             'updatedAt' => '2026-02-08T21:35:00.000000Z',
         ]]);
@@ -82,6 +84,7 @@ describe('Get Knowledgebase Item', function () {
             'tags' => [
                 ['id' => 1, 'name' => 'Billing'],
             ],
+            'publishedAt' => '2026-02-08T20:31:00.000000Z',
             'createdAt' => '2026-02-08T20:31:00.000000Z',
             'updatedAt' => '2026-02-08T20:31:00.000000Z',
         ]]);
@@ -112,7 +115,7 @@ function resetGetKnowledgebaseItemTestData(): void {
             'additional_content' => 'Additional content 1',
             'created_at' => '2026-02-08 21:31:00',
             'updated_at' => '2026-02-08 21:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:00',
         ],
         [
             'id' => 2,
@@ -122,7 +125,7 @@ function resetGetKnowledgebaseItemTestData(): void {
             'additional_content' => 'Additional content 2',
             'created_at' => '2026-02-08 21:31:30',
             'updated_at' => '2026-02-08 21:31:30',
-            'expires_at' => '2026-02-28 21:56:00',
+            'published_at' => '2099-01-01 00:00:00',
         ],
         [
             'id' => 3,
@@ -132,7 +135,7 @@ function resetGetKnowledgebaseItemTestData(): void {
             'additional_content' => 'Additional content 3',
             'created_at' => '2026-02-08 21:33:00',
             'updated_at' => '2026-02-08 22:35:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:33:00',
         ],
     ]);
 

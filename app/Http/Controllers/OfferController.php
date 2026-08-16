@@ -7,7 +7,6 @@ use App\Http\Resources\ErrorResource;
 use App\Http\Resources\OfferCollection;
 use App\Http\Resources\OfferResource;
 use App\Models\Offer;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Throwable;
@@ -17,21 +16,14 @@ class OfferController extends Controller {
         try {
             $user = $request->user();
 
-            $offers = Offer::where(function ($query) {
-                $query->where('expires_at', '>', Carbon::now())
-                    ->orWhereNull('expires_at');
-            })
+            $offers = Offer::published()
                 ->when(! $user, function ($query) {
                     $query->where('audience', 'P');
                 })
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
 
-            $total = Offer::where(function ($query) {
-                $query->where('expires_at', '>', Carbon::now())
-                    ->orWhereNull('expires_at');
-            })
-                ->count();
+            $total = Offer::published()->count();
 
             return new OfferCollection($offers, $total);
         } catch (Throwable $e) {
@@ -43,9 +35,8 @@ class OfferController extends Controller {
         $user = $request->user();
 
         $offerItem = Offer::where('id', $id)
-            ->where(function ($query) {
-                $query->where('expires_at', '>', Carbon::now())->orWhereNull('expires_at');
-            })->first();
+            ->published()
+            ->first();
 
         $canGet = Gate::inspect('getOfferItem', $offerItem ?? Offer::class);
 

@@ -21,10 +21,7 @@ class KnowledgebaseController extends Controller {
             $user = $request->user();
             $tag = $request->validated('tag');
 
-            $knowledgebase = Knowledgebase::where(function ($query) {
-                $query->where('expires_at', '>', Carbon::now())
-                    ->orWhereNull('expires_at');
-            })
+            $knowledgebase = Knowledgebase::published()
                 ->when(! $user, function (Builder $query) {
                     $query->where('audience', 'P');
                 })
@@ -40,10 +37,7 @@ class KnowledgebaseController extends Controller {
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
 
-            $total = Knowledgebase::where(function ($query) {
-                $query->where('expires_at', '>', Carbon::now())
-                    ->orWhereNull('expires_at');
-            })
+            $total = Knowledgebase::published()
                 ->when($tag, function (Builder $query) use ($tag) {
                     $query->whereHas('tags', function (Builder $query) use ($tag) {
                         $query->where('tags.id', $tag);
@@ -61,9 +55,7 @@ class KnowledgebaseController extends Controller {
         $user = $request->user();
 
         $knowledgebaseItem = Knowledgebase::where('id', $id)
-            ->where(function ($query) {
-                $query->where('expires_at', '>', Carbon::now())->orWhereNull('expires_at');
-            })
+            ->published()
             ->when($user, function (Builder $query) use ($user) {
                 $query->addSelect(['is_read' => UserKnowledgebase::select('user_id')->whereColumn('knowledgebase_id', 'knowledgebase.id')->where('user_id', $user->id)]);
             })
@@ -85,7 +77,7 @@ class KnowledgebaseController extends Controller {
     public function markKnowledgebaseItemAsRead(Request $request, string $id) {
         try {
             $user = $request->user();
-            $knowledgebaseItem = Knowledgebase::find($id);
+            $knowledgebaseItem = Knowledgebase::where('id', $id)->published()->first();
 
             $canMark = Gate::inspect('markKnowledgebaseItemAsRead', [Knowledgebase::class, $knowledgebaseItem]);
 

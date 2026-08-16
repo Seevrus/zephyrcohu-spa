@@ -21,6 +21,7 @@ describe('Get News', function () {
                     'title' => 'Updated Public 3',
                     'mainContent' => 'Main Content 3',
                     'additionalContent' => 'Additional content 3',
+                    'publishedAt' => '2026-02-08T20:33:00.000000Z',
                     'createdAt' => '2026-02-08T20:33:00.000000Z',
                     'updatedAt' => '2026-02-08T21:35:00.000000Z',
                 ],
@@ -30,6 +31,7 @@ describe('Get News', function () {
                     'title' => 'Updated Public 9',
                     'mainContent' => 'Main Content 9',
                     'additionalContent' => 'Updated Additional content 9',
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:37:00.000000Z',
                 ],
@@ -39,6 +41,7 @@ describe('Get News', function () {
                     'title' => 'Public 12',
                     'mainContent' => 'Main Content 12',
                     'additionalContent' => 'Additional content 12',
+                    'publishedAt' => '2026-02-08T20:32:12.000000Z',
                     'createdAt' => '2026-02-08T20:32:12.000000Z',
                     'updatedAt' => '2026-02-08T20:32:12.000000Z',
                 ],
@@ -48,6 +51,7 @@ describe('Get News', function () {
                     'title' => 'Public 10',
                     'mainContent' => 'Main Content 10',
                     'additionalContent' => 'Additional content 10',
+                    'publishedAt' => '2026-02-08T20:32:11.000000Z',
                     'createdAt' => '2026-02-08T20:32:11.000000Z',
                     'updatedAt' => '2026-02-08T20:32:11.000000Z',
                 ],
@@ -57,6 +61,7 @@ describe('Get News', function () {
                     'title' => 'Public 2',
                     'mainContent' => 'Main Content 2',
                     'additionalContent' => 'Additional content 2',
+                    'publishedAt' => '2026-02-08T20:31:30.000000Z',
                     'createdAt' => '2026-02-08T20:31:30.000000Z',
                     'updatedAt' => '2026-02-08T20:31:30.000000Z',
                 ],
@@ -66,6 +71,7 @@ describe('Get News', function () {
                     'title' => 'Public 1',
                     'mainContent' => 'Main Content 1',
                     'additionalContent' => 'Additional content 1',
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -75,6 +81,7 @@ describe('Get News', function () {
                     'title' => 'Public 6',
                     'mainContent' => 'Main Content 6',
                     'additionalContent' => null,
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -84,6 +91,7 @@ describe('Get News', function () {
                     'title' => 'Public 7',
                     'mainContent' => 'Main Content 7',
                     'additionalContent' => 'Additional content 7',
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -93,6 +101,7 @@ describe('Get News', function () {
                     'title' => 'Public 4',
                     'mainContent' => 'Main Content 4',
                     'additionalContent' => 'Additional content 4',
+                    'publishedAt' => '2026-02-08T20:19:00.000000Z',
                     'createdAt' => '2026-02-08T20:19:00.000000Z',
                     'updatedAt' => '2026-02-08T20:19:00.000000Z',
                 ],
@@ -102,6 +111,7 @@ describe('Get News', function () {
                     'title' => 'Public 8',
                     'mainContent' => 'Main Content 8',
                     'additionalContent' => null,
+                    'publishedAt' => '2026-02-08T19:31:00.000000Z',
                     'createdAt' => '2026-02-08T19:31:00.000000Z',
                     'updatedAt' => '2026-02-08T19:31:00.000000Z',
                 ],
@@ -124,6 +134,7 @@ describe('Get News', function () {
                     'title' => 'Public 5',
                     'mainContent' => 'Main Content 5',
                     'additionalContent' => 'Additional content 5',
+                    'publishedAt' => '2026-02-06T20:31:00.000000Z',
                     'createdAt' => '2026-02-06T20:31:00.000000Z',
                     'updatedAt' => '2026-02-06T20:31:00.000000Z',
                 ],
@@ -150,6 +161,7 @@ describe('Get News', function () {
                     'title' => 'Updated Public 3',
                     'mainContent' => 'Main Content 3',
                     'additionalContent' => 'Additional content 3',
+                    'publishedAt' => '2026-02-08T20:33:00.000000Z',
                     'createdAt' => '2026-02-08T20:33:00.000000Z',
                     'updatedAt' => '2026-02-08T21:35:00.000000Z',
                 ],
@@ -160,6 +172,7 @@ describe('Get News', function () {
                     'title' => 'Admin 1',
                     'mainContent' => 'Admin Content 1',
                     'additionalContent' => null,
+                    'publishedAt' => '2026-02-08T20:38:00.000000Z',
                     'createdAt' => '2026-02-08T20:38:00.000000Z',
                     'updatedAt' => '2026-02-08T20:38:00.000000Z',
                 ],
@@ -170,6 +183,7 @@ describe('Get News', function () {
                     'title' => 'Updated Public 9',
                     'mainContent' => 'Main Content 9',
                     'additionalContent' => 'Updated Additional content 9',
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:37:00.000000Z',
                 ],
@@ -180,6 +194,7 @@ describe('Get News', function () {
                     'title' => 'Public 12',
                     'mainContent' => 'Main Content 12',
                     'additionalContent' => 'Additional content 12',
+                    'publishedAt' => '2026-02-08T20:32:12.000000Z',
                     'createdAt' => '2026-02-08T20:32:12.000000Z',
                     'updatedAt' => '2026-02-08T20:32:12.000000Z',
                 ],
@@ -190,6 +205,7 @@ describe('Get News', function () {
                     'title' => 'Public 10',
                     'mainContent' => 'Main Content 10',
                     'additionalContent' => 'Additional content 10',
+                    'publishedAt' => '2026-02-08T20:32:11.000000Z',
                     'createdAt' => '2026-02-08T20:32:11.000000Z',
                     'updatedAt' => '2026-02-08T20:32:11.000000Z',
                 ],
@@ -200,6 +216,7 @@ describe('Get News', function () {
                     'title' => 'Public 2',
                     'mainContent' => 'Main Content 2',
                     'additionalContent' => 'Additional content 2',
+                    'publishedAt' => '2026-02-08T20:31:30.000000Z',
                     'createdAt' => '2026-02-08T20:31:30.000000Z',
                     'updatedAt' => '2026-02-08T20:31:30.000000Z',
                 ],
@@ -210,6 +227,7 @@ describe('Get News', function () {
                     'title' => 'Public 1',
                     'mainContent' => 'Main Content 1',
                     'additionalContent' => 'Additional content 1',
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -220,6 +238,7 @@ describe('Get News', function () {
                     'title' => 'Public 6',
                     'mainContent' => 'Main Content 6',
                     'additionalContent' => null,
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -230,6 +249,7 @@ describe('Get News', function () {
                     'title' => 'Public 7',
                     'mainContent' => 'Main Content 7',
                     'additionalContent' => 'Additional content 7',
+                    'publishedAt' => '2026-02-08T20:31:00.000000Z',
                     'createdAt' => '2026-02-08T20:31:00.000000Z',
                     'updatedAt' => '2026-02-08T20:31:00.000000Z',
                 ],
@@ -240,6 +260,7 @@ describe('Get News', function () {
                     'title' => 'Public 4',
                     'mainContent' => 'Main Content 4',
                     'additionalContent' => 'Additional content 4',
+                    'publishedAt' => '2026-02-08T20:19:00.000000Z',
                     'createdAt' => '2026-02-08T20:19:00.000000Z',
                     'updatedAt' => '2026-02-08T20:19:00.000000Z',
                 ],
@@ -249,6 +270,23 @@ describe('Get News', function () {
                 'total' => 12,
             ],
         ]);
+    });
+
+    test('excludes news that are not published yet', function () {
+        DB::table('news')->insert([
+            'id' => 14,
+            'audience' => 'P',
+            'title' => 'Public 14',
+            'main_content' => 'Main Content 14',
+            'additional_content' => null,
+            'published_at' => '2099-01-01 00:00:00',
+            'created_at' => '2099-01-01 00:00:00',
+            'updated_at' => '2099-01-01 00:00:00',
+        ]);
+
+        $response = $this->getJson('/api/news');
+
+        $response->assertJsonMissing(['id' => 14])->assertJsonPath('meta.total', 12);
     });
 });
 
@@ -272,7 +310,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => 'Additional content 1',
             'created_at' => '2026-02-08 21:31:00',
             'updated_at' => '2026-02-08 21:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:00',
         ],
         [
             'id' => 2,
@@ -282,7 +320,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => 'Additional content 2',
             'created_at' => '2026-02-08 21:31:30',
             'updated_at' => '2026-02-08 21:31:30',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:30',
         ],
         [
             'id' => 3,
@@ -292,7 +330,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => 'Additional content 3',
             'created_at' => '2026-02-08 21:33:00',
             'updated_at' => '2026-02-08 22:35:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:33:00',
         ],
         [
             'id' => 4,
@@ -302,7 +340,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => 'Additional content 4',
             'created_at' => '2026-02-08 21:19:00',
             'updated_at' => '2026-02-08 21:19:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:19:00',
         ],
         [
             'id' => 5,
@@ -312,7 +350,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => 'Additional content 5',
             'created_at' => '2026-02-06 21:31:00',
             'updated_at' => '2026-02-06 21:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-06 21:31:00',
         ],
         [
             'id' => 6,
@@ -322,7 +360,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => null,
             'created_at' => '2026-02-08 21:31:00',
             'updated_at' => '2026-02-08 21:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:00',
         ],
         [
             'id' => 7,
@@ -332,7 +370,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => 'Additional content 7',
             'created_at' => '2026-02-08 21:31:00',
             'updated_at' => '2026-02-08 21:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:00',
         ],
         [
             'id' => 8,
@@ -342,7 +380,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => null,
             'created_at' => '2026-02-08 20:31:00',
             'updated_at' => '2026-02-08 20:31:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 20:31:00',
         ],
         [
             'id' => 9,
@@ -352,7 +390,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => 'Updated Additional content 9',
             'created_at' => '2026-02-08 21:31:00',
             'updated_at' => '2026-02-08 21:37:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:31:00',
         ],
         [
             'id' => 10,
@@ -362,7 +400,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => 'Additional content 10',
             'created_at' => '2026-02-08 21:32:11',
             'updated_at' => '2026-02-08 21:32:11',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:32:11',
         ],
         [
             'id' => 11,
@@ -372,7 +410,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => 'Additional content 11',
             'created_at' => '2026-02-01 09:11:00',
             'updated_at' => '2026-02-01 09:11:00',
-            'expires_at' => '2026-02-08 21:35:00',
+            'published_at' => '2099-01-01 00:00:00',
         ],
         [
             'id' => 12,
@@ -382,7 +420,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => 'Additional content 12',
             'created_at' => '2026-02-08 21:32:12',
             'updated_at' => '2026-02-08 21:32:12',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:32:12',
         ],
         [
             'id' => 13,
@@ -392,7 +430,7 @@ function resetGetNewsTestData(): void {
             'additional_content' => null,
             'created_at' => '2026-02-08 21:38:00',
             'updated_at' => '2026-02-08 21:38:00',
-            'expires_at' => null,
+            'published_at' => '2026-02-08 21:38:00',
         ],
     ]);
 

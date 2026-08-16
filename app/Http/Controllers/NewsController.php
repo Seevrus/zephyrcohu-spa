@@ -19,10 +19,7 @@ class NewsController extends Controller {
         try {
             $user = $request->user();
 
-            $news = News::where(function ($query) {
-                $query->where('expires_at', '>', Carbon::now())
-                    ->orWhereNull('expires_at');
-            })
+            $news = News::published()
                 ->when(! $user, function (Builder $query) {
                     $query->where('audience', 'P');
                 })
@@ -32,11 +29,7 @@ class NewsController extends Controller {
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
 
-            $total = News::where(function ($query) {
-                $query->where('expires_at', '>', Carbon::now())
-                    ->orWhereNull('expires_at');
-            })
-                ->count();
+            $total = News::published()->count();
 
             return new NewsCollection($news, $total);
         } catch (Throwable $e) {
@@ -48,9 +41,7 @@ class NewsController extends Controller {
         $user = $request->user();
 
         $newsItem = News::where('id', $id)
-            ->where(function ($query) {
-                $query->where('expires_at', '>', Carbon::now())->orWhereNull('expires_at');
-            })
+            ->published()
             ->when($user, function (Builder $query) use ($user) {
                 $query->addSelect(['is_read' => UserNews::select('user_id')->whereColumn('news_id', 'news.id')->where('user_id', $user->id)]);
             })->first();
@@ -70,7 +61,7 @@ class NewsController extends Controller {
     public function markNewsItemAsRead(Request $request, string $id) {
         try {
             $user = $request->user();
-            $newsItem = News::find($id);
+            $newsItem = News::where('id', $id)->published()->first();
 
             $canMark = Gate::inspect('markNewsItemAsRead', [News::class, $newsItem]);
 
