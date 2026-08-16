@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\KnowledgebaseController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\UserController;
@@ -14,6 +15,12 @@ Route::controller(CaptchaController::class)->prefix('captcha')->group(function (
 Route::controller(DocumentController::class)->prefix('documents/integra')->group(function () {
     Route::get('/{category}', 'getDocuments');
     Route::get('/{document}/download', 'downloadDocument');
+});
+
+Route::controller(KnowledgebaseController::class)->prefix('knowledgebase')->group(function () {
+    Route::get('/', 'getKnowledgebase');
+    Route::get('/{id}', 'getKnowledgebaseItem');
+    Route::post('/{id}/read', 'markKnowledgebaseItemAsRead')->middleware('auth:sanctum');
 });
 
 Route::controller(NewsController::class)->prefix('news')->group(function () {

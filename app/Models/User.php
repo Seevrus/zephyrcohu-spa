@@ -50,6 +50,12 @@ class User extends Authenticatable {
         return $this->hasOne(UserNew::class);
     }
 
+    public function readKnowledgebase(): BelongsToMany {
+        return $this
+            ->belongsToMany(Knowledgebase::class, 'users_knowledgebase', 'user_id', 'knowledgebase_id')
+            ->using(UserKnowledgebase::class);
+    }
+
     public function readNews(): BelongsToMany {
         return $this
             ->belongsToMany(News::class, 'users_news', 'user_id', 'news_id')
