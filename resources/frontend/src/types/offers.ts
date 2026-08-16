@@ -4,6 +4,7 @@ export type OfferResponse = {
   title: string;
   mainContent: string;
   additionalContent: string | null;
+  publishedAt: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -13,7 +14,11 @@ type OfferMetaResponse = {
   total: number;
 };
 
-export type OfferItem = Omit<OfferResponse, "createdAt" | "updatedAt"> & {
+export type OfferItem = Omit<
+  OfferResponse,
+  "createdAt" | "publishedAt" | "updatedAt"
+> & {
+  publishedAt: Date;
   createdAt: Date;
   updatedAt: Date;
 };

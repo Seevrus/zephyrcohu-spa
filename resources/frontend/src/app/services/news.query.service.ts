@@ -99,6 +99,7 @@ export class NewsQueryService {
       data: response.data.map((news) => {
         const newsItem = {
           ...news,
+          publishedAt: new Date(news.publishedAt),
           createdAt: new Date(news.createdAt),
           updatedAt: new Date(news.updatedAt),
         };
@@ -112,6 +113,7 @@ export class NewsQueryService {
   private static mapNewsItemResponse(response: NewsItemResponse): NewsItem {
     return {
       ...response.data,
+      publishedAt: new Date(response.data.publishedAt),
       createdAt: new Date(response.data.createdAt),
       updatedAt: new Date(response.data.updatedAt),
     };

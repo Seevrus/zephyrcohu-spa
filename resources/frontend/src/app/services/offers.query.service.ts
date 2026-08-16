@@ -76,6 +76,7 @@ export class OffersQueryService {
       data: response.data.map((offer) => {
         const offerItem = {
           ...offer,
+          publishedAt: new Date(offer.publishedAt),
           createdAt: new Date(offer.createdAt),
           updatedAt: new Date(offer.updatedAt),
         };
@@ -89,6 +90,7 @@ export class OffersQueryService {
   private static mapOfferItemResponse(response: OfferItemResponse): OfferItem {
     return {
       ...response.data,
+      publishedAt: new Date(response.data.publishedAt),
       createdAt: new Date(response.data.createdAt),
       updatedAt: new Date(response.data.updatedAt),
     };

@@ -5,6 +5,7 @@ export type NewsResponse = {
   title: string;
   mainContent: string;
   additionalContent: string | null;
+  publishedAt: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -14,7 +15,11 @@ type NewsMetaResponse = {
   total: number;
 };
 
-export type NewsItem = Omit<NewsResponse, "createdAt" | "updatedAt"> & {
+export type NewsItem = Omit<
+  NewsResponse,
+  "createdAt" | "publishedAt" | "updatedAt"
+> & {
+  publishedAt: Date;
   createdAt: Date;
   updatedAt: Date;
 };
