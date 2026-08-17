@@ -2,20 +2,54 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder {
     /**
-     * Seed the application's database.
+     * Every table this seeder touches, truncated before reseeding so runs are
+     * repeatable and ids always restart from 1.
+     *
+     * @var array<int, string>
+     */
+    private const array TABLES_TO_TRUNCATE = [
+        'personal_access_tokens',
+        'users_login_attempts',
+        'users_new_passwords',
+        'users_new_emails',
+        'users_new',
+        'user_admins',
+        'users_knowledgebase',
+        'users_news',
+        'knowledgebase_tags',
+        'knowledgebase',
+        'tags',
+        'news',
+        'offers',
+        'documents',
+        'users',
+    ];
+
+    /**
+     * Seed the application's database with local development test data.
      */
     public function run(): void {
-        // User::factory(10)->create();
+        Schema::disableForeignKeyConstraints();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        foreach (self::TABLES_TO_TRUNCATE as $table) {
+            DB::table($table)->truncate();
+        }
+
+        Schema::enableForeignKeyConstraints();
+
+        $this->call([
+            UserSeeder::class,
+            TagSeeder::class,
+            KnowledgebaseSeeder::class,
+            NewsSeeder::class,
+            OfferSeeder::class,
+            DocumentSeeder::class,
         ]);
     }
 }

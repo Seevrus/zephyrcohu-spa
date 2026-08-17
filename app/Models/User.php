@@ -17,7 +17,7 @@ class User extends Authenticatable {
     protected $attributes = [
         'confirmed' => 0,
         'ip_address' => null,
-        'last_Active' => null,
+        'last_active' => null,
         'newsletter' => 0,
     ];
 
