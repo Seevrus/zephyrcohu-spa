@@ -6,7 +6,12 @@ import { AgGridAngular } from "ag-grid-angular";
 import {
   type AutoSizeStrategy,
   type ColDef,
+  ColumnAutoSizeModule,
+  LocaleModule,
+  type Module,
+  PaginationModule,
   type PaginationPanel,
+  RowAutoHeightModule,
 } from "ag-grid-community";
 
 import { formatDisplayDateWithoutDay } from "../../../mappers/dates";
@@ -85,6 +90,13 @@ export class IntegraComponent {
   };
 
   protected readonly theme = zephyrGridTheme;
+
+  protected readonly gridModules: Module[] = [
+    ColumnAutoSizeModule,
+    LocaleModule,
+    PaginationModule,
+    RowAutoHeightModule,
+  ];
 
   protected readonly integraColumnDefinitions: ColDef[] = [
     {

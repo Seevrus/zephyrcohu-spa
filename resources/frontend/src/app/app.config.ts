@@ -15,18 +15,6 @@ import {
 } from "@tanstack/angular-query-experimental";
 import { withDevtools } from "@tanstack/angular-query-experimental/devtools";
 import {
-  AllCommunityModule,
-  ClientSideRowModelModule,
-  ColumnAutoSizeModule,
-  enableDevValidations,
-  LocaleModule,
-  ModuleRegistry,
-  PaginationModule,
-  PaginationPageNumbersModule,
-  RowAutoHeightModule,
-  ValidationModule,
-} from "ag-grid-community";
-import {
   RECAPTCHA_SETTINGS,
   RecaptchaModule,
   type RecaptchaSettings,
@@ -38,18 +26,13 @@ import { AppTitleStrategy } from "./app.title.strategy";
 import { credentialsInterceptor } from "./services/credentialsInterceptor";
 import { xsrfInterceptor } from "./services/xsrfInterceptor";
 
-ModuleRegistry.registerModules([
-  ClientSideRowModelModule,
-  ColumnAutoSizeModule,
-  LocaleModule,
-  PaginationModule,
-  PaginationPageNumbersModule,
-  RowAutoHeightModule,
-  ValidationModule,
-]);
+async function bootstrapGridDevelopmentMode() {
+  const { enableDevValidations } = await import("ag-grid-community");
+  enableDevValidations();
+}
 
 if (environment.gridDevMode) {
-  enableDevValidations();
+  bootstrapGridDevelopmentMode();
 }
 
 const queryClient = new QueryClient({
