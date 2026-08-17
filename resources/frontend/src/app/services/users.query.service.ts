@@ -45,15 +45,7 @@ export class UsersQueryService {
             ),
         ),
       onSuccess: () => {
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
-        });
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.news(),
-        });
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.offers(),
-        });
+        this.invalidateContentQueries();
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
@@ -78,15 +70,7 @@ export class UsersQueryService {
             ),
         ),
       onSuccess: () => {
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
-        });
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.news(),
-        });
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.offers(),
-        });
+        this.invalidateContentQueries();
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
@@ -104,15 +88,7 @@ export class UsersQueryService {
             .pipe(catchError(() => of(void 0))),
         ),
       onSuccess: () => {
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
-        });
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.news(),
-        });
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.offers(),
-        });
+        this.invalidateContentQueries();
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
@@ -259,15 +235,7 @@ export class UsersQueryService {
             ),
         ),
       onSuccess: async () => {
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
-        });
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.news(),
-        });
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.offers(),
-        });
+        this.invalidateContentQueries();
         await this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
@@ -285,9 +253,7 @@ export class UsersQueryService {
             .pipe<SessionResponse<SessionData | null>, UserSession | null>(
               catchError((error: HttpErrorResponse) => {
                 if (error.status === 401) {
-                  this.queryClient.invalidateQueries({
-                    queryKey: queryKeys.news(),
-                  });
+                  this.invalidateContentQueries();
 
                   return of({
                     data: null,
@@ -359,19 +325,44 @@ export class UsersQueryService {
             ),
         ),
       onSuccess: async () => {
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
-        });
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.news(),
-        });
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.offers(),
-        });
+        this.invalidateContentQueries();
         await this.queryClient.invalidateQueries({
           queryKey: queryKeys.session,
         });
       },
+    });
+  }
+
+  /**
+   * Invalidates every query whose data can differ based on the current
+   * user's authentication state (e.g. gated news/offers/knowledgebase
+   * content). Called whenever a mutation changes who is logged in
+   * (login, logout, deleteProfile, resetPassword, updateProfileConfirmEmail).
+   */
+  private invalidateContentQueries() {
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
+    });
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.news(),
+    });
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.newsItem(),
+    });
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.offers(),
+    });
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.offerItem(),
+    });
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.knowledgebase(),
+    });
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.knowledgebaseItem(),
+    });
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.knowledgebaseTags,
     });
   }
 
