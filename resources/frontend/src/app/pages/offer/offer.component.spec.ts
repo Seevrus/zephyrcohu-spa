@@ -194,7 +194,7 @@ describe("OfferComponent", () => {
     );
 
     await waitFor(() => {
-      expect(titleSetTitleSpy).toHaveBeenCalledWith("Test title");
+      expect(titleSetTitleSpy).toHaveBeenCalledWith("Test title - Zephyr Bt.");
     });
 
     expect(breadcrumbSetBreadcrumbSpy).toHaveBeenCalledWith(
@@ -225,6 +225,8 @@ describe("OfferComponent", () => {
 });
 
 async function renderOffer(id = "1") {
+  testQueryClient.clear();
+
   const renderResult = await render(OfferComponent, {
     inputs: { id },
     providers: [

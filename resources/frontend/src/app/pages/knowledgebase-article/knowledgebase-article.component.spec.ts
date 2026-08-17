@@ -230,7 +230,7 @@ describe("KnowledgebaseArticleComponent", () => {
     );
 
     await waitFor(() => {
-      expect(titleSetTitleSpy).toHaveBeenCalledWith("Test title");
+      expect(titleSetTitleSpy).toHaveBeenCalledWith("Test title - Zephyr Bt.");
     });
 
     expect(breadcrumbSetBreadcrumbSpy).toHaveBeenCalledWith(

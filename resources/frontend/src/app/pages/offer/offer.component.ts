@@ -85,7 +85,7 @@ export class OfferComponent {
     const title = this.title();
     if (title) {
       this.breadcrumbService.setBreadcrumb(`Ajánlatok - ${title}`);
-      this.titleService.setTitle(title);
+      this.titleService.setTitle(`${title} - Zephyr Bt.`);
     }
   });
 

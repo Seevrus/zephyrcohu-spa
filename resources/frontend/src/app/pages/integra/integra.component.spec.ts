@@ -14,6 +14,7 @@ import { createGetIntegraDocumentsOkResponse } from "../../../mocks/integra/crea
 import { matchIntegraDocumentsRequest } from "../../../mocks/integra/integraDocumentsRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { type IntegraCategorySlug } from "../../../types/integra";
+import { BreadcrumbService } from "../../services/breadcrumb.service";
 import { IntegraComponent } from "./integra.component";
 
 describe("IntegraComponent", () => {
@@ -131,6 +132,31 @@ describe("IntegraComponent", () => {
     );
 
     expect(documentsTestRequest.request.url).toContain("integra-documentation");
+
+    documentsTestRequest.flush(createGetIntegraDocumentsOkResponse());
+
+    httpTesting.verify();
+  });
+
+  test("sets the breadcrumb for the selected category", async () => {
+    const breadcrumbSetIntegraBreadcrumbSpy = vi.spyOn(
+      BreadcrumbService.prototype,
+      "setIntegraBreadcrumb",
+    );
+
+    const { httpTesting } = await renderIntegra("dokumentacio");
+
+    expect(breadcrumbSetIntegraBreadcrumbSpy).toHaveBeenCalledWith(
+      "dokumentacio",
+    );
+
+    breadcrumbSetIntegraBreadcrumbSpy.mockRestore();
+
+    const documentsTestRequest = await waitFor(() =>
+      httpTesting.expectOne(
+        matchIntegraDocumentsRequest("integra-documentation"),
+      ),
+    );
 
     documentsTestRequest.flush(createGetIntegraDocumentsOkResponse());
 
