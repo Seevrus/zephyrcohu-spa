@@ -140,22 +140,16 @@ describe("App Component", () => {
     });
   });
 
-  test("News Component is rendered on /hirek route", async () => {
-    const { renderResult } = renderAppComponent("/hirek");
+  test.each([
+    { path: "/hirek", testId: "news-component" },
+    { path: "/hirek/6", testId: "news-article" },
+    { path: "/tudasbazis/cikkek", testId: "knowledgebase-component" },
+    { path: "/tudasbazis/cikkek/6", testId: "knowledgebase-article" },
+  ])("renders the $testId for $path", async ({ path, testId }) => {
+    const { renderResult } = renderAppComponent(path);
     await renderResult;
 
-    await expect(
-      screen.findByTestId("news-component"),
-    ).resolves.toBeInTheDocument();
-  });
-
-  test("News Article Component is rendered on /hirek/:id route", async () => {
-    const { renderResult } = renderAppComponent("/hirek/6");
-    await renderResult;
-
-    await expect(
-      screen.findByTestId("news-article"),
-    ).resolves.toBeInTheDocument();
+    await expect(screen.findByTestId(testId)).resolves.toBeInTheDocument();
   });
 
   test("Not Found Component is rendered on nonexistent routes", async () => {

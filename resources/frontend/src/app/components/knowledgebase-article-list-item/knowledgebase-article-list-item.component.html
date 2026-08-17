@@ -1,0 +1,50 @@
+<div
+  class="knowledgebase-article-list-item"
+  data-testid="knowledgebase-article-list-item"
+>
+  <div class="knowledgebase-article-title-container">
+    <div class="knowledgebase-article-with-chip">
+      <h2 data-testid="knowledgebase-article-title">
+        <a routerLink="/tudasbazis/cikkek/{{ id() }}" class="no-link">{{
+          title()
+        }}</a>
+      </h2>
+      @if (isRead() === false) {
+        <mat-chip>Új</mat-chip>
+      }
+    </div>
+    <h4 data-testid="knowledgebase-article-updated-at">
+      {{ displayUpdatedAt() }}
+    </h4>
+  </div>
+  <div
+    data-testid="knowledgebase-article-main-content"
+    [innerHTML]="mainContentHtml()"
+  ></div>
+  @if (additionalContent()) {
+    <div
+      data-testid="knowledgebase-article-additional-content"
+      class="knowledgebase-article-additional-content"
+    >
+      <a routerLink="/tudasbazis/cikkek/{{ id() }}" class="zephyr-link"
+        >Tovább...</a
+      >
+    </div>
+  }
+  @if (tags().length > 0) {
+    <div
+      class="knowledgebase-article-tags"
+      data-testid="knowledgebase-article-tags"
+    >
+      @for (tag of tags(); track tag.id) {
+        <a
+          mat-chip
+          routerLink="/tudasbazis/cikkek"
+          [queryParams]="{ cimke: tag.id }"
+          data-testid="knowledgebase-article-tag"
+          >{{ tag.name }}</a
+        >
+      }
+    </div>
+  }
+</div>

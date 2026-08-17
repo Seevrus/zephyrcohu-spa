@@ -6,6 +6,7 @@ export const mutationKeys = {
   downloadIntegraDocument: ["download_integra_document"],
   login: ["login"],
   logout: ["logout"],
+  markKnowledgebaseItemAsRead: ["mark_knowledgebase_item_as_read"],
   markNewsItemAsRead: ["mark_news_item_as_read"],
   register: ["register"],
   registerConfirmEmail: ["register_confirm_email"],
@@ -20,6 +21,22 @@ export const queryKeys = {
   integra(category?: IntegraCategory) {
     return category ? ["documents", category] : ["documents"];
   },
+  knowledgebase(page?: number, tag?: number) {
+    const key: (string | number)[] = ["knowledgebase"];
+
+    if (page) {
+      key.push(page);
+    }
+    if (tag) {
+      key.push("tag", tag);
+    }
+
+    return key;
+  },
+  knowledgebaseItem(id?: number) {
+    return id ? ["knowledgebase_item", id] : ["knowledgebase_item"];
+  },
+  knowledgebaseTags: ["knowledgebase_tags"],
   news(page?: number) {
     return page ? ["news", page] : ["news"];
   },

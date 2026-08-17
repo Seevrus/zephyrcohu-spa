@@ -1,0 +1,46 @@
+:host(.app-tag-cloud) {
+  display: block;
+  width: 100%;
+
+  .tag-cloud {
+    align-items: baseline;
+    background-color: var(--mat-sys-primary-container);
+    column-gap: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 1rem;
+    row-gap: 0.5rem;
+    width: 100%;
+
+    .tag-cloud-item {
+      color: var(--mat-sys-on-surface);
+      text-decoration: none;
+
+      &:hover,
+      &:focus-visible {
+        text-decoration: underline;
+      }
+    }
+
+    .tag-cloud-tier-0 {
+      font-size: 0.85rem;
+    }
+
+    .tag-cloud-tier-1 {
+      font-size: 1.1rem;
+    }
+
+    .tag-cloud-tier-2 {
+      font-size: 1.4rem;
+    }
+
+    .tag-cloud-tier-3 {
+      font-size: 1.7rem;
+    }
+
+    .tag-cloud-tier-4 {
+      font-size: 2rem;
+    }
+  }
+}

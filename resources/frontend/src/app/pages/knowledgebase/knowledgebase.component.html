@@ -1,0 +1,56 @@
+<div data-testid="knowledgebase-component" class="knowledgebase-component">
+  @if (areKnowledgebaseError()) {
+    <app-form-unexpected-error />
+  } @else {
+    @if (noKnowledgebaseAvailable()) {
+      <app-no-knowledgebase-available />
+    } @else if (noPublicKnowledgebaseAvailable()) {
+      <app-no-public-knowledgebase-available
+        [numberOfAdditionalKnowledgebase]="numberOfAdditionalKnowledgebase()"
+      />
+    } @else {
+      @if (areAdditionalKnowledgebaseAvailable() && currentPage() === 1) {
+        <app-additional-knowledgebase-available
+          [numberOfAdditionalKnowledgebase]="numberOfAdditionalKnowledgebase()"
+        />
+      }
+
+      @if (activeTag() !== undefined) {
+        <div class="active-tag-filter" data-testid="active-tag-filter">
+          <span>Szűrés: {{ activeTagName() ?? activeTag() }}</span>
+          <a
+            class="zephyr-link"
+            routerLink="/tudasbazis/cikkek"
+            data-testid="clear-tag-filter"
+            >Szűrő törlése</a
+          >
+        </div>
+      }
+
+      @if (areKnowledgebaseFetching()) {
+        <mat-progress-bar mode="indeterminate" />
+      } @else {
+        @for (article of knowledgebase(); track article.id) {
+          <app-knowledgebase-article-list-item
+            [additionalContent]="article.additionalContent"
+            [id]="article.id"
+            [isRead]="article.isRead"
+            [mainContent]="article.mainContent"
+            [tags]="article.tags"
+            [title]="article.title"
+            [updatedAt]="article.updatedAt"
+          />
+        }
+      }
+
+      <app-paginator-hu
+        [currentPage]="currentPage() ?? 1"
+        [disabled]="areKnowledgebaseFetching()"
+        [total]="numberOfKnowledgebaseAvailable()"
+        (pageChanged)="onPaginationModelChange($event)"
+      />
+
+      <app-tag-cloud [tags]="tags()" />
+    }
+  }
+</div>

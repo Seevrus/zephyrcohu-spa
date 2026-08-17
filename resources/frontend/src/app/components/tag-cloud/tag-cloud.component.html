@@ -1,0 +1,13 @@
+@if (sizedTags().length > 0) {
+  <div class="tag-cloud" data-testid="tag-cloud">
+    @for (tag of sizedTags(); track tag.id) {
+      <a
+        class="tag-cloud-item tag-cloud-tier-{{ tag.sizeTier }}"
+        routerLink="/tudasbazis/cikkek"
+        [queryParams]="{ cimke: tag.id }"
+        data-testid="tag-cloud-item"
+        >{{ tag.name }}</a
+      >
+    }
+  </div>
+}

@@ -1,0 +1,67 @@
+<div class="knowledgebase-article" data-testid="knowledgebase-article">
+  @if (errorMessage()) {
+    @switch (errorMessage()) {
+      @case ("GENERIC_NOT_FOUND") {
+        <app-not-found />
+      }
+      @case ("GENERIC_UNAUTHORIZED") {
+        <app-registered-only />
+      }
+      @default {
+        <app-form-unexpected-error />
+      }
+    }
+  } @else {
+    @if (isLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    } @else {
+      <div class="knowledgebase-article-title-container">
+        <div class="knowledgebase-article-with-chip">
+          <h2 data-testid="knowledgebase-article-title">
+            {{ title() }}
+          </h2>
+          @if (isRead() === false) {
+            <mat-chip>Új</mat-chip>
+          }
+        </div>
+        <h4 data-testid="knowledgebase-article-updated-at">
+          {{ displayUpdatedAt() }}
+        </h4>
+      </div>
+      <div
+        data-testid="knowledgebase-article-main-content"
+        [innerHTML]="mainContentHtml()"
+      ></div>
+      @if (additionalContentHtml()) {
+        <div
+          data-testid="knowledgebase-article-additional-content"
+          class="knowledgebase-article-additional-content"
+          [innerHTML]="additionalContentHtml()"
+        ></div>
+      }
+      @if (isRead() === false) {
+        <div class="mark-as-read-container">
+          <mat-divider />
+          <a
+            class="zephyr-link mark-as-read"
+            (click)="onMarkedAsRead()"
+            (keydown)="onMarkedAsRead()"
+            tabindex="0"
+            >Erre a hivatkozásra kattintva Ön olvasottnak jelölheti ezt a
+            cikket.</a
+          >
+        </div>
+      }
+      @if (tags().length > 0) {
+        <div
+          class="knowledgebase-article-detail-tags"
+          data-testid="knowledgebase-article-detail-tags"
+        >
+          @for (tag of tags(); track tag.id) {
+            <mat-chip>{{ tag.name }}</mat-chip>
+          }
+        </div>
+      }
+    }
+  }
+</div>

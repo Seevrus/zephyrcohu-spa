@@ -57,6 +57,24 @@ export const routes: Routes = [
     title: "Ajánlatok - ",
   },
   {
+    path: "tudasbazis/cikkek",
+    async loadComponent() {
+      const { KnowledgebaseComponent } =
+        await import("./pages/knowledgebase/knowledgebase.component");
+      return KnowledgebaseComponent;
+    },
+    title: "Tudásbázis - Cikkek",
+  },
+  {
+    path: "tudasbazis/cikkek/:id",
+    async loadComponent() {
+      const { KnowledgebaseArticleComponent } =
+        await import("./pages/knowledgebase-article/knowledgebase-article.component");
+      return KnowledgebaseArticleComponent;
+    },
+    title: "Tudásbázis - Cikkek - ",
+  },
+  {
     path: "integra/:kategoria",
     canActivate: [integraCategoryGuard],
     async loadComponent() {

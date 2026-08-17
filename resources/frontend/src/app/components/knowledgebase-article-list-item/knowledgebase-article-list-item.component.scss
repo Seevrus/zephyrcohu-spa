@@ -1,0 +1,61 @@
+@use "@angular/material" as mat;
+@use "../../../shared/mixins";
+
+:host(.app-knowledgebase-article-list-item) {
+  @include mixins.zephyr-main;
+
+  padding: 0 1rem 1rem 1rem;
+
+  .knowledgebase-article-list-item {
+    width: 100%;
+
+    .knowledgebase-article-title-container {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      margin: 1rem 0;
+
+      .knowledgebase-article-with-chip {
+        align-items: center;
+        display: flex;
+        gap: 1rem;
+
+        @include mat.chips-overrides(
+          (
+            label-text-color: var(--mat-sys-on-primary),
+            elevated-container-color: var(--mat-sys-on-primary-container),
+            outline-width: 0,
+          )
+        );
+
+        a.no-link {
+          color: var(--mat-sys-on-surface);
+          text-decoration: none;
+        }
+      }
+
+      h2,
+      h4 {
+        margin: 0;
+      }
+    }
+
+    .knowledgebase-article-additional-content {
+      margin-top: 1rem;
+    }
+
+    .knowledgebase-article-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin-top: 0.5rem;
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+    }
+  }
+}
