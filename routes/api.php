@@ -19,6 +19,7 @@ Route::controller(DocumentController::class)->prefix('documents/integra')->group
 
 Route::controller(KnowledgebaseController::class)->prefix('knowledgebase')->group(function () {
     Route::get('/', 'getKnowledgebase');
+    Route::get('/tags', 'getKnowledgebaseTags');
     Route::get('/{id}', 'getKnowledgebaseItem');
     Route::post('/{id}/read', 'markKnowledgebaseItemAsRead')->middleware('auth:sanctum');
 });

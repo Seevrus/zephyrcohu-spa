@@ -10,6 +10,7 @@ class TagResource extends JsonResource {
         return [
             'id' => $this->id,
             'name' => $this->tag_name,
+            'count' => $this->whenCounted('knowledgebase'),
         ];
     }
 }

@@ -7,7 +7,9 @@ use App\Http\Requests\GetKnowledgebaseRequest;
 use App\Http\Resources\ErrorResource;
 use App\Http\Resources\KnowledgebaseCollection;
 use App\Http\Resources\KnowledgebaseResource;
+use App\Http\Resources\TagResource;
 use App\Models\Knowledgebase;
+use App\Models\Tag;
 use App\Models\UserKnowledgebase;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -46,6 +48,27 @@ class KnowledgebaseController extends Controller {
                 ->count();
 
             return new KnowledgebaseCollection($knowledgebase, $total);
+        } catch (Throwable $e) {
+            abort(500);
+        }
+    }
+
+    public function getKnowledgebaseTags(Request $request) {
+        try {
+            $user = $request->user();
+
+            $tags = Tag::withCount(['knowledgebase' => function (Builder $query) use ($user) {
+                $query->published();
+
+                if (! $user) {
+                    $query->where('audience', 'P');
+                }
+            }])
+                ->having('knowledgebase_count', '>', 0)
+                ->orderBy('tag_name')
+                ->get();
+
+            return TagResource::collection($tags);
         } catch (Throwable $e) {
             abort(500);
         }
