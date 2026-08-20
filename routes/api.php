@@ -3,6 +3,7 @@
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\KnowledgebaseController;
+use App\Http\Controllers\LinkController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\UserController;
@@ -18,6 +19,10 @@ Route::controller(DocumentController::class)->prefix('documents/integra')->group
 });
 
 Route::controller(KnowledgebaseController::class)->prefix('knowledgebase')->group(function () {
+    Route::controller(LinkController::class)->prefix('links')->group(function () {
+        Route::get('/', 'getLinks');
+    });
+
     Route::get('/', 'getKnowledgebase');
     Route::get('/tags', 'getKnowledgebaseTags');
     Route::get('/{id}', 'getKnowledgebaseItem');

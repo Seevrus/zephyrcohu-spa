@@ -28,6 +28,8 @@ class DatabaseSeeder extends Seeder {
         'news',
         'offers',
         'documents',
+        'links',
+        'link_categories',
         'users',
     ];
 
@@ -50,6 +52,8 @@ class DatabaseSeeder extends Seeder {
             NewsSeeder::class,
             OfferSeeder::class,
             DocumentSeeder::class,
+            LinkCategorySeeder::class,
+            LinkSeeder::class,
         ]);
     }
 }
