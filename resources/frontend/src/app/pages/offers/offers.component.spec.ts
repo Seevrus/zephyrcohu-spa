@@ -5,7 +5,11 @@ import {
 } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
-import { provideRouter, withComponentInputBinding } from "@angular/router";
+import {
+  provideRouter,
+  Router,
+  withComponentInputBinding,
+} from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor, within } from "@testing-library/angular";
 import { type UserEvent, userEvent } from "@testing-library/user-event";
@@ -191,7 +195,7 @@ describe("OffersComponent", () => {
   });
 
   test("pagination works correctly", async () => {
-    const { container, httpTesting } = await renderOffers();
+    const { container, httpTesting, rerender, router } = await renderOffers();
 
     const offersTestRequest = await waitFor(() =>
       httpTesting.expectOne(matchOffersRequest(1)),
@@ -216,6 +220,12 @@ describe("OffersComponent", () => {
     )!;
 
     await user.click(nextButton);
+    await waitFor(() => expect(router.url).toBe("/ajanlatok?oldal=2"));
+
+    // Simulate the route -> component input binding that
+    // withComponentInputBinding() performs in the real router outlet,
+    // which this render setup does not exercise on its own.
+    await rerender({ inputs: { oldal: "2" } });
 
     await waitFor(() => httpTesting.expectOne(matchOffersRequest(2)));
 
@@ -246,9 +256,11 @@ async function renderOffers(page = 1) {
   });
 
   const httpTesting = TestBed.inject(HttpTestingController);
+  const router = TestBed.inject(Router);
 
   return {
     ...renderResult,
     httpTesting,
+    router,
   };
 }

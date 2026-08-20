@@ -1,12 +1,7 @@
-import {
-  Component,
-  computed,
-  inject,
-  input,
-  linkedSignal,
-} from "@angular/core";
+import { Component, computed, inject, input } from "@angular/core";
 import { type PageEvent } from "@angular/material/paginator";
 import { MatProgressBar } from "@angular/material/progress-bar";
+import { ActivatedRoute, Router } from "@angular/router";
 import { injectQuery } from "@tanstack/angular-query-experimental";
 
 import { AdditionalNewsAvailableComponent } from "../../components/additional-news-available/additional-news-available.component";
@@ -35,18 +30,16 @@ import { NewsQueryService } from "../../services/news.query.service";
   styleUrl: "./news.component.scss",
 })
 export class NewsComponent {
+  private readonly activatedRoute = inject(ActivatedRoute);
   private readonly newsQueryService = inject(NewsQueryService);
+  private readonly router = inject(Router);
 
   readonly oldal = input<string>();
 
-  private readonly pageFromQueryParam = computed(() => {
+  protected readonly currentPage = computed(() => {
     const pageNumber = this.oldal() ? Number(this.oldal()) : undefined;
     return Number.isInteger(pageNumber) ? pageNumber : 1;
   });
-
-  protected readonly currentPage = linkedSignal(() =>
-    this.pageFromQueryParam(),
-  );
 
   private readonly newsQuery = injectQuery(() =>
     this.newsQueryService.getNews(this.currentPage()),
@@ -83,6 +76,10 @@ export class NewsComponent {
   );
 
   protected onPaginationModelChange({ pageIndex }: PageEvent) {
-    this.currentPage.set(pageIndex + 1);
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: { oldal: pageIndex + 1 },
+      queryParamsHandling: "merge",
+    });
   }
 }
