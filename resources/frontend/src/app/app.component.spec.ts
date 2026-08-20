@@ -291,6 +291,15 @@ describe("App Component", () => {
     });
   });
 
+  test("renders the Request Quote Component", async () => {
+    const { renderResult } = renderAppComponent("/arajanlat_kerese");
+    await renderResult;
+
+    await expect(
+      screen.findByTestId("request-quote-component"),
+    ).resolves.toBeInTheDocument();
+  });
+
   describe("Footer links", () => {
     test.each([
       { path: "/kapcsolat", testId: "contact-us-component" },

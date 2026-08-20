@@ -2,6 +2,7 @@ import { HttpClient, type HttpErrorResponse } from "@angular/common/http";
 import { inject, Service } from "@angular/core";
 import {
   keepPreviousData,
+  mutationOptions,
   QueryClient,
   queryOptions,
 } from "@tanstack/angular-query-experimental";
@@ -9,6 +10,7 @@ import { catchError, lastValueFrom, map, throwError } from "rxjs";
 
 import { type ZephyrHttpError } from "../../api/ZephyrHttpError";
 import { environment } from "../../environments/environment";
+import { type RequestOfferRequest } from "../../types/offerRequest";
 import {
   type OfferCollection,
   type OfferCollectionResponse,
@@ -16,7 +18,7 @@ import {
   type OfferItemResponse,
 } from "../../types/offers";
 import { throwHttpError } from "../../utils/throwHttpError";
-import { queryKeys } from "./queryKeys";
+import { mutationKeys, queryKeys } from "./queryKeys";
 
 @Service()
 export class OffersQueryService {
@@ -65,6 +67,22 @@ export class OffersQueryService {
             ),
         ),
       enabled: id !== undefined,
+    });
+  }
+
+  requestOffer() {
+    return mutationOptions<undefined, ZephyrHttpError, RequestOfferRequest>({
+      mutationKey: mutationKeys.requestOffer,
+      mutationFn: (request) =>
+        lastValueFrom(
+          this.http
+            .post<undefined>(`${environment.apiUrl}/offers/request`, request)
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
     });
   }
 

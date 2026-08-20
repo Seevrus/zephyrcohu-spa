@@ -1,0 +1,14 @@
+@use "../login/shared-register";
+@use "../../../shared/mixins";
+
+:host(.app-request-quote) {
+  @include mixins.zephyr-main;
+
+  .request-quote-component {
+    @include shared-register.form-layout;
+
+    app-button-loadable {
+      width: 300px !important;
+    }
+  }
+}

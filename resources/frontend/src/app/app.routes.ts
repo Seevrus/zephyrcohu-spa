@@ -49,6 +49,15 @@ export const routes: Routes = [
     title: "Ajánlatok - ",
   },
   {
+    path: "arajanlat_kerese",
+    async loadComponent() {
+      const { RequestQuoteComponent } =
+        await import("./pages/request-quote/request-quote.component");
+      return RequestQuoteComponent;
+    },
+    title: "Árajánlat kérése",
+  },
+  {
     path: "hirek",
     async loadComponent() {
       const { NewsComponent } = await import("./pages/news/news.component");

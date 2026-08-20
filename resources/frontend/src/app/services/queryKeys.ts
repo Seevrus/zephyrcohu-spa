@@ -13,6 +13,7 @@ export const mutationKeys = {
   registerResendConfirmationEmail: ["register_resend_confirm_email"],
   registerRevoke: ["register_revoke"],
   requestNewPassword: ["request_new_password"],
+  requestOffer: ["request_offer"],
   updateProfile: ["update_profile"],
   updateProfileConfirmEmail: ["update_profile_confirm_email"],
 };
