@@ -11,6 +11,7 @@ import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
 import { CookieService } from "ngx-cookie-service";
+import { describe } from "vitest";
 
 import { testQueryClient } from "../mocks/testQueryClient";
 import getSessionErrorResponse from "../mocks/users/getSessionErrorResponse.json";
@@ -140,24 +141,19 @@ describe("App Component", () => {
     });
   });
 
-  test.each([
-    { path: "/hirek", testId: "news-component" },
-    { path: "/hirek/6", testId: "news-article" },
-    { path: "/tudasbazis/cikkek", testId: "knowledgebase-component" },
-    { path: "/tudasbazis/cikkek/6", testId: "knowledgebase-article" },
-  ])("renders the $testId for $path", async ({ path, testId }) => {
-    const { renderResult } = renderAppComponent(path);
-    await renderResult;
+  describe("News and Knowledgebase", () => {
+    test.each([
+      { path: "/hirek", testId: "news-component" },
+      { path: "/hirek/6", testId: "news-article" },
+      { path: "/tudasbazis/cikkek", testId: "knowledgebase-component" },
+      { path: "/tudasbazis/cikkek/6", testId: "knowledgebase-article" },
+      { path: "/tudasbazis/linkek", testId: "links-component" },
+    ])("renders the $testId for $path", async ({ path, testId }) => {
+      const { renderResult } = renderAppComponent(path);
+      await renderResult;
 
-    await expect(screen.findByTestId(testId)).resolves.toBeInTheDocument();
-  });
-
-  test("Not Found Component is rendered on nonexistent routes", async () => {
-    renderAppComponent("/psps");
-
-    await expect(
-      screen.findByTestId("not-found-component"),
-    ).resolves.toBeInTheDocument();
+      await expect(screen.findByTestId(testId)).resolves.toBeInTheDocument();
+    });
   });
 
   describe("Forgot Password Component", () => {
@@ -293,6 +289,26 @@ describe("App Component", () => {
 
       await expect(screen.findByTestId(testId)).resolves.toBeInTheDocument();
     });
+  });
+
+  describe("Footer links", () => {
+    test.each([
+      { path: "/kapcsolat", testId: "contact-us-component" },
+      { path: "/adatvedelmi_tajekoztato", testId: "privacy-policy-component" },
+    ])("renders the $testId for $path", async ({ path, testId }) => {
+      const { renderResult } = renderAppComponent(path);
+      await renderResult;
+
+      await expect(screen.findByTestId(testId)).resolves.toBeInTheDocument();
+    });
+  });
+
+  test("Not Found Component is rendered on nonexistent routes", async () => {
+    renderAppComponent("/psps");
+
+    await expect(
+      screen.findByTestId("not-found-component"),
+    ).resolves.toBeInTheDocument();
   });
 });
 

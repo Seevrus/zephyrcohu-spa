@@ -14,6 +14,15 @@ export const routes: Routes = [
     title: "Főoldal",
   },
   {
+    path: "adatvedelmi_tajekoztato",
+    async loadComponent() {
+      const { PrivacyPolicyComponent } =
+        await import("./pages/privacy-policy/privacy-policy.component");
+      return PrivacyPolicyComponent;
+    },
+    title: "Adatvédelmi tájékoztató",
+  },
+  {
     path: "bejelentkezes",
     canActivate: [guestGuard],
     async loadComponent() {

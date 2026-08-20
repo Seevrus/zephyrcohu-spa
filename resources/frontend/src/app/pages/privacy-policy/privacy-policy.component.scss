@@ -1,0 +1,34 @@
+@use "@angular/material" as mat;
+@use "../../../shared/mixins";
+
+:host(.app-privacy-policy) {
+  @include mixins.zephyr-main;
+
+  @include mat.list-overrides(
+    (
+      list-item-two-line-container-height: auto,
+    )
+  );
+
+  .cookie-list {
+    padding: 0;
+
+    .mat-line {
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .cookie-name {
+      font-weight: 500;
+    }
+
+    .cookie-explanation {
+      color: var(--mat-sys-on-surface);
+      font-size: 1rem;
+    }
+  }
+
+  .closing-line {
+    margin-top: 3rem;
+  }
+}
