@@ -13,9 +13,7 @@ describe("No Integra Documents Available Component", () => {
 
     expect(
       screen.getByTestId("no-integra-documents-available-title"),
-    ).toHaveTextContent(
-      "Ebben a kategóriában még nincs elérhető dokumentum.",
-    );
+    ).toHaveTextContent("Ebben a kategóriában még nincs elérhető dokumentum.");
 
     expect(
       screen.getByTestId("no-integra-documents-available-content"),

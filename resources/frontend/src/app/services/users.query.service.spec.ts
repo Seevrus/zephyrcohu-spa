@@ -3,7 +3,11 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
-import { Component, inject, provideZonelessChangeDetection } from "@angular/core";
+import {
+  Component,
+  inject,
+  provideZonelessChangeDetection,
+} from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import {
   injectMutation,
@@ -195,7 +199,7 @@ describe("UsersQueryService", () => {
         resetPasswordMutation.mutate({
           code: 'code',
           email: 'a@b.com',
-          password: 'Password1!'
+          password: 'Password1!',
         })
       "
     >
@@ -207,7 +211,7 @@ describe("UsersQueryService", () => {
         updateProfileConfirmEmailMutation.mutate({
           code: 'code',
           email: 'a@b.com',
-          password: 'Password1!'
+          password: 'Password1!',
         })
       "
     >

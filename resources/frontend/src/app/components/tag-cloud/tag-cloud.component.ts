@@ -36,9 +36,7 @@ export class TagCloudComponent {
           ? TAG_CLOUD_TIER_COUNT - 1
           : Math.min(
               TAG_CLOUD_TIER_COUNT - 1,
-              Math.floor(
-                ((tag.count - min) / span) * TAG_CLOUD_TIER_COUNT,
-              ),
+              Math.floor(((tag.count - min) / span) * TAG_CLOUD_TIER_COUNT),
             ),
     }));
   });

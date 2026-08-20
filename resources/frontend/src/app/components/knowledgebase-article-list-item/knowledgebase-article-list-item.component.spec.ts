@@ -94,21 +94,13 @@ describe("Knowledgebase Article List Item", () => {
       updatedAt: new Date("2026-02-08T18:23:00.000000Z"),
     });
 
-    const tagLinks = await screen.findAllByTestId(
-      "knowledgebase-article-tag",
-    );
+    const tagLinks = await screen.findAllByTestId("knowledgebase-article-tag");
 
     expect(tagLinks).toHaveLength(2);
     expect(tagLinks[0]).toHaveTextContent("Billing");
-    expect(tagLinks[0]).toHaveAttribute(
-      "href",
-      "/tudasbazis/cikkek?cimke=1",
-    );
+    expect(tagLinks[0]).toHaveAttribute("href", "/tudasbazis/cikkek?cimke=1");
     expect(tagLinks[1]).toHaveTextContent("Onboarding");
-    expect(tagLinks[1]).toHaveAttribute(
-      "href",
-      "/tudasbazis/cikkek?cimke=2",
-    );
+    expect(tagLinks[1]).toHaveAttribute("href", "/tudasbazis/cikkek?cimke=2");
   });
 });
 

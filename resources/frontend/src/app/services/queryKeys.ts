@@ -37,6 +37,7 @@ export const queryKeys = {
     return id ? ["knowledgebase_item", id] : ["knowledgebase_item"];
   },
   knowledgebaseTags: ["knowledgebase_tags"],
+  links: ["links"],
   news(page?: number) {
     return page ? ["news", page] : ["news"];
   },

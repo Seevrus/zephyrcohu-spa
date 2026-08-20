@@ -75,6 +75,14 @@ export const routes: Routes = [
     title: "Tudásbázis - Cikkek - ",
   },
   {
+    path: "tudasbazis/linkek",
+    async loadComponent() {
+      const { LinksComponent } = await import("./pages/links/links.component");
+      return LinksComponent;
+    },
+    title: "Tudásbázis - Hasznos linkek",
+  },
+  {
     path: "integra/:kategoria",
     canActivate: [integraCategoryGuard],
     async loadComponent() {

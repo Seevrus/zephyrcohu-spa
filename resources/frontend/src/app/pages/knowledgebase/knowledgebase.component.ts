@@ -1,4 +1,10 @@
-import { Component, computed, inject, input, linkedSignal } from "@angular/core";
+import {
+  Component,
+  computed,
+  inject,
+  input,
+  linkedSignal,
+} from "@angular/core";
 import { type PageEvent } from "@angular/material/paginator";
 import { MatProgressBar } from "@angular/material/progress-bar";
 import { RouterLink } from "@angular/router";
@@ -88,7 +94,8 @@ export class KnowledgebaseComponent {
   protected readonly areKnowledgebaseError = computed(() =>
     this.knowledgebaseQuery.isError(),
   );
-  protected readonly areKnowledgebaseFetching = this.knowledgebaseQuery.isFetching;
+  protected readonly areKnowledgebaseFetching =
+    this.knowledgebaseQuery.isFetching;
 
   protected readonly knowledgebase = computed(
     () => this.knowledgebaseQuery.data()?.data ?? [],

@@ -1,0 +1,28 @@
+<div data-testid="links-component" class="links-component">
+  @if (isError()) {
+    <app-form-unexpected-error />
+  } @else if (isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  } @else if (isEmpty()) {
+    <p data-testid="no-links-available">Jelenleg nincsenek elérhető linkek.</p>
+  } @else {
+    @for (category of linkCategories(); track category) {
+      <h2 data-testid="link-category-title">{{ category }}</h2>
+      <mat-nav-list>
+        @for (link of linksByCategory()[category]; track link.id) {
+          <a
+            mat-list-item
+            [href]="link.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="link-item"
+          >
+            <mat-icon matListItemIcon>open_in_new</mat-icon>
+            <span matListItemTitle>{{ link.title }}</span>
+          </a>
+        }
+      </mat-nav-list>
+      <mat-divider />
+    }
+  }
+</div>
