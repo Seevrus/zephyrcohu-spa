@@ -130,6 +130,6 @@ export class IntegraComponent {
       suppressPageInput: true,
     },
     "rowSummary",
-    { type: "pageSize", paginationPageSize: 10 },
+    { type: "pageSize", paginationPageSize: 25 },
   ];
 }
