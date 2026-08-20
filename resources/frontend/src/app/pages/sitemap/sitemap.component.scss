@@ -1,0 +1,22 @@
+@use "../../../shared/mixins";
+
+:host(.app-sitemap) {
+  @include mixins.zephyr-main;
+
+  mat-nav-list {
+    padding: 0;
+    width: fit-content;
+
+    .mat-mdc-subheader {
+      font-weight: 400;
+    }
+  }
+
+  .sub-list-level-1 {
+    padding-left: 1rem;
+  }
+
+  .you-are-here {
+    font-weight: 500;
+  }
+}

@@ -1,0 +1,92 @@
+<div data-testid="sitemap-component">
+  <h1>Honlaptérkép</h1>
+  <mat-nav-list>
+    <a mat-list-item routerLink="/">
+      <mat-icon matListItemIcon>open_in_browser</mat-icon
+      ><span>Főoldal</span></a
+    >
+    <a mat-list-item routerLink="/hirek">
+      <mat-icon matListItemIcon>open_in_browser</mat-icon><span>Hírek</span></a
+    >
+    <a mat-list-item routerLink="/ajanlatok">
+      <mat-icon matListItemIcon>open_in_browser</mat-icon
+      ><span>Ajánlatok</span></a
+    >
+
+    <h3 matSubheader>INTEGRA</h3>
+    <mat-nav-list class="sub-list-level-1">
+      <a mat-list-item routerLink="/integra/tajekoztato">
+        <mat-icon matListItemIcon>open_in_browser</mat-icon
+        ><span>Tájékoztató</span></a
+      >
+      <a mat-list-item routerLink="/integra/probaverzio">
+        <mat-icon matListItemIcon>open_in_browser</mat-icon
+        ><span>Próbaverzió</span></a
+      >
+      <a mat-list-item routerLink="/integra/dokumentacio">
+        <mat-icon matListItemIcon>open_in_browser</mat-icon
+        ><span>Dokumentáció</span></a
+      >
+      <a mat-list-item routerLink="/integra/programfrissites">
+        <mat-icon matListItemIcon>open_in_browser</mat-icon
+        ><span>Programfrissítés</span></a
+      >
+      <a mat-list-item routerLink="/integra/egyeb">
+        <mat-icon matListItemIcon>open_in_browser</mat-icon
+        ><span>Egyéb dokumentumok</span></a
+      >
+    </mat-nav-list>
+
+    <h3 matSubheader>Tudásbázis</h3>
+    <mat-nav-list class="sub-list-level-1">
+      <a mat-list-item routerLink="/tudasbazis/cikkek">
+        <mat-icon matListItemIcon>open_in_browser</mat-icon
+        ><span>Cikkek</span></a
+      >
+      <a mat-list-item routerLink="/tudasbazis/linkek">
+        <mat-icon matListItemIcon>open_in_browser</mat-icon
+        ><span>Hasznos linkek</span></a
+      >
+    </mat-nav-list>
+
+    @if (showLogin() || showProfile()) {
+      <h3 matSubheader>Profil kezelése</h3>
+      <mat-nav-list class="sub-list-level-1">
+        @if (showLogin()) {
+          <a mat-list-item routerLink="/regisztracio">
+            <mat-icon matListItemIcon>open_in_browser</mat-icon
+            ><span>Regisztráció</span></a
+          >
+          <a mat-list-item routerLink="/bejelentkezes">
+            <mat-icon matListItemIcon>open_in_browser</mat-icon
+            ><span>Bejelentkezés</span></a
+          >
+          <a mat-list-item routerLink="/profil/elfelejtett_jelszo">
+            <mat-icon matListItemIcon>open_in_browser</mat-icon
+            ><span>Elfelejtett jelszó</span></a
+          >
+        } @else if (showProfile()) {
+          <a mat-list-item routerLink="/profil">
+            <mat-icon matListItemIcon>open_in_browser</mat-icon
+            ><span>Adatok módosítása</span></a
+          >
+        }
+      </mat-nav-list>
+    }
+
+    <a mat-list-item routerLink="/kapcsolat">
+      <mat-icon matListItemIcon>open_in_browser</mat-icon
+      ><span>Kapcsolat</span></a
+    >
+    <mat-list-item role="listitem"
+      ><mat-icon matListItemIcon>beenhere</mat-icon>
+      <div matLine>
+        <span>Honlaptérkép</span> - <span class="you-are-here">Ön itt áll</span>
+      </div></mat-list-item
+    >
+    <a mat-list-item routerLink="/adatvedelmi_tajekoztato">
+      <mat-icon matListItemIcon>open_in_browser</mat-icon
+      ><span>Adatvédelmi tájékoztató</span></a
+    >
+  </mat-nav-list>
+</div>

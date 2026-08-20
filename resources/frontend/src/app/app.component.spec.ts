@@ -294,6 +294,7 @@ describe("App Component", () => {
   describe("Footer links", () => {
     test.each([
       { path: "/kapcsolat", testId: "contact-us-component" },
+      { path: "/honlapterkep", testId: "sitemap-component" },
       { path: "/adatvedelmi_tajekoztato", testId: "privacy-policy-component" },
     ])("renders the $testId for $path", async ({ path, testId }) => {
       const { renderResult } = renderAppComponent(path);

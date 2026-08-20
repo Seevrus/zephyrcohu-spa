@@ -66,6 +66,15 @@ export const routes: Routes = [
     title: "Hírek - ",
   },
   {
+    path: "honlapterkep",
+    async loadComponent() {
+      const { SitemapComponent } =
+        await import("./pages/sitemap/sitemap.component");
+      return SitemapComponent;
+    },
+    title: "Honlaptérkép",
+  },
+  {
     path: "integra/:kategoria",
     canActivate: [integraCategoryGuard],
     async loadComponent() {
