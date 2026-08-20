@@ -2,7 +2,7 @@
     <div style="border-bottom: 3px solid rgb(0, 0, 128);">
         <img style="height: 4rem;" src="https://zephyr.co.hu/img/logo/logo.png" alt="Zephyr Bt. Logo">
     </div>
-    <div style="background-color: rgb(207, 231, 245); padding: 1rem; font-family: sans-serif; font-size: 14px;">
+    <div style="background-color: #d7e3ff; padding: 1rem; font-family: sans-serif; font-size: 14px;">
         <p>Tisztelt Felhasználónk!</p>
         <p>Ezt a levelet azért küldjük, mert ezzel az e-mail címmel regisztráltak a <a href="https://zephyr.co.hu"
                                                                                        style="color: rgb(51, 51, 51); text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); background-color: rgba(245, 245, 245, 1);">zephyr.co.hu</a>
