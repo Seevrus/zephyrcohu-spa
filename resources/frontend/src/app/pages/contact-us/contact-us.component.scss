@@ -1,0 +1,19 @@
+@use "../../../shared/mixins";
+
+:host(.app-contact-us) {
+  @include mixins.zephyr-main;
+
+  .email-list,
+  .phone-list {
+    padding: 0;
+
+    .mat-line {
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .phone-number {
+      font-weight: 500;
+    }
+  }
+}

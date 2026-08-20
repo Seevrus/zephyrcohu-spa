@@ -1,0 +1,58 @@
+<div data-testid="contact-us-component">
+  <h1>Kapcsolatfelvétel</h1>
+  <div>
+    <p>
+      <strong>Cég neve:</strong> Zephyr Számítástechnikai Fejlesztő és Gazdasági
+      Szolgáltató Bt.
+    </p>
+    <p>
+      <strong>Telephely és levélcím:</strong> 3534 Miskolc, Gagarin utca 12.
+      2/4.
+    </p>
+    <p><strong>Telefonszámaink:</strong></p>
+    <mat-list role="list" class="phone-list">
+      <mat-list-item role="listitem"
+        ><mat-icon matListItemIcon>phone</mat-icon>
+        <div matLine>
+          <span class="phone-number">20-9328608</span> (munkafelvétel,
+          ügyfél-kapcsolati központi szám)
+        </div></mat-list-item
+      >
+      <mat-list-item role="listitem"
+        ><mat-icon matListItemIcon>phone</mat-icon>
+        <div matLine>
+          <span class="phone-number">20-9692981</span> (szoftverfejlesztés,
+          cégvezetés)
+        </div></mat-list-item
+      >
+      <mat-list-item role="listitem"
+        ><mat-icon matListItemIcon>phone</mat-icon>
+        <div matLine>
+          <span class="phone-number">20-9692982</span> (szoftverfejlesztés,
+          cégvezetés)
+        </div></mat-list-item
+      >
+    </mat-list>
+    <p><strong>E-mail címeink (főbb címek):</strong></p>
+    <mat-list role="list" class="email-list">
+      <mat-list-item role="listitem"
+        ><mat-icon matListItemIcon>email</mat-icon>
+        <div matLine>
+          <a class="zephyr-link" href="mailto:{{ zephyrInfo }}">{{
+            zephyrInfo
+          }}</a>
+          (központi cím)
+        </div></mat-list-item
+      >
+      <mat-list-item role="listitem"
+        ><mat-icon matListItemIcon>email</mat-icon>
+        <div matLine>
+          <a class="zephyr-link" href="mailto:{{ zephyrEmail }}">{{
+            zephyrEmail
+          }}</a>
+          (alternatív központi cím)
+        </div></mat-list-item
+      >
+    </mat-list>
+  </div>
+</div>

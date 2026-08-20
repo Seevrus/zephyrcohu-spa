@@ -21,3 +21,22 @@ export const zephyr =
   "c" +
   "o" +
   "m";
+
+export const zephyrInfo =
+  "i" +
+  "n" +
+  "f" +
+  "o" +
+  "@" +
+  "z" +
+  "e" +
+  "p" +
+  "h" +
+  "y" +
+  "r" +
+  "." +
+  "c" +
+  "o" +
+  "." +
+  "h" +
+  "u";

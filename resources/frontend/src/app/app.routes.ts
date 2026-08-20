@@ -23,23 +23,6 @@ export const routes: Routes = [
     title: "Bejelentkezés",
   },
   {
-    path: "hirek",
-    async loadComponent() {
-      const { NewsComponent } = await import("./pages/news/news.component");
-      return NewsComponent;
-    },
-    title: "Hírek",
-  },
-  {
-    path: "hirek/:id",
-    async loadComponent() {
-      const { NewsArticleComponent } =
-        await import("./pages/news-article/news-article.component");
-      return NewsArticleComponent;
-    },
-    title: "Hírek - ",
-  },
-  {
     path: "ajanlatok",
     async loadComponent() {
       const { OffersComponent } =
@@ -57,30 +40,21 @@ export const routes: Routes = [
     title: "Ajánlatok - ",
   },
   {
-    path: "tudasbazis/cikkek",
+    path: "hirek",
     async loadComponent() {
-      const { KnowledgebaseComponent } =
-        await import("./pages/knowledgebase/knowledgebase.component");
-      return KnowledgebaseComponent;
+      const { NewsComponent } = await import("./pages/news/news.component");
+      return NewsComponent;
     },
-    title: "Tudásbázis - Cikkek",
+    title: "Hírek",
   },
   {
-    path: "tudasbazis/cikkek/:id",
+    path: "hirek/:id",
     async loadComponent() {
-      const { KnowledgebaseArticleComponent } =
-        await import("./pages/knowledgebase-article/knowledgebase-article.component");
-      return KnowledgebaseArticleComponent;
+      const { NewsArticleComponent } =
+        await import("./pages/news-article/news-article.component");
+      return NewsArticleComponent;
     },
-    title: "Tudásbázis - Cikkek - ",
-  },
-  {
-    path: "tudasbazis/linkek",
-    async loadComponent() {
-      const { LinksComponent } = await import("./pages/links/links.component");
-      return LinksComponent;
-    },
-    title: "Tudásbázis - Hasznos linkek",
+    title: "Hírek - ",
   },
   {
     path: "integra/:kategoria",
@@ -91,6 +65,14 @@ export const routes: Routes = [
       return IntegraComponent;
     },
     title: "Integra",
+  },
+  {
+    path: "kapcsolat",
+    async loadComponent() {
+      const { ContactUsComponent } =
+        await import("./pages/contact-us/contact-us.component");
+      return ContactUsComponent;
+    },
   },
   {
     path: "profil",
@@ -170,6 +152,32 @@ export const routes: Routes = [
       return RegisteredOnlyComponent;
     },
     title: "Regisztráció szükséges",
+  },
+  {
+    path: "tudasbazis/cikkek",
+    async loadComponent() {
+      const { KnowledgebaseComponent } =
+        await import("./pages/knowledgebase/knowledgebase.component");
+      return KnowledgebaseComponent;
+    },
+    title: "Tudásbázis - Cikkek",
+  },
+  {
+    path: "tudasbazis/cikkek/:id",
+    async loadComponent() {
+      const { KnowledgebaseArticleComponent } =
+        await import("./pages/knowledgebase-article/knowledgebase-article.component");
+      return KnowledgebaseArticleComponent;
+    },
+    title: "Tudásbázis - Cikkek - ",
+  },
+  {
+    path: "tudasbazis/linkek",
+    async loadComponent() {
+      const { LinksComponent } = await import("./pages/links/links.component");
+      return LinksComponent;
+    },
+    title: "Tudásbázis - Hasznos linkek",
   },
   {
     path: "**",
