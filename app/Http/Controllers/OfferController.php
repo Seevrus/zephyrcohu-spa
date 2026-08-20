@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\ErrorCode;
+use App\Http\Requests\RequestOfferRequest;
 use App\Http\Resources\ErrorResource;
 use App\Http\Resources\OfferCollection;
 use App\Http\Resources\OfferResource;
+use App\Mail\OfferRequested;
 use App\Models\Offer;
+use App\OfferRequestSubject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class OfferController extends Controller {
@@ -48,5 +52,19 @@ class OfferController extends Controller {
         }
 
         return new OfferResource($offerItem);
+    }
+
+    public function requestOffer(RequestOfferRequest $request) {
+        try {
+            $subject = OfferRequestSubject::from($request->subject);
+
+            Mail::to(config('mail.from.address'))->send(
+                new OfferRequested($request->email, $request->name, $subject->label(), $request->message)
+            );
+
+            return response(null, 201);
+        } catch (Throwable $e) {
+            abort(500);
+        }
     }
 }

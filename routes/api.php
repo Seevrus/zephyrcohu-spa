@@ -38,6 +38,7 @@ Route::controller(NewsController::class)->prefix('news')->group(function () {
 Route::controller(OfferController::class)->prefix('offers')->group(function () {
     Route::get('/', 'getOffers');
     Route::get('/{id}', 'getOfferItem');
+    Route::post('/request', 'requestOffer');
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function () {
