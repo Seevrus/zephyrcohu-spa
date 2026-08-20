@@ -35,4 +35,10 @@
   <a mat-button routerLink="/arajanlat_kerese" routerLinkActive="active-link"
     >Árajánlat kérése</a
   >
+
+  @if (showAdminNavigation()) {
+    <button mat-button (click)="onActivateAdminNavigation()">
+      Admin funkciók
+    </button>
+  }
 </div>

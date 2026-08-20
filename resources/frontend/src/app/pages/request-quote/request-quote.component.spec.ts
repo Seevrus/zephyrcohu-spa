@@ -149,7 +149,10 @@ describe("Request Quote Component", () => {
 });
 
 async function fillForm(user: ReturnType<typeof userEvent.setup>) {
-  await user.type(screen.getByTestId("name").querySelector("input")!, "Teszt Elek");
+  await user.type(
+    screen.getByTestId("name").querySelector("input")!,
+    "Teszt Elek",
+  );
   await user.type(
     screen.getByTestId("email").querySelector("input")!,
     "teszt@example.com",

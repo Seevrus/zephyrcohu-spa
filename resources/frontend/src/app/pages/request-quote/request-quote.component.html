@@ -49,7 +49,11 @@
       </mat-form-field>
       <mat-form-field data-testid="message">
         <mat-label>További információk</mat-label>
-        <textarea matInput [formField]="requestOfferForm.message" rows="10"></textarea>
+        <textarea
+          matInput
+          [formField]="requestOfferForm.message"
+          rows="10"
+        ></textarea>
         @if (
           requestOfferForm.message().touched() &&
           requestOfferForm.message().getError("required")

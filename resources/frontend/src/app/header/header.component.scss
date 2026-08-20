@@ -98,8 +98,16 @@
   }
 }
 
+.admin-nav,
 .desktop-nav {
   display: none;
+}
+
+@media (min-width: variables.$tablet-width) {
+  .admin-nav {
+    display: block;
+    width: 100%;
+  }
 }
 
 @media (min-width: variables.$desktop-width) {

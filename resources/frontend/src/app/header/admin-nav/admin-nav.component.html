@@ -1,0 +1,64 @@
+<div class="admin-nav-main">
+  <button mat-button [matMenuTriggerFor]="ajanlatok">
+    <mat-icon>arrow_drop_down</mat-icon>
+    <span>Ajánlatok</span>
+  </button>
+  <mat-menu #ajanlatok="matMenu">
+    <a mat-menu-item>Ajánlatok kezelése</a>
+    <a mat-menu-item>Új ajánlat készítése</a>
+  </mat-menu>
+
+  <a mat-button routerLinkActive="active-link">Felhasználók</a>
+
+  <button mat-button [matMenuTriggerFor]="linkek">
+    <mat-icon>arrow_drop_down</mat-icon>
+    <span>Hasznos linkek</span>
+  </button>
+  <mat-menu #linkek="matMenu">
+    <a mat-menu-item>Linkek kezelése</a>
+    <a mat-menu-item>Kategóriák</a>
+    <a mat-menu-item>Új link felvétele</a>
+  </mat-menu>
+
+  <button mat-button [matMenuTriggerFor]="hirek">
+    <mat-icon>arrow_drop_down</mat-icon>
+    <span>Hírek</span>
+  </button>
+  <mat-menu #hirek="matMenu">
+    <a mat-menu-item>Hírek kezelése</a>
+    <a mat-menu-item>Új hír írása</a>
+  </mat-menu>
+
+  <button mat-button [matMenuTriggerFor]="hirlevel">
+    <mat-icon>arrow_drop_down</mat-icon>
+    <span>Hírlevél</span>
+  </button>
+  <mat-menu #hirlevel="matMenu">
+    <a mat-menu-item>Kiküldött hírlevelek</a>
+    <a mat-menu-item>Új hírlevél írása</a>
+  </mat-menu>
+
+  <button mat-button [matMenuTriggerFor]="integra">
+    <mat-icon>arrow_drop_down</mat-icon>
+    <span>INTEGRA</span>
+  </button>
+  <mat-menu #integra="matMenu">
+    <a mat-menu-item>Feltöltések</a>
+    <a mat-menu-item>Új fájl feltöltése</a>
+  </mat-menu>
+
+  <button mat-button [matMenuTriggerFor]="tudasbazis">
+    <mat-icon>arrow_drop_down</mat-icon>
+    <span>Tudásbázis</span>
+  </button>
+  <mat-menu #tudasbazis="matMenu">
+    <a mat-menu-item>Tudásbázis cikkek</a>
+    <a mat-menu-item>Tudásbázis címkék</a>
+    <a mat-menu-item>Új cikk írása</a>
+  </mat-menu>
+
+  <a mat-button routerLinkActive="active-link">API dokumentáció</a>
+  <button mat-button (click)="onDeactivateAdminNavigation()">
+    Felhasználói funkciók
+  </button>
+</div>

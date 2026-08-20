@@ -58,5 +58,16 @@
     </div>
   </div>
 </div>
-<app-desktop-nav class="desktop-nav" />
-<app-mobile-nav class="mobile-nav" />
+@if (showAdminNavigationBar()) {
+  <app-admin-nav
+    class="admin-nav"
+    (deactivateAdminNavigation)="onToggleAdminNavigation()"
+  />
+} @else {
+  <app-desktop-nav
+    class="desktop-nav"
+    [showAdminNavigation]="isAdmin()"
+    (activateAdminNavigation)="onToggleAdminNavigation()"
+  />
+  <app-mobile-nav class="mobile-nav" />
+}

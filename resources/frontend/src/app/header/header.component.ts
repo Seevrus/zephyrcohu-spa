@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from "@angular/common";
-import { Component, computed, inject } from "@angular/core";
+import { Component, computed, inject, signal } from "@angular/core";
 import { MatAnchor, MatButton } from "@angular/material/button";
 import { Router, RouterLink, RouterLinkActive } from "@angular/router";
 import {
@@ -9,12 +9,14 @@ import {
 
 import { BreadcrumbService } from "../services/breadcrumb.service";
 import { UsersQueryService } from "../services/users.query.service";
+import { AdminNavComponent } from "./admin-nav/admin-nav.component";
 import { DesktopNavComponent } from "./desktop-nav/desktop-nav.component";
 import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
 
 @Component({
   selector: "app-header",
   imports: [
+    AdminNavComponent,
     DesktopNavComponent,
     MatAnchor,
     MatButton,
@@ -39,19 +41,28 @@ export class HeaderComponent {
     this.usersQueryService.session(),
   );
 
-  readonly breadcrumb = this.breadcrumbService.breadcrumb;
-  readonly email = computed(() => this.sessionQuery.data()?.email);
-  readonly showLogin = computed(
+  protected readonly breadcrumb = this.breadcrumbService.breadcrumb;
+  protected readonly email = computed(() => this.sessionQuery.data()?.email);
+  protected readonly isAdmin = computed(
+    () => this.sessionQuery.data()?.isAdmin ?? false,
+  );
+  protected readonly showAdminNavigationBar = signal(false);
+  protected readonly showLogin = computed(
     () =>
       !this.sessionQuery.isPending() &&
       (this.sessionQuery.isError() || !this.sessionQuery.data()),
   );
-  readonly showProfile = computed(
+  protected readonly showProfile = computed(
     () => !this.sessionQuery.isPending() && !!this.sessionQuery.data(),
   );
 
-  async onLogout() {
+  protected async onLogout() {
     await this.logoutMutation.mutateAsync();
+    this.router.navigate(["/"]);
+  }
+
+  protected onToggleAdminNavigation() {
+    this.showAdminNavigationBar.update((value) => !value);
     this.router.navigate(["/"]);
   }
 }

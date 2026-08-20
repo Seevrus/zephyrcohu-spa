@@ -1,0 +1,5 @@
+@use "../desktop-nav/shared-nav-layout";
+
+.admin-nav-main {
+  @include shared-nav-layout.shared-nav-layout;
+}
