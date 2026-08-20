@@ -93,7 +93,7 @@ export class RequestQuoteComponent {
         });
 
         this.success.set(true);
-        this.requestOfferModel.set({
+        this.requestOfferForm().reset({
           name: "",
           email: "",
           subject: "",
