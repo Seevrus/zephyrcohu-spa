@@ -43,7 +43,7 @@ export class AdminNavComponent {
   );
 
   protected readonly isNewsLettersActive = computed(() =>
-    this.currentUrl().startsWith("/admin/hirek-iratkozok"),
+    this.currentUrl().startsWith("/admin/hirlevel"),
   );
 
   protected readonly isOffersActive = computed(() =>

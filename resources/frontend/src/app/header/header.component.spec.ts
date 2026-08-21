@@ -3,7 +3,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { Component, provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { Router } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
@@ -17,6 +17,9 @@ import { logoutRequest } from "../../mocks/users/logoutRequest";
 import { sessionRequest } from "../../mocks/users/sessionRequest";
 import { BreadcrumbService } from "../services/breadcrumb.service";
 import { HeaderComponent } from "./header.component";
+
+@Component({ selector: "app-dummy", template: "" })
+class DummyComponent {}
 
 describe("Header", () => {
   const user = userEvent.setup();
@@ -108,12 +111,52 @@ describe("Header", () => {
 
     httpTesting.verify();
   });
+
+  test("should not show the admin funkciók button for non-admin users", async () => {
+    const { httpTesting } = await renderHeader();
+
+    const request = await waitFor(() => httpTesting.expectOne(sessionRequest));
+
+    request.flush(getSessionOkResponse);
+
+    await screen.findAllByTestId("header-user-action");
+
+    expect(
+      screen.queryByRole("button", { name: "Admin funkciók" }),
+    ).not.toBeInTheDocument();
+
+    httpTesting.verify();
+  });
+
+  test("should not show the admin navigation bar on an admin url for a user who isn't logged in", async () => {
+    const { container, httpTesting } = await renderHeader({
+      initialRoute: "/admin",
+    });
+
+    // Regardless of whether the test router's navigation to "/admin" landed
+    // before this assertion runs, the admin nav must never appear for a
+    // visitor who isn't a confirmed admin - it's gated on the session, not
+    // just the url.
+    expect(container.querySelector(".admin-nav")).not.toBeInTheDocument();
+    expect(container.querySelector(".desktop-nav")).toBeInTheDocument();
+
+    const request = await waitFor(() => httpTesting.expectOne(sessionRequest));
+
+    request.flush(getSessionErrorResponse, {
+      status: 401,
+      statusText: "Unauthorized",
+    });
+
+    httpTesting.verify();
+  });
 });
 
-async function renderHeader() {
+async function renderHeader({ initialRoute }: { initialRoute?: string } = {}) {
   testQueryClient.clear();
 
   const renderResult = await render(HeaderComponent, {
+    initialRoute,
+    routes: [{ path: "**", component: DummyComponent }],
     providers: [
       provideHttpClient(),
       provideHttpClientTesting(),

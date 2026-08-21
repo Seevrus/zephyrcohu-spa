@@ -61,8 +61,8 @@ export class HeaderComponent {
   protected readonly isAdmin = computed(
     () => this.sessionQuery.data()?.isAdmin ?? false,
   );
-  protected readonly showAdminNavigationBar = linkedSignal(() =>
-    this.currentUrl().startsWith("/admin"),
+  protected readonly showAdminNavigationBar = linkedSignal(
+    () => this.currentUrl().startsWith("/admin") && this.isAdmin(),
   );
   protected readonly showLogin = computed(
     () =>

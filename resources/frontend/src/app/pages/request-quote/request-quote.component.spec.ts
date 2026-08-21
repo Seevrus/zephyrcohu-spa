@@ -146,6 +146,37 @@ describe("Request Quote Component", () => {
 
     httpTesting.verify();
   });
+
+  test("should reset the form to a valid, empty state after a successful submission", async () => {
+    const { container, fixture, httpTesting } =
+      await renderRequestQuoteComponent();
+    await fillForm(user);
+
+    const submitButton = screen
+      .getByTestId("submit-button")
+      .querySelector("button")!;
+
+    await user.click(submitButton);
+
+    const request = await waitFor(() =>
+      httpTesting.expectOne(requestOfferRequest),
+    );
+
+    request.flush(null);
+
+    await screen.findByTestId("request-quote-success");
+    await fixture.whenStable();
+
+    expect(screen.getByTestId("name").querySelector("input")).toHaveValue("");
+    expect(screen.getByTestId("email").querySelector("input")).toHaveValue("");
+    expect(screen.getByTestId("message").querySelector("textarea")).toHaveValue(
+      "",
+    );
+    expect(container.querySelector("mat-error")).not.toBeInTheDocument();
+    expect(submitButton).toBeDisabled();
+
+    httpTesting.verify();
+  });
 });
 
 async function fillForm(user: ReturnType<typeof userEvent.setup>) {
