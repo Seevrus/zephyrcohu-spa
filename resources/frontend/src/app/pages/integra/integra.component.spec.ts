@@ -58,18 +58,14 @@ describe("IntegraComponent", () => {
   test("renders an unexpected error message if the documents cannot be loaded", async () => {
     const { httpTesting } = await renderIntegra("tajekoztato");
 
-    // The query retries up to 3 times on non-auth errors, so the initial
-    // request and every retry need to be flushed before the query settles.
-    for (let attempt = 0; attempt < 4; attempt += 1) {
-      const documentsTestRequest = await waitFor(() =>
-        httpTesting.expectOne(matchIntegraDocumentsRequest("integra-flyer")),
-      );
+    const documentsTestRequest = await waitFor(() =>
+      httpTesting.expectOne(matchIntegraDocumentsRequest("integra-flyer")),
+    );
 
-      documentsTestRequest.flush(
-        createGetIntegraDocumentsErrorResponse("INTERNAL_SERVER_ERROR"),
-        { status: 500, statusText: "Internal Server Error" },
-      );
-    }
+    documentsTestRequest.flush(
+      createGetIntegraDocumentsErrorResponse("INTERNAL_SERVER_ERROR"),
+      { status: 500, statusText: "Internal Server Error" },
+    );
 
     await expect(
       screen.findByTestId("form-unexpected-error"),

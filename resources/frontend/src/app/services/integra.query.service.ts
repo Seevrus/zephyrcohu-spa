@@ -64,13 +64,6 @@ export class IntegraQueryService {
             ),
         ),
       enabled: category !== undefined,
-      retry(failureCount, error) {
-        if (error.code === "GENERIC_UNAUTHORIZED") {
-          return false;
-        }
-
-        return failureCount < 3;
-      },
     });
   }
 

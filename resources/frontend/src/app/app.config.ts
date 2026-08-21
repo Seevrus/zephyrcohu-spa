@@ -20,6 +20,7 @@ import {
   type RecaptchaSettings,
 } from "ng-recaptcha-2";
 
+import { ZephyrHttpError } from "../api/ZephyrHttpError";
 import { environment } from "../environments/environment";
 import { routes } from "./app.routes";
 import { AppTitleStrategy } from "./app.title.strategy";
@@ -40,7 +41,15 @@ const queryClient = new QueryClient({
     queries: {
       gcTime: Number.POSITIVE_INFINITY,
       refetchOnWindowFocus: true,
-      retry(failureCount) {
+      retry(failureCount, error) {
+        if (error instanceof ZephyrHttpError) {
+          const isThrottled = error.status === 429;
+
+          if (error.status < 500 && !isThrottled) {
+            return false;
+          }
+        }
+
         return failureCount < 3;
       },
       retryDelay(attemptIndex) {
