@@ -10,7 +10,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(CaptchaController::class)->prefix('captcha')->group(function () {
-    Route::post('/', 'check_recaptcha_token');
+    Route::post('/', 'check_recaptcha_token')->middleware('throttle:auth');
 });
 
 Route::controller(DocumentController::class)->prefix('documents/integra')->group(function () {
@@ -38,26 +38,26 @@ Route::controller(NewsController::class)->prefix('news')->group(function () {
 Route::controller(OfferController::class)->prefix('offers')->group(function () {
     Route::get('/', 'getOffers');
     Route::get('/{id}', 'getOfferItem');
-    Route::post('/request', 'requestOffer');
+    Route::post('/request', 'requestOffer')->middleware('throttle:auth');
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::prefix('profile')->group(function () {
         Route::delete('/', 'deleteProfile')->middleware('auth:sanctum');
-        Route::post('/request_new_password', 'requestNewPassword');
-        Route::post('/reset_password', 'resetPassword');
+        Route::post('/request_new_password', 'requestNewPassword')->middleware('throttle:auth');
+        Route::post('/reset_password', 'resetPassword')->middleware('throttle:auth');
         Route::post('/update', 'updateProfile')->middleware('auth:sanctum');
-        Route::post('/update/confirm_new_email', 'updateConfirmNewEmail');
+        Route::post('/update/confirm_new_email', 'updateConfirmNewEmail')->middleware('throttle:auth');
     });
 
     Route::prefix('register')->group(function () {
-        Route::post('/', 'registerUser');
-        Route::post('/confirm_email', 'confirmEmail');
-        Route::post('/resend_confirm_email', 'resendConfirmEmail');
-        Route::post('/revoke', 'revokeRegistration');
+        Route::post('/', 'registerUser')->middleware('throttle:auth');
+        Route::post('/confirm_email', 'confirmEmail')->middleware('throttle:auth');
+        Route::post('/resend_confirm_email', 'resendConfirmEmail')->middleware('throttle:auth');
+        Route::post('/revoke', 'revokeRegistration')->middleware('throttle:auth');
     });
 
-    Route::post('/login', 'login');
+    Route::post('/login', 'login')->middleware('throttle:auth');
     Route::post('/logout', 'logout')->middleware('auth:sanctum');
     Route::get('/session', 'session')->middleware('auth:sanctum');
 });
