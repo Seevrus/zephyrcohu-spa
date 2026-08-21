@@ -11,7 +11,11 @@
     >Ajánlatok</a
   >
 
-  <button mat-button [matMenuTriggerFor]="integra">
+  <button
+    mat-button
+    [matMenuTriggerFor]="integra"
+    [class.active-link]="isIntegraActive()"
+  >
     <mat-icon>arrow_drop_down</mat-icon>
     <span>Integra</span>
   </button>
@@ -23,7 +27,11 @@
     <a mat-menu-item routerLink="/integra/egyeb">Egyéb dokumentumok</a>
   </mat-menu>
 
-  <button mat-button [matMenuTriggerFor]="kb">
+  <button
+    mat-button
+    [matMenuTriggerFor]="kb"
+    [class.active-link]="isKbActive()"
+  >
     <mat-icon>arrow_drop_down</mat-icon>
     <span>Tudásbázis</span>
   </button>
