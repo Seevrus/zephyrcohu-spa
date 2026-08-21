@@ -1,11 +1,18 @@
 import { NgOptimizedImage } from "@angular/common";
-import { Component, computed, inject, signal } from "@angular/core";
+import { Component, computed, inject, linkedSignal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { MatAnchor, MatButton } from "@angular/material/button";
-import { Router, RouterLink, RouterLinkActive } from "@angular/router";
+import {
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+} from "@angular/router";
 import {
   injectMutation,
   injectQuery,
 } from "@tanstack/angular-query-experimental";
+import { filter, map } from "rxjs";
 
 import { BreadcrumbService } from "../services/breadcrumb.service";
 import { UsersQueryService } from "../services/users.query.service";
@@ -41,12 +48,22 @@ export class HeaderComponent {
     this.usersQueryService.session(),
   );
 
+  protected readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map((event) => event.urlAfterRedirects),
+    ),
+    { initialValue: this.router.url },
+  );
+
   protected readonly breadcrumb = this.breadcrumbService.breadcrumb;
   protected readonly email = computed(() => this.sessionQuery.data()?.email);
   protected readonly isAdmin = computed(
     () => this.sessionQuery.data()?.isAdmin ?? false,
   );
-  protected readonly showAdminNavigationBar = signal(false);
+  protected readonly showAdminNavigationBar = linkedSignal(() =>
+    this.currentUrl().startsWith("/admin"),
+  );
   protected readonly showLogin = computed(
     () =>
       !this.sessionQuery.isPending() &&
@@ -63,6 +80,5 @@ export class HeaderComponent {
 
   protected onToggleAdminNavigation() {
     this.showAdminNavigationBar.update((value) => !value);
-    this.router.navigate(["/"]);
   }
 }

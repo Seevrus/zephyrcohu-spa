@@ -45,7 +45,11 @@
   >
 
   @if (showAdminNavigation()) {
-    <button mat-button (click)="onActivateAdminNavigation()">
+    <button
+      mat-button
+      (click)="onActivateAdminNavigation()"
+      [class.active-link]="isAdminActive()"
+    >
       Admin funkciók
     </button>
   }

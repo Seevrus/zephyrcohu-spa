@@ -1,64 +1,98 @@
 <div class="admin-nav-main">
-  <button mat-button [matMenuTriggerFor]="ajanlatok">
+  <button
+    mat-button
+    [matMenuTriggerFor]="ajanlatok"
+    [class.active-link]="isOffersActive()"
+  >
     <mat-icon>arrow_drop_down</mat-icon>
     <span>Ajánlatok</span>
   </button>
   <mat-menu #ajanlatok="matMenu">
-    <a mat-menu-item>Ajánlatok kezelése</a>
-    <a mat-menu-item>Új ajánlat készítése</a>
+    <a mat-menu-item routerLink="/admin/ajanlatok">Ajánlatok kezelése</a>
+    <a mat-menu-item routerLink="/admin/ajanlatok/uj">Új ajánlat készítése</a>
   </mat-menu>
 
-  <a mat-button routerLinkActive="active-link">Felhasználók</a>
+  <a
+    mat-button
+    routerLink="/admin/felhasznalok"
+    routerLinkActive="active-link"
+    [routerLinkActiveOptions]="{ exact: true }"
+    >Felhasználók</a
+  >
 
-  <button mat-button [matMenuTriggerFor]="linkek">
+  <button
+    mat-button
+    [matMenuTriggerFor]="linkek"
+    [class.active-link]="isLinksActive()"
+  >
     <mat-icon>arrow_drop_down</mat-icon>
     <span>Hasznos linkek</span>
   </button>
   <mat-menu #linkek="matMenu">
-    <a mat-menu-item>Linkek kezelése</a>
-    <a mat-menu-item>Kategóriák</a>
-    <a mat-menu-item>Új link felvétele</a>
+    <a mat-menu-item routerLink="/admin/linkek">Linkek kezelése</a>
+    <a mat-menu-item routerLink="/admin/linkek/kategoriak">Kategóriák</a>
+    <a mat-menu-item routerLink="/admin/linkek/uj">Új link felvétele</a>
   </mat-menu>
 
-  <button mat-button [matMenuTriggerFor]="hirek">
+  <button
+    mat-button
+    [matMenuTriggerFor]="hirek"
+    [class.active-link]="isNewsActive()"
+  >
     <mat-icon>arrow_drop_down</mat-icon>
     <span>Hírek</span>
   </button>
   <mat-menu #hirek="matMenu">
-    <a mat-menu-item>Hírek kezelése</a>
-    <a mat-menu-item>Új hír írása</a>
+    <a mat-menu-item routerLink="/admin/hirek">Hírek kezelése</a>
+    <a mat-menu-item routerLink="/admin/hirek/uj">Új hír írása</a>
   </mat-menu>
 
-  <button mat-button [matMenuTriggerFor]="hirlevel">
+  <button
+    mat-button
+    [matMenuTriggerFor]="hirlevel"
+    [class.active-link]="isNewsLettersActive()"
+  >
     <mat-icon>arrow_drop_down</mat-icon>
     <span>Hírlevél</span>
   </button>
   <mat-menu #hirlevel="matMenu">
-    <a mat-menu-item>Kiküldött hírlevelek</a>
-    <a mat-menu-item>Új hírlevél írása</a>
+    <a mat-menu-item routerLink="/admin/hirlevel">Kiküldött hírlevelek</a>
+    <a mat-menu-item routerLink="/admin/hirlevel/uj">Új hírlevél írása</a>
   </mat-menu>
 
-  <button mat-button [matMenuTriggerFor]="integra">
+  <button
+    mat-button
+    [matMenuTriggerFor]="integra"
+    [class.active-link]="isIntegraActive()"
+  >
     <mat-icon>arrow_drop_down</mat-icon>
     <span>INTEGRA</span>
   </button>
   <mat-menu #integra="matMenu">
-    <a mat-menu-item>Feltöltések</a>
-    <a mat-menu-item>Új fájl feltöltése</a>
+    <a mat-menu-item routerLink="/admin/integra">Feltöltések</a>
+    <a mat-menu-item routerLink="/admin/integra/uj">Új fájl feltöltése</a>
   </mat-menu>
 
-  <button mat-button [matMenuTriggerFor]="tudasbazis">
+  <button
+    mat-button
+    [matMenuTriggerFor]="tudasbazis"
+    [class.active-link]="isKbActive()"
+  >
     <mat-icon>arrow_drop_down</mat-icon>
     <span>Tudásbázis</span>
   </button>
   <mat-menu #tudasbazis="matMenu">
-    <a mat-menu-item>Tudásbázis cikkek</a>
-    <a mat-menu-item>Tudásbázis címkék</a>
-    <a mat-menu-item>Új cikk írása</a>
+    <a mat-menu-item routerLink="/admin/tudasbazis">Tudásbázis cikkek</a>
+    <a mat-menu-item routerLink="/admin/tudasbazis/cimkek">Tudásbázis címkék</a>
+    <a mat-menu-item routerLink="/admin/tudasbazis/uj">Új cikk írása</a>
   </mat-menu>
 
-  <a mat-button routerLinkActive="active-link">API dokumentáció</a>
-  <button mat-button (click)="onDeactivateAdminNavigation()">
+  <a mat-button>API dokumentáció</a>
+  <button
+    mat-button
+    (click)="onDeactivateAdminNavigation()"
+    [class.active-link]="!isAdminActive()"
+  >
     Felhasználói funkciók
   </button>
 </div>
