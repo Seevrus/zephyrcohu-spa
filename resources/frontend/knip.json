@@ -1,5 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["tinymce/langs/*"],
   "tags": ["-lintignore"],
   "ignoreDependencies": ["@angular-eslint/builder"]
 }

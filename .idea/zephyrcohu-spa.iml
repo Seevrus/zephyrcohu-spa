@@ -145,6 +145,8 @@
       <excludeFolder url="file://$MODULE_DIR$/public/img" />
       <excludeFolder url="file://$MODULE_DIR$/resources/frontend/out-tsc" />
       <excludeFolder url="file://$MODULE_DIR$/vendor" />
+      <excludeFolder url="file://$MODULE_DIR$/resources/frontend/src/assets/tinymce" />
+      <excludeFolder url="file://$MODULE_DIR$/resources/frontend/tinymce/langs" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
