@@ -15,9 +15,9 @@ import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaT
 import checkCaptchaTokenOkResponse from "../../../mocks/captcha/checkCaptchaTokenOkResponse.json";
 import { checkCaptchaTokenRequest } from "../../../mocks/captcha/checkCaptchaTokenRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
+import { createGetSessionOkResponse } from "../../../mocks/users/createGetSessionOkResponse";
 import { createPostResendConfirmEmailErrorResponse } from "../../../mocks/users/createPostResendConfirmEmailErrorResponse";
 import { createRegisterErrorResponse } from "../../../mocks/users/createRegisterErrorResponse";
-import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
 import { registerRequest } from "../../../mocks/users/registerRequest";
 import { resendConfirmationEmailRequest } from "../../../mocks/users/resendConfirmationEmailRequest";
 import { RegisterComponent } from "./register.component";
@@ -302,7 +302,7 @@ describe("Register Component", () => {
       http.expectOne(registerRequest),
     );
 
-    registerTestRequest.flush(getSessionOkResponse);
+    registerTestRequest.flush(createGetSessionOkResponse());
 
     await assertFormMessagePresent("register-success");
 

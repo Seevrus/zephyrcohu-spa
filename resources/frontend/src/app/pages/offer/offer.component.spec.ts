@@ -225,8 +225,6 @@ describe("OfferComponent", () => {
 });
 
 async function renderOffer(id = "1") {
-  testQueryClient.clear();
-
   const renderResult = await render(OfferComponent, {
     inputs: { id },
     providers: [

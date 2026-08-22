@@ -20,8 +20,8 @@ import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaT
 import checkCaptchaTokenOkResponse from "../../../mocks/captcha/checkCaptchaTokenOkResponse.json";
 import { checkCaptchaTokenRequest } from "../../../mocks/captcha/checkCaptchaTokenRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
+import { createGetSessionOkResponse } from "../../../mocks/users/createGetSessionOkResponse";
 import { createResetPasswordErrorResponse } from "../../../mocks/users/createResetPasswordErrorResponse";
-import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
 import { resetPasswordRequest } from "../../../mocks/users/resetPasswordRequest";
 import { ResetPasswordComponent } from "./reset-password.component";
 
@@ -327,7 +327,7 @@ describe("Reset Password Component", () => {
     const resetPasswordTestRequest = await waitFor(() =>
       httpTesting.expectOne(resetPasswordRequest),
     );
-    resetPasswordTestRequest.flush(getSessionOkResponse);
+    resetPasswordTestRequest.flush(createGetSessionOkResponse());
 
     await waitFor(() => {
       expect(navigateSpy).toHaveBeenCalledWith(["/"]);

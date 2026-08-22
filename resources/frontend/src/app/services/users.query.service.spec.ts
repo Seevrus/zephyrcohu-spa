@@ -18,8 +18,8 @@ import { render, screen, waitFor } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
 
 import { testQueryClient } from "../../mocks/testQueryClient";
+import { createGetSessionOkResponse } from "../../mocks/users/createGetSessionOkResponse";
 import { deleteProfileRequest } from "../../mocks/users/deleteProfileRequest";
-import getSessionOkResponse from "../../mocks/users/getSessionOkResponse.json";
 import { loginRequest } from "../../mocks/users/loginRequest";
 import { logoutRequest } from "../../mocks/users/logoutRequest";
 import { resetPasswordRequest } from "../../mocks/users/resetPasswordRequest";
@@ -75,7 +75,7 @@ describe("UsersQueryService", () => {
     await user.click(screen.getByTestId("login-button"));
 
     const request = await waitFor(() => httpTesting.expectOne(loginRequest));
-    request.flush(getSessionOkResponse);
+    request.flush(createGetSessionOkResponse());
 
     await waitFor(() => {
       expectContentQueriesInvalidated(queryClient);
@@ -139,7 +139,7 @@ describe("UsersQueryService", () => {
     const request = await waitFor(() =>
       httpTesting.expectOne(resetPasswordRequest),
     );
-    request.flush(getSessionOkResponse);
+    request.flush(createGetSessionOkResponse());
 
     await waitFor(() => {
       expectContentQueriesInvalidated(queryClient);
@@ -161,7 +161,7 @@ describe("UsersQueryService", () => {
     const request = await waitFor(() =>
       httpTesting.expectOne(updateProfileConfirmEmailRequest),
     );
-    request.flush(getSessionOkResponse);
+    request.flush(createGetSessionOkResponse());
 
     await waitFor(() => {
       expectContentQueriesInvalidated(queryClient);

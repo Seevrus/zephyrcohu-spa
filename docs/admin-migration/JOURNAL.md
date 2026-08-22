@@ -126,3 +126,66 @@ dialog instead of per-entity delete pages; both legacy cron scripts become Larav
 **Next session should know:** `AdminPingController` and the `/api/admin/ping` route are
 temporary. Task 04 removes them and rewrites `AdminGuardTest` to exercise
 `GET /api/admin/news` instead.
+
+---
+
+## 2026-08-22 — Task 02: FE admin routing and guard
+
+**Status:** done
+
+**Shipped:**
+- `resources/frontend/src/app/guards/admin.guard.ts` — `CanMatchFn`, resolves `true` only for a
+  session with `isAdmin === true`; models `user.guard.ts` minus the redirect.
+- `resources/frontend/src/app/admin.routes.ts` — index route loading `AdminHomeComponent`.
+- `resources/frontend/src/app/pages/admin/home/admin-home.component.ts` (+ `.scss`, `.spec.ts`)
+  — temporary landing page, **Task 05 deletes it**.
+- `resources/frontend/src/app/app.routes.ts` — `/admin` entry (`canMatch: [adminGuard]`,
+  `loadChildren` from `admin.routes`) added before the `**` wildcard.
+- `resources/frontend/src/app/app.component.spec.ts` — new `describe("Admin routes")` block: 4
+  cases (admin session, non-admin session, failing session request, non-admin on a nested
+  `/admin/hirek` path).
+- `resources/frontend/src/mocks/users/createGetSessionOkResponse.ts` — new factory mock
+  (`isAdmin` defaults to `false`), matching the project's `create*OkResponse` convention.
+  `getSessionOkResponse.json` was removed and every pre-existing spec that used it now calls
+  `createGetSessionOkResponse()` instead (reviewer's follow-up, not scoped to this task, but
+  keeps one canonical non-admin session mock instead of two).
+
+**Decisions made while implementing:** none beyond the task file — followed it as written,
+except the session mock (task file suggested inlining the admin body; used a factory instead,
+per reviewer direction, to match the existing `create*OkResponse` pattern).
+
+**Surprises / gotchas:**
+- `admin.guard.spec.ts`, using the shared `testQueryClient` mock the same way every other
+  guard/service spec does, passed in isolation but **deterministically failed** its 2nd and 3rd
+  test in the full `npx ng test` run ("no request found" for the session fetch). Root cause:
+  `testQueryClient` was a single mutable `QueryClient` object exported from a module shared
+  across the whole bundled test run, so a concurrently running spec file's own
+  `queryKeys.session` fetch could get deduped against this guard's `ensureQueryData` call before
+  its own `HttpTestingController` ever saw a request. Fixed at the source (reviewer's change,
+  not scoped to this task): `mocks/testQueryClient.ts` now exports an `InjectionToken<QueryClient>`
+  with a factory and no explicit `providedIn` (defaults to `'root'`), and every
+  `provideTanStackQuery(testQueryClient)` call site passes the token straight through —
+  `provideTanStackQuery` accepts `QueryClient | InjectionToken<QueryClient>` for exactly this.
+  Each test's TestBed root injector now lazily constructs and caches its own `QueryClient`
+  instance, so there is no longer a cross-test/cross-file shared mutable instance to leak, and
+  the old manual `testQueryClient.clear()` `beforeEach`/`afterEach` pair is gone. Verified with
+  4 consecutive full-suite runs (316/316 each time).
+
+**Verification:**
+- `npx ng test` (full suite) → 316 passed, 64 files (run twice to confirm the fix wasn't luck)
+- `npx eslint` on all changed/new files → clean (fixed 3 unnecessary type-assertion errors in
+  the guard spec; the pre-existing 783 `ng lint` errors are all in `src/assets/tinymce` vendor
+  files, unrelated)
+- `npx tsc -p tsconfig.app.json` → clean
+- `npx prettier . --check` → clean for every changed file (pre-existing warnings are vendored
+  tinymce assets)
+- `npx knip` → no new unused exports (pre-existing findings are tinymce-related, unrelated)
+
+**Left uncommitted for review:** yes
+
+**Next session should know:** `AdminHomeComponent` and `admin.routes.ts`'s single index route
+are scaffolding — Task 05 deletes the component and replaces the index route with
+`{ path: "", pathMatch: "full", redirectTo: "hirek" }` once the news grid lands. The
+`app-admin-nav` links already point at future admin paths (`/admin/hirek`, `/admin/ajanlatok`,
+etc.); until their routes exist they correctly 404 for everyone, admins included — expected
+until later tasks build those screens.

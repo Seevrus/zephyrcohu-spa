@@ -17,8 +17,8 @@ import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaT
 import checkCaptchaTokenOkResponse from "../../../mocks/captcha/checkCaptchaTokenOkResponse.json";
 import { checkCaptchaTokenRequest } from "../../../mocks/captcha/checkCaptchaTokenRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
+import { createGetSessionOkResponse } from "../../../mocks/users/createGetSessionOkResponse";
 import { createUpdateProfileConfirmEmailErrorResponse } from "../../../mocks/users/createUpdateProfileConfirmEmailErrorResponse";
-import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
 import { updateProfileConfirmEmailRequest } from "../../../mocks/users/updateProfileConfirmEmailRequest";
 import { ProfileUpdateEmailComponent } from "./profile-update-email.component";
 
@@ -274,7 +274,7 @@ describe("ProfileUpdateEmailComponent", () => {
       httpTesting.expectOne(updateProfileConfirmEmailRequest),
     );
 
-    updateProfileConfirmEmailTestRequest.flush(getSessionOkResponse);
+    updateProfileConfirmEmailTestRequest.flush(createGetSessionOkResponse());
 
     await assertFormMessagePresent("profile-email-updated");
 

@@ -14,8 +14,8 @@ import { CookieService } from "ngx-cookie-service";
 import { describe } from "vitest";
 
 import { testQueryClient } from "../mocks/testQueryClient";
+import { createGetSessionOkResponse } from "../mocks/users/createGetSessionOkResponse";
 import getSessionErrorResponse from "../mocks/users/getSessionErrorResponse.json";
-import getSessionOkResponse from "../mocks/users/getSessionOkResponse.json";
 import { sessionRequest } from "../mocks/users/sessionRequest";
 import { AppComponent } from "./app.component";
 import { routes } from "./app.routes";
@@ -90,7 +90,7 @@ describe("App Component", () => {
       const request = await waitFor(() =>
         httpTesting.expectOne(sessionRequest),
       );
-      request.flush(getSessionOkResponse);
+      request.flush(createGetSessionOkResponse());
 
       await expect(
         screen.findByTestId("main-component"),
@@ -163,7 +163,7 @@ describe("App Component", () => {
       const request = await waitFor(() =>
         httpTesting.expectOne(sessionRequest),
       );
-      request.flush(getSessionOkResponse);
+      request.flush(createGetSessionOkResponse());
 
       await expect(
         screen.findByTestId("main-component"),
@@ -204,7 +204,7 @@ describe("App Component", () => {
       const request = await waitFor(() =>
         httpTesting.expectOne(sessionRequest),
       );
-      request.flush(getSessionOkResponse);
+      request.flush(createGetSessionOkResponse());
 
       await expect(
         screen.findByTestId("profile-component"),
@@ -227,7 +227,7 @@ describe("App Component", () => {
       const request = await waitFor(() =>
         httpTesting.expectOne(sessionRequest),
       );
-      request.flush(getSessionOkResponse);
+      request.flush(createGetSessionOkResponse());
 
       await expect(
         screen.findByTestId("main-component"),
@@ -261,7 +261,7 @@ describe("App Component", () => {
         const request = await waitFor(() =>
           httpTesting.expectOne(sessionRequest),
         );
-        request.flush(getSessionOkResponse);
+        request.flush(createGetSessionOkResponse());
 
         await expect(
           screen.findByTestId("main-component"),
@@ -320,11 +320,63 @@ describe("App Component", () => {
       screen.findByTestId("not-found-component"),
     ).resolves.toBeInTheDocument();
   });
+
+  describe("Admin routes", () => {
+    test("renders the Admin Home Component for an admin", async () => {
+      const { httpTesting } = renderAppComponent("/admin");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(createGetSessionOkResponse({ isAdmin: true }));
+
+      await expect(
+        screen.findByTestId("admin-home-component"),
+      ).resolves.toBeInTheDocument();
+    });
+
+    test("renders the Not Found Component for a non-admin", async () => {
+      const { httpTesting } = renderAppComponent("/admin");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(createGetSessionOkResponse());
+
+      await expect(
+        screen.findByTestId("not-found-component"),
+      ).resolves.toBeInTheDocument();
+    });
+
+    test("renders the Not Found Component when the session request fails", async () => {
+      const { httpTesting } = renderAppComponent("/admin");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(getSessionErrorResponse);
+
+      await expect(
+        screen.findByTestId("not-found-component"),
+      ).resolves.toBeInTheDocument();
+    });
+
+    test("renders the Not Found Component for a non-admin on a nested admin path", async () => {
+      const { httpTesting } = renderAppComponent("/admin/hirek");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(createGetSessionOkResponse());
+
+      await expect(
+        screen.findByTestId("not-found-component"),
+      ).resolves.toBeInTheDocument();
+    });
+  });
 });
 
 function renderAppComponent(initialRoute: string) {
-  testQueryClient.clear();
-
   const renderResult = render(AppComponent, {
     initialRoute,
     providers: [

@@ -1,10 +1,19 @@
 import { type Routes } from "@angular/router";
 
+import { adminGuard } from "./guards/admin.guard";
 import { guestGuard } from "./guards/guest.guard";
 import { integraCategoryGuard } from "./guards/integra-category.guard";
 import { userGuard } from "./guards/user.guard";
 
 export const routes: Routes = [
+  {
+    path: "admin",
+    canMatch: [adminGuard],
+    async loadChildren() {
+      const { adminRoutes } = await import("./admin.routes");
+      return adminRoutes;
+    },
+  },
   {
     path: "",
     async loadComponent() {

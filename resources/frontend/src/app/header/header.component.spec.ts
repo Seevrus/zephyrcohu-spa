@@ -11,8 +11,8 @@ import { render, screen, waitFor } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event/dist/cjs/index.js";
 
 import { testQueryClient } from "../../mocks/testQueryClient";
+import { createGetSessionOkResponse } from "../../mocks/users/createGetSessionOkResponse";
 import getSessionErrorResponse from "../../mocks/users/getSessionErrorResponse.json";
-import getSessionOkResponse from "../../mocks/users/getSessionOkResponse.json";
 import { logoutRequest } from "../../mocks/users/logoutRequest";
 import { sessionRequest } from "../../mocks/users/sessionRequest";
 import { BreadcrumbService } from "../services/breadcrumb.service";
@@ -49,7 +49,7 @@ describe("Header", () => {
 
     const request = await waitFor(() => httpTesting.expectOne(sessionRequest));
 
-    request.flush(getSessionOkResponse);
+    request.flush(createGetSessionOkResponse());
 
     const userActions = await screen.findAllByTestId("header-user-action");
 
@@ -80,7 +80,7 @@ describe("Header", () => {
       httpTesting.expectOne(sessionRequest),
     );
 
-    testSessionRequest.flush(getSessionOkResponse);
+    testSessionRequest.flush(createGetSessionOkResponse());
 
     const logoutButton = (
       await screen.findAllByTestId("header-user-action")
@@ -117,7 +117,7 @@ describe("Header", () => {
 
     const request = await waitFor(() => httpTesting.expectOne(sessionRequest));
 
-    request.flush(getSessionOkResponse);
+    request.flush(createGetSessionOkResponse());
 
     await screen.findAllByTestId("header-user-action");
 
@@ -152,8 +152,6 @@ describe("Header", () => {
 });
 
 async function renderHeader({ initialRoute }: { initialRoute?: string } = {}) {
-  testQueryClient.clear();
-
   const renderResult = await render(HeaderComponent, {
     initialRoute,
     routes: [{ path: "**", component: DummyComponent }],

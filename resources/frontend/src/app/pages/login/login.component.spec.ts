@@ -16,9 +16,9 @@ import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaT
 import checkCaptchaTokenOkResponse from "../../../mocks/captcha/checkCaptchaTokenOkResponse.json";
 import { checkCaptchaTokenRequest } from "../../../mocks/captcha/checkCaptchaTokenRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
+import { createGetSessionOkResponse } from "../../../mocks/users/createGetSessionOkResponse";
 import { createLoginErrorResponse } from "../../../mocks/users/createLoginErrorResponse";
 import { createPostResendConfirmEmailErrorResponse } from "../../../mocks/users/createPostResendConfirmEmailErrorResponse";
-import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
 import { loginRequest } from "../../../mocks/users/loginRequest";
 import { resendConfirmationEmailRequest } from "../../../mocks/users/resendConfirmationEmailRequest";
 import { LoginComponent } from "./login.component";
@@ -339,7 +339,7 @@ describe("Login Component", () => {
     checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
 
     const loginTestRequest = await waitFor(() => http.expectOne(loginRequest));
-    loginTestRequest.flush(getSessionOkResponse);
+    loginTestRequest.flush(createGetSessionOkResponse());
 
     await waitFor(() => {
       expect(navigateSpy).toHaveBeenCalledWith(["/"]);

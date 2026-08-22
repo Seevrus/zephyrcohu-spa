@@ -11,10 +11,10 @@ import { render, screen, waitFor } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
 
 import { testQueryClient } from "../../../mocks/testQueryClient";
+import { createGetSessionOkResponse } from "../../../mocks/users/createGetSessionOkResponse";
 import { createUpdateProfileOkResponse } from "../../../mocks/users/createUpdateProfileOkResponse";
 import deleteProfileErrorResponse from "../../../mocks/users/deleteProfileErrorResponse.json";
 import { deleteProfileRequest } from "../../../mocks/users/deleteProfileRequest";
-import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
 import { sessionRequest } from "../../../mocks/users/sessionRequest";
 import updateProfileErrorResponse from "../../../mocks/users/updateProfileErrorResponse.json";
 import { updateProfileRequest } from "../../../mocks/users/updateProfileRequest";
@@ -225,7 +225,7 @@ describe("Profile Component", () => {
         httpTesting.expectOne(sessionRequest),
       );
 
-      sessionTestRequest.flush(getSessionOkResponse);
+      sessionTestRequest.flush(createGetSessionOkResponse());
 
       await waitFor(() => {
         expect(screen.getByTestId("profile-updated-card")).toHaveTextContent(
@@ -411,7 +411,7 @@ async function renderProfileComponent() {
     httpTesting.expectOne(sessionRequest),
   );
 
-  sessionTestRequest.flush(getSessionOkResponse);
+  sessionTestRequest.flush(createGetSessionOkResponse());
 
   return {
     ...renderResult,

@@ -12,7 +12,7 @@ import { render, screen, waitFor } from "@testing-library/angular";
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { confirmEmailRequest } from "../../../mocks/users/confirmEmailRequest";
 import { createConfirmEmailErrorResponse } from "../../../mocks/users/createConfirmEmailErrorResponse";
-import getSessionOkResponse from "../../../mocks/users/getSessionOkResponse.json";
+import { createGetSessionOkResponse } from "../../../mocks/users/createGetSessionOkResponse";
 import { RegisterMailAcceptComponent } from "./register-mail-accept.component";
 
 const TEST_EMAIL = "abc@example.com";
@@ -129,7 +129,7 @@ describe("Register Email, Accept Registration", () => {
       httpTesting.expectOne(confirmEmailRequest),
     );
 
-    request.flush(getSessionOkResponse);
+    request.flush(createGetSessionOkResponse());
 
     expect(
       (await screen.findByTestId("confirm-success-message")).innerHTML,
