@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminPingController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\KnowledgebaseController;
@@ -60,4 +61,8 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::post('/login', 'login')->middleware('throttle:auth');
     Route::post('/logout', 'logout')->middleware('auth:sanctum');
     Route::get('/session', 'session')->middleware('auth:sanctum');
+});
+
+Route::prefix('admin')->middleware('admin')->group(function () {
+    Route::get('/ping', [AdminPingController::class, 'ping']);
 });

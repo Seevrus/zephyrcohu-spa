@@ -1,6 +1,7 @@
 <?php
 
 use App\ErrorHandling;
+use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -12,10 +13,10 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\LockedHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
-use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -28,6 +29,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(AddCspHeaders::class);
         $middleware->statefulApi();
         $middleware->throttleApi();
+        $middleware->alias([
+            'admin' => EnsureUserIsAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
@@ -38,7 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(fn (AuthenticationException $e) => ErrorHandling::unauthorized());
         $exceptions->render(fn (BadRequestHttpException $e) => ErrorHandling::bad_request());
         $exceptions->render(fn (LockedHttpException $e) => ErrorHandling::locked());
-        $exceptions->render(fn (MethodNotAllowedException $e) => ErrorHandling::method_not_allowed());
+        $exceptions->render(fn (MethodNotAllowedHttpException $e) => ErrorHandling::method_not_allowed());
         $exceptions->render(fn (NotFoundHttpException $e) => ErrorHandling::not_found());
         $exceptions->render(fn (UnauthorizedHttpException $e) => ErrorHandling::unauthorized());
         $exceptions->render(fn (UnsupportedMediaTypeHttpException $e) => ErrorHandling::unsupported_media_type());

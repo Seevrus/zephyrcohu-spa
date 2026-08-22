@@ -83,3 +83,46 @@ dialog instead of per-entity delete pages; both legacy cron scripts become Larav
 **Left uncommitted for review:** yes
 
 **Next session should know:** start with Task 01; it unblocks every other backend task.
+
+---
+
+## 2026-08-22 — Task 01: BE admin guard (middleware + `/api/admin` group)
+
+**Status:** done
+
+**Shipped:**
+- `app/Http/Middleware/EnsureUserIsAdmin.php` — resolves the user via `$request->user('sanctum')`,
+  `abort(404)` for guests and non-admins (checks `User::admin()`).
+- `bootstrap/app.php` — registers the `admin` middleware alias.
+- `app/Http/Controllers/AdminPingController.php` — temporary, returns `{"data":"ok"}`.
+- `routes/api.php` — `Route::prefix('admin')->middleware('admin')->group(...)` with `GET /ping`,
+  appended at the end of the file.
+- `tests/Feature/Admin/AdminGuardTest.php` — 4 guard tests (guest 404, non-admin 404, admin 200,
+  wrong method 405).
+- `.ai/rules/routes.md` — recorded rule via Boost `record-rule`.
+
+**Decisions made while implementing:** none beyond the task file — followed it as written.
+
+**Surprises / gotchas:**
+- Found and fixed a **pre-existing bug** in `bootstrap/app.php`: the 405 exception renderer was
+  registered against `Symfony\Component\Routing\Exception\MethodNotAllowedException`, but
+  Laravel's router actually throws `Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException`
+  (which extends `HttpException`, not the routing-component class). The renderer never matched,
+  so every wrong-method request in the whole app — not just admin — fell through to the generic
+  `HttpException` handler and returned 500 `INTERNAL_SERVER_ERROR` instead of 405
+  `GENERIC_METHOD_NOT_ALLOWED`. Fixed the import/type in the same file already in scope for this
+  task. Verified with the full test suite (150 passed) that nothing relied on the old (broken)
+  behaviour.
+
+**Verification:**
+- `php artisan test --compact --filter=AdminGuardTest` → 4 passed
+- `php artisan test --compact` (full suite) → 150 passed
+- `vendor/bin/pint --dirty --format agent` → passed
+- `php artisan route:list --path=api/admin -v` → shows `admin` middleware, no `auth:sanctum`
+- `php artisan route:list` → no duplicate route names
+
+**Left uncommitted for review:** yes
+
+**Next session should know:** `AdminPingController` and the `/api/admin/ping` route are
+temporary. Task 04 removes them and rewrites `AdminGuardTest` to exercise
+`GET /api/admin/news` instead.
