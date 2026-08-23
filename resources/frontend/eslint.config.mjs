@@ -161,6 +161,7 @@ export default defineConfig(
       "promise/catch-or-return": "off",
       "sonarjs/cognitive-complexity": "off",
       "sonarjs/function-return-type": "off",
+      "sonarjs/no-angular-bypass-sanitization": "off",
       "sonarjs/no-redundant-jump": "off",
     },
   },
@@ -215,6 +216,6 @@ export default defineConfig(
     rules: {},
   },
   {
-    ignores: [".angular", "node_modules/"],
+    ignores: [".angular", "node_modules/", "src/assets/tinymce/", "tinymce/"],
   },
 );

@@ -1,11 +1,4 @@
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  SecurityContext,
-} from "@angular/core";
+import { Component, computed, effect, inject, input } from "@angular/core";
 import { MatChip } from "@angular/material/chips";
 import { MatDivider } from "@angular/material/list";
 import { MatProgressBar } from "@angular/material/progress-bar";
@@ -15,6 +8,7 @@ import {
   injectMutation,
   injectQuery,
 } from "@tanstack/angular-query-experimental";
+import DOMPurify from "dompurify";
 
 import { formatDisplayDate } from "../../../mappers/dates";
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
@@ -64,7 +58,9 @@ export class NewsArticleComponent {
   protected readonly additionalContentHtml = computed(() => {
     const additionalContent = this.newsItemQuery.data()?.additionalContent;
     return additionalContent
-      ? this.sanitizer.sanitize(SecurityContext.HTML, additionalContent)
+      ? this.sanitizer.bypassSecurityTrustHtml(
+          DOMPurify.sanitize(additionalContent),
+        )
       : "";
   });
   protected readonly displayUpdatedAt = computed(() => {
@@ -86,7 +82,7 @@ export class NewsArticleComponent {
   protected readonly mainContentHtml = computed(() => {
     const mainContent = this.newsItemQuery.data()?.mainContent;
     return mainContent
-      ? this.sanitizer.sanitize(SecurityContext.HTML, mainContent)
+      ? this.sanitizer.bypassSecurityTrustHtml(DOMPurify.sanitize(mainContent))
       : "";
   });
   protected readonly title = computed(() => this.newsItemQuery.data()?.title);

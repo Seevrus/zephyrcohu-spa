@@ -1,15 +1,18 @@
-import { Component } from "@angular/core";
+import { Component, input } from "@angular/core";
+import { type FieldTree, FormField } from "@angular/forms/signals";
 import { EditorComponent, TINYMCE_SCRIPT_SRC } from "@tinymce/tinymce-angular";
 
 @Component({
   selector: "app-rich-text-editor",
-  imports: [EditorComponent],
+  imports: [EditorComponent, FormField],
   providers: [
     { provide: TINYMCE_SCRIPT_SRC, useValue: "/assets/tinymce/tinymce.min.js" },
   ],
   templateUrl: "./rich-text-editor.component.html",
 })
 export class RichTextEditorComponent {
+  readonly field = input.required<FieldTree<string>>();
+
   protected readonly init: EditorComponent["init"] = {
     promotion: false,
     language: "hu_HU",

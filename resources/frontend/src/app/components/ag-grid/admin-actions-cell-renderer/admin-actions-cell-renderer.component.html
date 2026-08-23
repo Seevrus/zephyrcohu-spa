@@ -1,0 +1,9 @@
+@for (action of adminRowActions(); track action) {
+  <button
+    mat-icon-button
+    [attr.aria-label]="getAriaLabel(action)"
+    (click)="onAction(action)"
+  >
+    <mat-icon>{{ getActionIcon(action) }}</mat-icon>
+  </button>
+}

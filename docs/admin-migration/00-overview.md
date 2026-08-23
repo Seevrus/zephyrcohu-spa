@@ -83,12 +83,7 @@ npx knip             # catches unused exports/files introduced by a task
 | D12 | Admin grids are `ag-grid` (like the Integra page), client-side paginated, and admin pages may grow to `variables.$widescreen` instead of `$desktop-width`. | Requested; admin tables are wide. |
 | D13 | The newsletter send endpoint gets its own rate limiter (`throttle:newsletter`, 120/min) and opts **out** of the global `api` limiter, and the FE paces its loop at ~1s per send and backs off on 429. | The `api` limiter is 60/min per user (`AppServiceProvider::boot()`, applied group-wide by `throttleApi()`), and the FE-governed loop makes one request per recipient. Without this, a run larger than 60 recipients would 429 and mark everyone after the 60th as failed. The 1s pacing also reproduces the legacy `sleep(1)`, which protected the shared SMTP account. |
 | D15 | The admin "generate new password" action stays (legacy parity), but the UI states that **self-service reset is the preferred route** and that the generated password travels by email in plain text. | Deliberate fallback for when nothing else helps. It is a last resort, and both the admin UI and the notification mail should say so. |
-
-### Open question — decide during Task 03
-
-| # | Question | Why it matters |
-|---|---|---|
-| **D14** | How should admin-authored rich text survive rendering? The public pages run content through `DomSanitizer.sanitize(SecurityContext.HTML, …)` (see `pages/news-article/news-article.component.ts`), whose allow-list contains `class`, `align`, `color`, `face` but **not `style`** — and TinyMCE 8 emits `style="…"` for colours, font sizes and alignment. Admin formatting will therefore be silently dropped on the public site. | Task 03 runs the spike that proves what survives, and the decision is recorded here before any admin form is built. Candidate answers: **(a)** trim the editor toolbar to formatting that survives; **(b)** sanitise with **DOMPurify** on render and pass the result through `bypassSecurityTrustHtml` (a new FE dependency — needs sign-off, and moves the XSS boundary to DOMPurify's allow-list); **(c)** accept the loss and document it. Until this is answered, do not tune the TinyMCE toolbar. |
+| D14 | Admin-authored rich text is sanitised with **DOMPurify** on render, and the result is passed through `bypassSecurityTrustHtml` instead of Angular's `DomSanitizer.sanitize(SecurityContext.HTML, …)`. | Confirmed Angular's sanitizer allow-list strips `style`, which TinyMCE 8 uses for colour, font size and alignment — admin formatting was silently vanishing on the public site. DOMPurify preserves it. Content is admin-only (not user-submitted), so the residual XSS risk this moves onto DOMPurify's configuration is small — it is a defence against accidentally pasted content, not malicious intent. `dompurify` added as a new FE dependency (approved). All six public renderers of admin HTML were updated: `news-article`, `news-article-list-item`, `knowledgebase-article`, `knowledgebase-article-list-item`, `offer`, `offer-article-list-item`. |
 
 ### Deliberate behaviour changes vs. the legacy admin
 
@@ -212,7 +207,7 @@ These paths are exactly the ones the already-shipped `app-admin-nav` component l
 |---|---|---|---|---|
 | 01 | BE | [Admin guard: middleware + `/api/admin` group](01-be-admin-guarding.md) | — | [x] |
 | 02 | FE | [Admin routing and guard](02-fe-admin-routing-and-guard.md) | 01 | [x] |
-| 03 | FE | [Admin UI kit: dialog, grid actions, rich text field, layout](03-fe-admin-ui-kit.md) | 02 | [ ] |
+| 03 | FE | [Admin UI kit: dialog, grid actions, rich text field, layout](03-fe-admin-ui-kit.md) | 02 | [x] |
 | 04 | BE | [News admin API](04-be-news-crud.md) | 01 | [ ] |
 | 05 | FE | [News admin grid](05-fe-news-list.md) | 03, 04 | [ ] |
 | 06 | FE | [News create/edit form](06-fe-news-form.md) | 05 | [ ] |

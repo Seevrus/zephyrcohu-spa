@@ -1,12 +1,7 @@
-import {
-  Component,
-  computed,
-  inject,
-  input,
-  SecurityContext,
-} from "@angular/core";
+import { Component, computed, inject, input } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { RouterLink } from "@angular/router";
+import DOMPurify from "dompurify";
 
 import { formatDisplayDate } from "../../../mappers/dates";
 
@@ -33,6 +28,8 @@ export class OfferArticleListItemComponent {
   );
 
   protected readonly mainContentHtml = computed(() =>
-    this.sanitizer.sanitize(SecurityContext.HTML, this.mainContent()),
+    this.sanitizer.bypassSecurityTrustHtml(
+      DOMPurify.sanitize(this.mainContent()),
+    ),
   );
 }

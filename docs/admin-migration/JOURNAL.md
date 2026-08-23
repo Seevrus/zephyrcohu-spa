@@ -189,3 +189,74 @@ are scaffolding — Task 05 deletes the component and replaces the index route w
 `app-admin-nav` links already point at future admin paths (`/admin/hirek`, `/admin/ajanlatok`,
 etc.); until their routes exist they correctly 404 for everyone, admins included — expected
 until later tasks build those screens.
+
+---
+
+## 2026-08-23 — Task 03: FE admin UI kit (confirm dialog, grid actions, rich text field, layout)
+
+**Status:** done
+
+**Shipped:**
+- Step 0/D14 (done ahead of the rest, by the reviewer): confirmed Angular's `DomSanitizer`
+  strips `style`, which TinyMCE uses for colour/font-size/alignment. Chose **(b) DOMPurify** —
+  `dompurify` added as a new FE dependency (approved). All six public renderers of
+  admin-authored HTML now sanitise with `DOMPurify.sanitize(...)` and pass the result through
+  `sanitizer.bypassSecurityTrustHtml(...)` instead of `sanitizer.sanitize(SecurityContext.HTML, …)`:
+  `pages/news-article`, `components/news-article-list-item`, `pages/knowledgebase-article`,
+  `components/knowledgebase-article-list-item`, `pages/offer`, `components/offer-article-list-item`.
+  `eslint.config.mjs` disables `sonarjs/no-angular-bypass-sanitization` for the project, since
+  this is now the deliberate, consistent pattern rather than an isolated escape hatch. D14 in
+  `00-overview.md` moved from "open question" to the settled decisions table.
+- `shared/mixins.scss` — `zephyr-admin-main` (composes `zephyr-main`, caps at `$widescreen`).
+- `app/components/confirm-dialog/confirm-dialog.component.ts` (+ `.html`, `.scss`, `.spec.ts`) —
+  `ConfirmDialogComponent`, `MAT_DIALOG_DATA`-driven (`ConfirmDialogData`), `close(true)` on
+  confirm / `close(false)` on cancel, confirm button `cdkFocusInitial` + `color="warn"`.
+- `app/components/ag-grid/admin-actions-cell-renderer/admin-actions-cell-renderer.component.ts`
+  (+ `.html`, `.scss`, `.spec.ts`) — `AdminActionsCellRendererComponent<TRow>`, renders the
+  requested subset of `info`/`edit`/`email`/`delete` icon buttons in order, each with an
+  `aria-label` built from a Hungarian default plus an optional `rowLabel(row)` suffix (e.g.
+  `"Szerkesztés: Cím"`), calls `onAction(action, row)`.
+- `shared/admin-grid.ts` — `adminGridModules`, `adminGridAutoSizeStrategy`,
+  `adminPaginationPanels`, `adminGridLocaleText`, lifted from `pages/integra/integra.component.ts`.
+- `app/components/rich-text-editor/rich-text-editor.component.ts` (+ `.html`, new `.spec.ts`) —
+  added a required `field = input.required<FieldTree<string>>()`, forwarded to `<editor
+  [formField]="field()" …>` so signal-forms' `FormField` directive can bind to it. Spec renders
+  it inside a tiny inline host component with a real `form()` model; does not attempt to drive
+  TinyMCE under jsdom.
+
+**Decisions made while implementing:**
+- `AdminActionsParams<TRow>` extends `ICellRendererParams<TRow>` and adds an optional
+  `rowLabel?: (row: TRow) => string` (not in the task file's sketch) so aria-labels can include
+  row identity generically across every future admin grid, instead of each grid re-deriving it.
+- `ConfirmDialogComponent`'s spec opens the component through a real `TestBed.inject(MatDialog).open(...)`
+  rather than rendering it standalone with a stubbed `MatDialogRef`: rendered outside the CDK
+  dialog container, there is no `role="dialog"` and no `aria-labelledby` wiring, so the
+  "accessible name" assertion the task calls for is only meaningful against the real overlay.
+  This also meant dropping `provideNoopAnimations()`/`provideAnimations()` — both are deprecated
+  in this Angular version (20.2, removal targeted for v23) — and `afterClosed().toPromise()` in
+  favour of `firstValueFrom(dialogRef.afterClosed())`, also deprecated.
+
+**Surprises / gotchas:**
+- No spike database row was needed/left over — the reviewer verified the `style`-stripping
+  behaviour by inspecting `DomSanitizer`'s allow-list and TinyMCE's output directly rather than
+  inserting a row via tinker; confirmed via `database-query` that no `news` row matching a spike
+  title exists, so there was nothing to delete.
+- `knip` still flags `shared/admin-grid.ts` as unused (no page consumes it yet); `confirm-dialog`
+  and `admin-actions-cell-renderer` are *not* flagged because their own specs import them. Per
+  the task note, left as-is rather than adding a knip ignore — re-check when Task 05's grid lands.
+
+**Verification:**
+- `npx ng test` (full suite) → 325 passed, 67 files
+- `npx tsc -p tsconfig.app.json` → clean
+- `npx eslint src/app src/mocks src/shared` → clean
+- `npx prettier . --check` → clean for every changed file (pre-existing warnings are vendored
+  tinymce assets, unrelated)
+- `npx knip` → only the expected `shared/admin-grid.ts` unused-file warning
+
+**Left uncommitted for review:** yes
+
+**Next session should know:** Task 05 (news grid) is the first real consumer of
+`zephyr-admin-main`, `admin-grid.ts`, `ConfirmDialogComponent`, and
+`AdminActionsCellRendererComponent` — re-run `npx knip` once it lands and confirm the
+`admin-grid.ts` warning is gone. `RichTextEditorComponent` still has no page consumer either;
+its `field` input is exercised only by its own spec until a form task binds it for real.

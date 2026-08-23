@@ -32,6 +32,7 @@
     "ag-grid-community": "^36.1.0",
     "check-password-strength": "^3.0.0",
     "date-fns": "^4.4.0",
+    "dompurify": "^3.4.14",
     "ng-recaptcha-2": "^22.0.1",
     "ngx-cookie-service": "^22.0.0",
     "rxjs": "~7.8.2",

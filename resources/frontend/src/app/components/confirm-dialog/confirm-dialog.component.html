@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+<mat-dialog-content>
+  <p>{{ data.message }}</p>
+  @if (data.warning) {
+    <p class="confirm-dialog-warning">{{ data.warning }}</p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">{{ cancelLabel }}</button>
+  <button mat-raised-button color="warn" cdkFocusInitial (click)="onConfirm()">
+    {{ confirmLabel }}
+  </button>
+</mat-dialog-actions>

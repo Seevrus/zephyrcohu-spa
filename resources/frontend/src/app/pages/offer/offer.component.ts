@@ -1,15 +1,9 @@
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  SecurityContext,
-} from "@angular/core";
+import { Component, computed, effect, inject, input } from "@angular/core";
 import { MatProgressBar } from "@angular/material/progress-bar";
 import { DomSanitizer, Title } from "@angular/platform-browser";
 import { Router } from "@angular/router";
 import { injectQuery } from "@tanstack/angular-query-experimental";
+import DOMPurify from "dompurify";
 
 import { formatDisplayDate } from "../../../mappers/dates";
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
@@ -53,7 +47,9 @@ export class OfferComponent {
   protected readonly additionalContentHtml = computed(() => {
     const additionalContent = this.offerItemQuery.data()?.additionalContent;
     return additionalContent
-      ? this.sanitizer.sanitize(SecurityContext.HTML, additionalContent)
+      ? this.sanitizer.bypassSecurityTrustHtml(
+          DOMPurify.sanitize(additionalContent),
+        )
       : "";
   });
   protected readonly displayUpdatedAt = computed(() => {
@@ -76,7 +72,7 @@ export class OfferComponent {
   protected readonly mainContentHtml = computed(() => {
     const mainContent = this.offerItemQuery.data()?.mainContent;
     return mainContent
-      ? this.sanitizer.sanitize(SecurityContext.HTML, mainContent)
+      ? this.sanitizer.bypassSecurityTrustHtml(DOMPurify.sanitize(mainContent))
       : "";
   });
   protected readonly title = computed(() => this.offerItemQuery.data()?.title);

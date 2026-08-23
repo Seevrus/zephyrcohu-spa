@@ -1,13 +1,8 @@
-import {
-  Component,
-  computed,
-  inject,
-  input,
-  SecurityContext,
-} from "@angular/core";
+import { Component, computed, inject, input } from "@angular/core";
 import { MatChip } from "@angular/material/chips";
 import { DomSanitizer } from "@angular/platform-browser";
 import { RouterLink } from "@angular/router";
+import DOMPurify from "dompurify";
 
 import { formatDisplayDate } from "../../../mappers/dates";
 import { type TagResponse } from "../../../types/knowledgebase";
@@ -37,6 +32,8 @@ export class KnowledgebaseArticleListItemComponent {
   );
 
   protected readonly mainContentHtml = computed(() =>
-    this.sanitizer.sanitize(SecurityContext.HTML, this.mainContent()),
+    this.sanitizer.bypassSecurityTrustHtml(
+      DOMPurify.sanitize(this.mainContent()),
+    ),
   );
 }

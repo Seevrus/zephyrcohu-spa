@@ -10,6 +10,12 @@
   width: 100%;
 }
 
+@mixin zephyr-admin-main {
+  @include zephyr-main;
+
+  max-width: variables.$widescreen;
+}
+
 @mixin zephyr-grid {
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: var(--mat-sys-corner-medium, 12px);
