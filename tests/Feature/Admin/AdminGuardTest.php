@@ -9,7 +9,7 @@ describe('Admin Guard', function () {
     });
 
     test('returns 404 for a guest', function () {
-        $response = $this->getJson('/api/admin/ping');
+        $response = $this->getJson('/api/admin/news');
 
         $response->assertStatus(404)->assertJson([
             'status' => 404,
@@ -20,7 +20,7 @@ describe('Admin Guard', function () {
     test('returns 404 for a logged in non-admin user', function () {
         Sanctum::actingAs(User::find(1));
 
-        $response = $this->getJson('/api/admin/ping');
+        $response = $this->getJson('/api/admin/news');
 
         $response->assertStatus(404)->assertJson([
             'status' => 404,
@@ -31,15 +31,15 @@ describe('Admin Guard', function () {
     test('lets an administrator through', function () {
         Sanctum::actingAs(User::find(2));
 
-        $response = $this->getJson('/api/admin/ping');
+        $response = $this->getJson('/api/admin/news');
 
-        $response->assertStatus(200)->assertExactJson(['data' => 'ok']);
+        $response->assertStatus(200);
     });
 
     test('returns 405 for a wrong method on an admin route', function () {
         Sanctum::actingAs(User::find(2));
 
-        $response = $this->postJson('/api/admin/ping');
+        $response = $this->patchJson('/api/admin/news/1');
 
         $response->assertStatus(405)->assertJson([
             'code' => 'GENERIC_METHOD_NOT_ALLOWED',

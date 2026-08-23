@@ -208,7 +208,7 @@ These paths are exactly the ones the already-shipped `app-admin-nav` component l
 | 01 | BE | [Admin guard: middleware + `/api/admin` group](01-be-admin-guarding.md) | — | [x] |
 | 02 | FE | [Admin routing and guard](02-fe-admin-routing-and-guard.md) | 01 | [x] |
 | 03 | FE | [Admin UI kit: dialog, grid actions, rich text field, layout](03-fe-admin-ui-kit.md) | 02 | [x] |
-| 04 | BE | [News admin API](04-be-news-crud.md) | 01 | [ ] |
+| 04 | BE | [News admin API](04-be-news-crud.md) | 01 | [x] |
 | 05 | FE | [News admin grid](05-fe-news-list.md) | 03, 04 | [ ] |
 | 06 | FE | [News create/edit form](06-fe-news-form.md) | 05 | [ ] |
 | 07 | BE | [Offers admin API](07-be-offers-crud.md) | 01 | [ ] |

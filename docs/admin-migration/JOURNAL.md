@@ -260,3 +260,52 @@ until later tasks build those screens.
 `AdminActionsCellRendererComponent` — re-run `npx knip` once it lands and confirm the
 `admin-grid.ts` warning is gone. `RichTextEditorComponent` still has no page consumer either;
 its `field` input is exercised only by its own spec until a form task binds it for real.
+
+## 2026-08-23 — Task 04: BE news admin API
+
+**Status:** done
+
+**Shipped:**
+- `app/Http/Controllers/AdminNewsController.php` — `getNews`, `getNewsItem`, `storeNews`,
+  `updateNews`, `deleteNews`, all wrapped in `try/catch (Throwable) { abort(500); }`, matching
+  `NewsController`.
+- `app/Http/Requests/StoreNewsRequest.php`, `UpdateNewsRequest.php` — identical rule sets (full
+  replace on update, matching legacy behaviour).
+- `app/Http/Resources/AdminNewsResource.php` — `readers`/`readerCount` included only when the
+  `readers` relation is loaded (`relationLoaded('readers')`), sorted by email, to avoid N+1 and
+  accidental lazy loads.
+- `routes/api.php` — `admin/news` route group inside the existing `admin` middleware group;
+  removed the `AdminPingController`/`GET /api/admin/ping` placeholder from Task 01.
+- `tests/Feature/AdminNewsController/{GetAdminNewsTest,GetAdminNewsItemTest,StoreNewsTest,
+  UpdateNewsTest,DeleteNewsTest}.php` — full CRUD + guard coverage per the task's test table.
+- `tests/Feature/Admin/AdminGuardTest.php` — rewritten to hit `GET /api/admin/news` (200/404/404)
+  and `PATCH /api/admin/news/1` for the 405 case.
+
+**Decisions made while implementing:**
+- `storeNews` returns `(new AdminNewsResource($news))->response()->setStatusCode(201)` rather
+  than `response(new AdminNewsResource($news), 201)` — the latter does not go through
+  `JsonResource::toResponse()`, so the response is not wrapped in `{"data": …}`. No existing
+  controller in the codebase returns a resource with a non-default status code, so this is a new
+  (but standard Laravel) pattern.
+- `users_news.news_id` is already `cascadeOnDelete` (migration `2026_02_08_181423`), confirmed
+  by both reading the migration and a passing test — no explicit pivot cleanup needed in
+  `deleteNews`.
+
+**Surprises / gotchas:**
+- None — the task file's contract matched the codebase exactly (route shape, error codes,
+  `published_at` sort field).
+
+**Verification:**
+- `php artisan test --compact --filter=AdminNews` → 23 passed
+- `php artisan test --compact --filter=AdminGuardTest` → 4 passed
+- `php artisan test --compact --filter=NewsController` → 37 passed (public endpoints untouched)
+- `php artisan test --compact` (full suite) → 173 passed
+- `vendor/bin/pint --dirty --format agent` → passed
+- `php artisan route:list --path=api/admin` → five `admin/news` routes, ping route gone
+
+**Left uncommitted for review:** yes
+
+**Next session should know:** Task 05 (FE news admin grid) can now consume
+`GET /api/admin/news` for real. The admin news response shape matches the task file's contract
+exactly (`readerCount`/`readers` always present since `getNews`/`getNewsItem` always eager-load
+`readers`).

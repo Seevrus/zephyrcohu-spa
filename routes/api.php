@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AdminPingController;
+use App\Http\Controllers\AdminNewsController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\KnowledgebaseController;
@@ -64,5 +64,11 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 });
 
 Route::prefix('admin')->middleware('admin')->group(function () {
-    Route::get('/ping', [AdminPingController::class, 'ping']);
+    Route::controller(AdminNewsController::class)->prefix('news')->group(function () {
+        Route::get('/', 'getNews');
+        Route::post('/', 'storeNews');
+        Route::get('/{news}', 'getNewsItem');
+        Route::put('/{news}', 'updateNews');
+        Route::delete('/{news}', 'deleteNews');
+    });
 });
