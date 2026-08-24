@@ -4,7 +4,6 @@ import { MatProgressBar } from "@angular/material/progress-bar";
 import { injectQuery } from "@tanstack/angular-query-experimental";
 import { AgGridAngular } from "ag-grid-angular";
 import {
-  type AutoSizeStrategy,
   type ColDef,
   ColumnAutoSizeModule,
   LocaleModule,
@@ -85,10 +84,6 @@ export class IntegraComponent {
     this.integraDocumentsQuery.isPending(),
   );
 
-  protected readonly autoSizeStrategy: AutoSizeStrategy = {
-    type: "fitGridWidth",
-  };
-
   protected readonly theme = zephyrGridTheme;
 
   protected readonly gridModules: Module[] = [
@@ -98,11 +93,17 @@ export class IntegraComponent {
     RowAutoHeightModule,
   ];
 
+  protected readonly defaultColDef: ColDef = {
+    flex: 1,
+    minWidth: 120,
+  };
+
   protected readonly integraColumnDefinitions: ColDef[] = [
     {
       autoHeight: true,
       headerName: "Dokumentum neve",
       field: "displayName",
+      flex: 3,
       wrapText: true,
       cellRenderer: IntegraDocumentLinkCellRendererComponent,
     },
@@ -110,6 +111,7 @@ export class IntegraComponent {
       autoHeight: true,
       headerName: "Verzió",
       field: "version",
+      flex: 1,
       wrapText: true,
     },
     {
@@ -117,6 +119,7 @@ export class IntegraComponent {
       cellDataType: "date",
       headerName: "Érvényes",
       field: "publishedAt",
+      flex: 1,
       valueFormatter: ({ value }) => formatDisplayDateWithoutDay(value as Date),
       wrapText: true,
     },

@@ -1,13 +1,14 @@
 import { type Routes } from "@angular/router";
 
 export const adminRoutes: Routes = [
+  { path: "", pathMatch: "full", redirectTo: "hirek" },
   {
-    path: "",
+    path: "hirek",
     async loadComponent() {
-      const { AdminHomeComponent } =
-        await import("./pages/admin/home/admin-home.component");
-      return AdminHomeComponent;
+      const { AdminNewsComponent } =
+        await import("./pages/admin/news/admin-news.component");
+      return AdminNewsComponent;
     },
-    title: "Admin",
+    title: "Admin - Hírek",
   },
 ];

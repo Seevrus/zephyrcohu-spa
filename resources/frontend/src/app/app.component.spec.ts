@@ -322,7 +322,7 @@ describe("App Component", () => {
   });
 
   describe("Admin routes", () => {
-    test("renders the Admin Home Component for an admin", async () => {
+    test("redirects an admin at /admin to the news grid", async () => {
       const { httpTesting } = renderAppComponent("/admin");
 
       const request = await waitFor(() =>
@@ -331,7 +331,20 @@ describe("App Component", () => {
       request.flush(createGetSessionOkResponse({ isAdmin: true }));
 
       await expect(
-        screen.findByTestId("admin-home-component"),
+        screen.findByTestId("admin-news-component"),
+      ).resolves.toBeInTheDocument();
+    });
+
+    test("renders the admin news grid for an admin at /admin/hirek", async () => {
+      const { httpTesting } = renderAppComponent("/admin/hirek");
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(sessionRequest),
+      );
+      request.flush(createGetSessionOkResponse({ isAdmin: true }));
+
+      await expect(
+        screen.findByTestId("admin-news-component"),
       ).resolves.toBeInTheDocument();
     });
 

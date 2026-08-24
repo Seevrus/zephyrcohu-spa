@@ -1,5 +1,0 @@
-@use "../../../../shared/mixins";
-
-:host(.app-admin-home) {
-  @include mixins.zephyr-main;
-}

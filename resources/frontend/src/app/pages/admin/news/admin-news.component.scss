@@ -1,0 +1,28 @@
+@use "../../../../shared/mixins";
+
+:host(.app-admin-news) {
+  @include mixins.zephyr-admin-main;
+
+  background-color: unset;
+
+  .admin-news-component {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .admin-news-header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .admin-news-search {
+    max-width: 600px;
+  }
+
+  .admin-news-grid {
+    @include mixins.zephyr-grid;
+  }
+}

@@ -2,6 +2,8 @@ import { type IntegraCategory } from "../../types/integra";
 
 export const mutationKeys = {
   checkRecaptchaToken: ["check_recaptcha_token"],
+  createAdminNews: ["create_admin_news"],
+  deleteAdminNews: ["delete_admin_news"],
   deleteProfile: ["delete_profile"],
   downloadIntegraDocument: ["download_integra_document"],
   login: ["login"],
@@ -14,11 +16,16 @@ export const mutationKeys = {
   registerRevoke: ["register_revoke"],
   requestNewPassword: ["request_new_password"],
   requestOffer: ["request_offer"],
+  updateAdminNews: ["update_admin_news"],
   updateProfile: ["update_profile"],
   updateProfileConfirmEmail: ["update_profile_confirm_email"],
 };
 
 export const queryKeys = {
+  adminNews: ["admin_news"],
+  adminNewsItem(id?: number) {
+    return id ? ["admin_news_item", id] : ["admin_news_item"];
+  },
   integra(category?: IntegraCategory) {
     return category ? ["documents", category] : ["documents"];
   },

@@ -15,12 +15,12 @@
   } @else {
     <div class="integra-grid">
       <ag-grid-angular
-        [autoSizeStrategy]="autoSizeStrategy"
         [theme]="theme"
         [modules]="gridModules"
         domLayout="autoHeight"
         [rowData]="documents()"
         [columnDefs]="integraColumnDefinitions"
+        [defaultColDef]="defaultColDef"
         [localeText]="localeText"
         [pagination]="true"
         [paginationPanels]="paginationPanels"

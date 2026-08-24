@@ -309,3 +309,58 @@ its `field` input is exercised only by its own spec until a form task binds it f
 `GET /api/admin/news` for real. The admin news response shape matches the task file's contract
 exactly (`readerCount`/`readers` always present since `getNews`/`getNewsItem` always eager-load
 `readers`).
+
+## 2026-08-24 — Task 05: FE news admin grid
+
+**Status:** done
+
+**Shipped:**
+- `types/admin-news.ts`, `app/services/admin-news.query.service.ts` — `getAdminNews`,
+  `getAdminNewsItem`, `createAdminNews`, `updateAdminNews`, `deleteAdminNews`, following
+  `news.query.service.ts`. Every mutation invalidates both `queryKeys.adminNews`/
+  `adminNewsItem` and the public `queryKeys.news()`/`newsItem(id)`.
+- `mocks/admin/news/{adminNewsRequest,createGetAdminNewsOkResponse,deleteAdminNewsRequest}.ts`.
+- `app/pages/admin/news/admin-news.component.{ts,html,scss,spec.ts}` — the first real consumer
+  of `admin-grid.ts`, `zephyrGridTheme`, `ConfirmDialogComponent`, and
+  `AdminActionsCellRendererComponent`. Grid columns match the legacy order/labels; the date
+  column gets a muted `cellClass` for a future `publishedAt`.
+- `admin.routes.ts` — `/admin` now `redirectTo: "hirek"`; `/admin/hirek` lazy-loads
+  `AdminNewsComponent`.
+- Deleted `pages/admin/home/` (Task 02 scaffolding) and updated the Task 02 routing assertions
+  in `app.component.spec.ts` accordingly.
+
+**Decisions made while implementing:**
+- Added an FE-only search box ("Keresés cím szerint") above the grid, filtering the already
+  -fetched rows by title (case-insensitive `includes`), per explicit user request. Not part of
+  the task file's original design; deliberately kept client-side only — server-side
+  pagination/filtering is out of scope until the API needs it. `filteredNews()` is what feeds
+  `[rowData]`, not the raw query data.
+- Split the error state into `errorMessage` (the `getAdminNews` query error, gates the whole
+  loading/empty/grid branch) and `deleteErrorMessage` (the delete mutation error, rendered above
+  a still-visible grid). Collapsing both into one signal would have made the empty/error/loading
+  branches non-exclusive, which the task's self-review explicitly checks for.
+- `getAdminNews()` returns a plain `AdminNewsItem[]` (not a `{ data: … }` wrapper), matching the
+  `LinksQueryService` precedent for a flat, non-function `queryKeys` entry.
+- Removed `matchAdminNewsItemRequest` from the mocks file after writing it — `knip` flagged it
+  as unused since nothing needs the single-item request matcher until Task 06's edit form. Re-add
+  it there.
+
+**Surprises / gotchas:**
+- None — ag-grid's cell renderer components (the actions column, in particular) render and
+  respond to `userEvent.click` fine under Vitest/jsdom with no extra setup, so the edit/delete
+  action tests didn't need anything beyond the existing `admin-actions-cell-renderer` component.
+
+**Verification:**
+- `npx ng test` → 335 passed (67 files)
+- `npx ng lint` → clean
+- `npx tsc -p tsconfig.app.json` → clean
+- `npx prettier . --check` → clean
+- `npx knip` → clean
+
+**Left uncommitted for review:** yes
+
+**Next session should know:** Task 06 (news create/edit form) will need
+`matchAdminNewsItemRequest` back in `mocks/admin/news/adminNewsRequest.ts`, and can reuse
+`getAdminNewsItem`/`createAdminNews`/`updateAdminNews` from `AdminNewsQueryService` as-is — they
+were built now but exercised only indirectly (via `getAdminNews`'s per-item cache seeding) since
+this task doesn't need them directly.

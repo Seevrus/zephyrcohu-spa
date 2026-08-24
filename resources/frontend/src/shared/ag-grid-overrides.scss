@@ -1,0 +1,13 @@
+// ag-grid renders its own DOM outside Angular's template/encapsulation
+// boundary, so component-scoped styles can only reach them globally.
+
+.ag-grid-admin-grid-cell {
+  display: flex;
+  align-items: center;
+  line-height: 1.5;
+}
+
+.admin-news-unpublished {
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+}

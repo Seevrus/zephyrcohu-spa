@@ -1,6 +1,7 @@
 import { AG_GRID_LOCALE_HU } from "@ag-grid-community/locale";
 import {
-  type AutoSizeStrategy,
+  CellStyleModule,
+  type ColDef,
   ColumnAutoSizeModule,
   LocaleModule,
   type Module,
@@ -10,14 +11,17 @@ import {
 } from "ag-grid-community";
 
 export const adminGridModules: Module[] = [
+  CellStyleModule,
   ColumnAutoSizeModule,
   LocaleModule,
   PaginationModule,
   RowAutoHeightModule,
 ];
 
-export const adminGridAutoSizeStrategy: AutoSizeStrategy = {
-  type: "fitGridWidth",
+export const adminGridDefaultColumnDefinition: ColDef = {
+  cellClass: "ag-grid-admin-grid-cell",
+  flex: 1,
+  minWidth: 120,
 };
 
 export const adminPaginationPanels: PaginationPanel[] = [
