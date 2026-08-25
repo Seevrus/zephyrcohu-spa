@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from "@angular/core";
+import { toObservable, toSignal } from "@angular/core/rxjs-interop";
 import { MatButton } from "@angular/material/button";
 import { MatDialog } from "@angular/material/dialog";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
@@ -11,7 +12,9 @@ import {
 } from "@tanstack/angular-query-experimental";
 import { AgGridAngular } from "ag-grid-angular";
 import { type ColDef } from "ag-grid-community";
+import { debounceTime } from "rxjs";
 
+import { SEARCH_DEBOUNCE_MS } from "../../../../constants/debounce";
 import { formatDisplayDateWithoutDay } from "../../../../mappers/dates";
 import {
   adminGridDefaultColumnDefinition,
@@ -66,10 +69,15 @@ export class AdminNewsComponent {
 
   protected readonly searchTerm = signal("");
 
+  private readonly debouncedSearchTerm = toSignal(
+    toObservable(this.searchTerm).pipe(debounceTime(SEARCH_DEBOUNCE_MS)),
+    { initialValue: "" },
+  );
+
   private readonly news = computed(() => this.adminNewsQuery.data() ?? []);
 
   protected readonly filteredNews = computed(() => {
-    const term = this.searchTerm().trim().toLowerCase();
+    const term = this.debouncedSearchTerm().trim().toLowerCase();
 
     if (!term) {
       return this.news();

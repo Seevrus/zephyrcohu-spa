@@ -255,6 +255,35 @@ describe("AdminNewsComponent", () => {
 
     httpTesting.verify();
   });
+
+  test("debounces the filter instead of re-filtering on every keystroke", async () => {
+    const user = userEvent.setup();
+    const { httpTesting, container } = await renderAdminNews();
+
+    const request = await waitFor(() =>
+      httpTesting.expectOne(matchAdminNewsRequest()),
+    );
+    request.flush(
+      createGetAdminNewsOkResponse([
+        { id: 1, title: "Karbantartási szünet" },
+        { id: 2, title: "Új funkció érkezett" },
+      ]),
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain("Karbantartási szünet");
+    });
+
+    await user.type(screen.getByLabelText("Keresés cím szerint"), "Új");
+
+    expect(container.textContent).toContain("Karbantartási szünet");
+
+    await waitFor(() => {
+      expect(container.textContent).not.toContain("Karbantartási szünet");
+    });
+
+    httpTesting.verify();
+  });
 });
 
 async function renderAdminNews() {
