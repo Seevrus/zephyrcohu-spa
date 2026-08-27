@@ -9,6 +9,8 @@ import { type Observable } from "rxjs";
 
 import { environment } from "../../environments/environment";
 
+const STATE_CHANGING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
 export function xsrfInterceptor(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
@@ -18,7 +20,7 @@ export function xsrfInterceptor(
 
   if (
     token &&
-    request.method === "POST" &&
+    STATE_CHANGING_METHODS.has(request.method) &&
     request.url.startsWith(environment.apiUrl)
   ) {
     const requestWithHeader = request.clone({
