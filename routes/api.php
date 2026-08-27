@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminNewsController;
+use App\Http\Controllers\AdminOfferController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\KnowledgebaseController;
@@ -70,5 +71,13 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/{news}', 'getNewsItem');
         Route::put('/{news}', 'updateNews');
         Route::delete('/{news}', 'deleteNews');
+    });
+
+    Route::controller(AdminOfferController::class)->prefix('offers')->group(function () {
+        Route::get('/', 'getOffers');
+        Route::post('/', 'storeOffer');
+        Route::get('/{offer}', 'getOfferItem');
+        Route::put('/{offer}', 'updateOffer');
+        Route::delete('/{offer}', 'deleteOffer');
     });
 });

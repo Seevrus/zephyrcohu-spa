@@ -507,3 +507,90 @@ just losing its positioning. Fixed by adding `MatSuffix` to `imports`. Verified 
 (not just cosmetic) by reverting the import and re-running: the new spec assertion
 (`getByRole("button", { name: "Open calendar" })`) failed RED with the import missing, passed
 GREEN with it restored. Full sweep re-verified: 350 tests, lint/tsc/prettier/knip clean.
+
+## 2026-08-27 — Task 07: BE offers admin API
+
+**Status:** done
+
+**Shipped:**
+- `app/Http/Controllers/AdminOfferController.php` — `getOffers`, `getOfferItem`, `storeOffer`,
+  `updateOffer`, `deleteOffer`, straight copy of `AdminNewsController`'s shape minus everything
+  about readers (offers have no readers relation).
+- `app/Http/Requests/StoreOfferRequest.php`, `UpdateOfferRequest.php` — identical rule set to the
+  news requests (`audience` in `A,P`, `title` required/max 255, `mainContent` required,
+  `additionalContent` nullable, `publishedAt` required date).
+- `app/Http/Resources/AdminOfferResource.php` — same shape as `AdminNewsResource` minus the
+  reader fields.
+- `routes/api.php` — `admin/offers` route group added inside the existing `admin` middleware
+  group, right after `admin/news`.
+- `tests/Feature/AdminOfferController/{GetAdminOffersTest,GetAdminOfferItemTest,StoreOfferTest,
+  UpdateOfferTest,DeleteOfferTest}.php` — full CRUD + guard coverage per the task's test table.
+
+**Decisions made while implementing:** none beyond the task file — followed Task 04's pattern
+step-for-step as instructed, dropping readers entirely (no `with('readers')`, no
+`readerCount`/`readers` keys, no `users_offers` pivot to worry about on delete).
+
+**Surprises / gotchas:** none — the task file's contract matched the codebase exactly, and
+`Offer`'s `published`/`unpublished` scope wasn't even needed since the admin list intentionally
+bypasses it (`Offer::orderBy('published_at', 'desc')->get()`, no `published()` scope, to include
+unpublished offers).
+
+**Verification:**
+- `php artisan test --compact --filter=AdminOffer` → 22 passed
+- `php artisan test --compact --filter=OfferController` → 34 passed (public endpoints untouched)
+- `php artisan test --compact` (full suite) → 195 passed
+- `vendor/bin/pint --dirty --format agent` → passed
+- `php artisan route:list --path=api/admin` → five new `admin/offers` routes alongside the
+  existing five `admin/news` routes
+
+**Left uncommitted for review:** yes
+
+**Next session should know:** Task 08 (FE offers admin grid + form) can now consume
+`/api/admin/offers` for real, and per Task 06's journal note should reuse
+`AdminNewsFormComponent`'s shape (one component for create+edit, `linkedSignal` prefill guard,
+`fieldset`/`legend` around each rich text field, `zephyr-admin-rich-text-form` mixin) rather than
+re-deriving it.
+
+## 2026-08-27 — Bug fix (cross-cutting, found while closing Task 07): PUT/DELETE from the admin UI returned 500
+
+**Status:** done
+
+**Symptom (user-reported):** editing or deleting a news item through the real UI returned
+`500 INTERNAL_SERVER_ERROR`, even though `AdminNewsController`'s update/delete tests all passed
+and manually updating/deleting the row via `App\Models\News` in tinker worked fine — proving the
+bug was in the HTTP layer, not the controller/model.
+
+**Root cause:** `resources/frontend/src/app/services/xsrfInterceptor.ts` only attached the
+`X-XSRF-TOKEN` header when `request.method === "POST"` — a pre-existing bug dating back to the
+very first CORS-wiring commit (`98b74ea`), never hit before because every previous state-changing
+endpoint in the app was `POST`-only (login, register, profile update, etc.). Task 04/06/07 were
+the first to add real `PUT`/`DELETE` admin endpoints, which exposed it: those requests went out
+with no CSRF token, Sanctum's stateful-API CSRF check (`statefulApi()` in `bootstrap/app.php`)
+threw `TokenMismatchException`, Laravel's exception handler converts that into an `HttpException`
+with status 419 — but `bootstrap/app.php`'s exception config only special-cases specific
+`HttpException` subtypes/statuses (400/401/403/404/405/415/423/429) and renders **every other**
+`HttpException`, 419 included, through the generic `ErrorHandling::internal_Server_error()`
+handler. So a routine CSRF-token omission surfaced as an opaque 500 with no server-side log entry
+(the controller's own `catch (Throwable) { abort(500); }` never even ran — the failure happened
+in middleware, before the controller).
+
+**Fix:** `xsrfInterceptor.ts` now checks `STATE_CHANGING_METHODS.has(request.method)`
+(`POST`/`PUT`/`PATCH`/`DELETE`) instead of `=== "POST"`. Backend untouched — the 419→500 masking
+is existing, deliberate-looking app convention (every other unmapped `HttpException` falls
+through the same generic handler) and out of scope for this fix.
+
+**Verification:**
+- Added `xsrfInterceptor.spec.ts` (none existed before): confirmed RED first — `PUT`/`PATCH`/
+  `DELETE` requests came through with no `X-XSRF-TOKEN` header while `POST` already had it; fixed
+  the method check, re-ran GREEN for all four plus a `GET` case (asserts the header is *absent*,
+  matching the existing safe-method exclusion).
+- `npx ng test` → 355 passed (69 files)
+- `npx ng lint` / `npx tsc -p tsconfig.app.json` / `npx prettier . --check` / `npx knip` → clean
+
+**Left uncommitted for review:** yes
+
+**Next session should know:** this bug affected every current and future admin `PUT`/`DELETE`
+endpoint identically (news, and by the same code path, offers once Task 08 ships a form for them)
+— it is fixed at the interceptor level, so no per-feature workaround is needed. If a 500 with no
+matching server log entry turns up again, suspect the same 419-masking path before assuming the
+controller is at fault.
