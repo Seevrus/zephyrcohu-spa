@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, formatISO } from "date-fns";
 import { hu } from "date-fns/locale";
 
 export function formatDisplayDate(date: Date) {
@@ -7,4 +7,8 @@ export function formatDisplayDate(date: Date) {
 
 export function formatDisplayDateWithoutDay(date: Date) {
   return format(date, "yyyy. LLLL d.", { locale: hu });
+}
+
+export function toApiDate(date: Date): string {
+  return formatISO(date, { representation: "date" });
 }

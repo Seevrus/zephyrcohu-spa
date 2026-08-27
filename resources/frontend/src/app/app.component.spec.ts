@@ -322,44 +322,44 @@ describe("App Component", () => {
   });
 
   describe("Admin routes", () => {
-    test("redirects an admin at /admin to the news grid", async () => {
-      const { httpTesting } = renderAppComponent("/admin");
+    test.each([
+      { path: "/admin", testId: "admin-news-component" },
+      { path: "/admin/hirek", testId: "admin-news-component" },
+      { path: "/admin/hirek/uj", testId: "admin-news-form-component" },
+      { path: "/admin/hirek/1", testId: "admin-news-form-component" },
+    ])(
+      "renders the $testId for an admin at $path",
+      async ({ path, testId }) => {
+        const { httpTesting } = renderAppComponent(path);
 
-      const request = await waitFor(() =>
-        httpTesting.expectOne(sessionRequest),
-      );
-      request.flush(createGetSessionOkResponse({ isAdmin: true }));
+        const request = await waitFor(() =>
+          httpTesting.expectOne(sessionRequest),
+        );
+        request.flush(createGetSessionOkResponse({ isAdmin: true }));
 
-      await expect(
-        screen.findByTestId("admin-news-component"),
-      ).resolves.toBeInTheDocument();
-    });
+        await expect(screen.findByTestId(testId)).resolves.toBeInTheDocument();
+      },
+    );
 
-    test("renders the admin news grid for an admin at /admin/hirek", async () => {
-      const { httpTesting } = renderAppComponent("/admin/hirek");
+    test.each([
+      { path: "/admin" },
+      { path: "/admin/hirek" },
+      { path: "/admin/hirek/uj" },
+    ])(
+      "renders the Not Found Component for a non-admin at $path",
+      async ({ path }) => {
+        const { httpTesting } = renderAppComponent(path);
 
-      const request = await waitFor(() =>
-        httpTesting.expectOne(sessionRequest),
-      );
-      request.flush(createGetSessionOkResponse({ isAdmin: true }));
+        const request = await waitFor(() =>
+          httpTesting.expectOne(sessionRequest),
+        );
+        request.flush(createGetSessionOkResponse());
 
-      await expect(
-        screen.findByTestId("admin-news-component"),
-      ).resolves.toBeInTheDocument();
-    });
-
-    test("renders the Not Found Component for a non-admin", async () => {
-      const { httpTesting } = renderAppComponent("/admin");
-
-      const request = await waitFor(() =>
-        httpTesting.expectOne(sessionRequest),
-      );
-      request.flush(createGetSessionOkResponse());
-
-      await expect(
-        screen.findByTestId("not-found-component"),
-      ).resolves.toBeInTheDocument();
-    });
+        await expect(
+          screen.findByTestId("not-found-component"),
+        ).resolves.toBeInTheDocument();
+      },
+    );
 
     test("renders the Not Found Component when the session request fails", async () => {
       const { httpTesting } = renderAppComponent("/admin");
@@ -368,19 +368,6 @@ describe("App Component", () => {
         httpTesting.expectOne(sessionRequest),
       );
       request.flush(getSessionErrorResponse);
-
-      await expect(
-        screen.findByTestId("not-found-component"),
-      ).resolves.toBeInTheDocument();
-    });
-
-    test("renders the Not Found Component for a non-admin on a nested admin path", async () => {
-      const { httpTesting } = renderAppComponent("/admin/hirek");
-
-      const request = await waitFor(() =>
-        httpTesting.expectOne(sessionRequest),
-      );
-      request.flush(createGetSessionOkResponse());
 
       await expect(
         screen.findByTestId("not-found-component"),

@@ -11,4 +11,22 @@ export const adminRoutes: Routes = [
     },
     title: "Admin - Hírek",
   },
+  {
+    path: "hirek/uj",
+    async loadComponent() {
+      const { AdminNewsFormComponent } =
+        await import("./pages/admin/news-form/admin-news-form.component");
+      return AdminNewsFormComponent;
+    },
+    title: "Admin - Új hír",
+  },
+  {
+    path: "hirek/:id",
+    async loadComponent() {
+      const { AdminNewsFormComponent } =
+        await import("./pages/admin/news-form/admin-news-form.component");
+      return AdminNewsFormComponent;
+    },
+    title: "Admin - Hír szerkesztése",
+  },
 ];

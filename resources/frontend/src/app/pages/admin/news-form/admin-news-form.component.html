@@ -1,0 +1,92 @@
+<div data-testid="admin-news-form-component" class="admin-news-form-component">
+  <h1>{{ isEditMode() ? "Hír szerkesztése" : "Új hír írása" }}</h1>
+
+  @if (loadErrorMessage()) {
+    <app-form-unexpected-error />
+  } @else {
+    @if (errorMessage() === "INVALID_REQUEST_DATA") {
+      <p data-testid="invalid-data-message">
+        A megadott adatok nem megfelelőek.
+      </p>
+    } @else if (errorMessage()) {
+      <app-form-unexpected-error />
+    }
+
+    <form (submit)="onSubmit($event)">
+      <div class="form-elements-container">
+        <mat-form-field data-testid="audience">
+          <mat-label>Kiknek szól</mat-label>
+          <mat-select [formField]="newsForm.audience">
+            <mat-option value="P">Mindenki</mat-option>
+            <mat-option value="A">Regisztrált felhasználók</mat-option>
+          </mat-select>
+          @if (
+            newsForm.audience().touched() &&
+            newsForm.audience().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field data-testid="title">
+          <mat-label>Cím</mat-label>
+          <input matInput [formField]="newsForm.title" />
+          @if (
+            newsForm.title().touched() && newsForm.title().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          } @else if (
+            newsForm.title().touched() && newsForm.title().getError("maxLength")
+          ) {
+            <mat-error>A cím legfeljebb 255 karakter lehet</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field data-testid="publishedAt">
+          <mat-label>Közzététel dátuma</mat-label>
+          <input
+            matInput
+            [matDatepicker]="publishedAtPicker"
+            [formField]="newsForm.publishedAt"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="publishedAtPicker" />
+          <mat-datepicker #publishedAtPicker />
+          @if (
+            newsForm.publishedAt().touched() &&
+            newsForm.publishedAt().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          }
+        </mat-form-field>
+
+        <fieldset data-testid="mainContent">
+          <legend>Hír fő szövege</legend>
+          <app-rich-text-editor [field]="newsForm.mainContent" />
+          @if (
+            newsForm.mainContent().touched() &&
+            newsForm.mainContent().getError("required")
+          ) {
+            <p class="admin-form-field-error" role="alert">Kötelező mező</p>
+          }
+        </fieldset>
+
+        <fieldset data-testid="additionalContent">
+          <legend>További szöveg (lenyitható)</legend>
+          <app-rich-text-editor [field]="newsForm.additionalContent" />
+        </fieldset>
+
+        <div class="admin-form-actions">
+          <app-button-loadable
+            data-testid="submit-button"
+            type="submit"
+            [loading]="isSubmitting()"
+            [disabled]="isSubmitting() || newsForm().invalid()"
+          >
+            {{ submitLabel() }}
+          </app-button-loadable>
+          <a mat-button routerLink="/admin/hirek">Mégsem</a>
+        </div>
+      </div>
+    </form>
+  }
+</div>

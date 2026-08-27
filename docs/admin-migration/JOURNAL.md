@@ -364,3 +364,146 @@ exactly (`readerCount`/`readers` always present since `getNews`/`getNewsItem` al
 `getAdminNewsItem`/`createAdminNews`/`updateAdminNews` from `AdminNewsQueryService` as-is — they
 were built now but exercised only indirectly (via `getAdminNews`'s per-item cache seeding) since
 this task doesn't need them directly.
+
+## 2026-08-25 — Task 06: FE news create/edit form
+
+**Status:** done
+
+**Shipped:**
+- `mappers/dates.ts` — `toApiDate(date: Date): string` (ISO `yyyy-MM-dd`, via `date-fns`
+  `formatISO`), with a `dates.spec.ts` case.
+- `mocks/admin/news/adminNewsRequest.ts` — re-added `matchAdminNewsItemRequest(id)` (removed by
+  Task 05, flagged then to come back here).
+- `mocks/admin/news/createAdminNewsRequest.ts` — `matchCreateAdminNewsRequest()` (POST) and
+  `matchUpdateAdminNewsRequest(id)` (PUT).
+- `mocks/admin/news/createGetAdminNewsItemOkResponse.ts` — single-item GET response factory,
+  mirroring `createGetAdminNewsOkResponse`'s override-defaults shape.
+- `app/validators/richTextRequiredValidator.ts` — custom signal-forms validator: strips HTML tags
+  and trims before checking non-empty, so an "empty" TinyMCE value (e.g. `<p><br></p>`) still
+  fails required.
+- `app/pages/admin/news-form/admin-news-form.component.{ts,html,scss,spec.ts}` — one component
+  for both `/admin/hirek/uj` (create) and `/admin/hirek/:id` (edit), signal forms
+  (`form()`/`submit()`), `MatDatepickerModule` with `provideNativeDateAdapter()` +
+  `MAT_DATE_LOCALE: "hu-HU"` scoped to the component's own `providers`. 8 spec cases per the task
+  file's list.
+- `admin.routes.ts` — added `hirek/uj` and `hirek/:id` (order matters, `uj` first).
+- `app.component.spec.ts` — folded the "Admin routes" describe block into two `test.each` tables
+  (admin → testId; non-admin → not-found) to satisfy `sonarjs/parameterized-tests`, and added the
+  two new form routes to the admin table.
+
+**Decisions made while implementing:**
+- **Local form model diverges from `SaveAdminNewsRequest`.** `AdminNewsFormModel.publishedAt` is
+  `Date | null` (bound straight to `MatDatepicker`, converted to the API's ISO string only at
+  submit via `toApiDate`) and `additionalContent` is always `string` (never `null`), so it can
+  bind to `app-rich-text-editor`'s `FieldTree<string>` input. `null` is reintroduced for
+  `additionalContent` only when building the outgoing `SaveAdminNewsRequest` at submit time, if
+  the trimmed value is empty — this is what the self-review's "sent as null, not empty string"
+  bullet is checking.
+- **Prefill uses `linkedSignal`'s two-argument (`source`/`computation`) form, not a plain
+  computation.** The `computation` returns `previous.value` whenever `previous.source` is already
+  defined, i.e. it only builds the form model from `data` the *first* time the query resolves; any
+  later reference change to `newsItemQuery.data()` (a background refetch producing a new object
+  with the same values) still re-triggers `computation`, but it returns the untouched `previous`
+  value instead of rebuilding — so a refetch can never clobber what the admin is mid-typing.
+  Chose this over an `effect()`-based approach because it keeps the writable model itself as the
+  single source of truth for signal forms (an effect would need a second signal plus a guard
+  condition against every field the admin touches).
+- **Rich text fields are inside `<fieldset><legend>…</legend>` groups, not `<mat-form-field>`.**
+  `app-rich-text-editor` wraps a raw TinyMCE `<editor>`, so a `<mat-label>` can't associate with
+  it the way it does with `matInput`/`mat-select`. A `fieldset`/`legend` pair gives the group an
+  accessible name without inventing a bespoke label pattern; the "required" error text under
+  `mainContent` gets `role="alert"` so it's announced without a `mat-error`.
+- **Date and rich text fields are set directly through the component instance in specs**
+  (`fixture.componentInstance.newsForm.publishedAt().value.set(...)`), not driven via
+  `userEvent`. `newsForm` is exposed as plain `readonly` (not `protected`) for this reason —
+  matching `loginForm`/`updateProfileForm`'s existing precedent of public reactive forms reachable
+  from specs, since a `protected` signal-forms field can't be accessed from a spec file at all
+  under TypeScript's visibility rules. TinyMCE doesn't render a usable control under jsdom
+  (established in `rich-text-editor.component.spec.ts`), and the Material datepicker's calendar
+  overlay is comparably brittle to drive with `userEvent` under jsdom — both are test-hooked
+  instead, consistent with the task file's guidance for the rich text field specifically.
+- **`getError("required")` kind on the custom rich-text validator is literally `"required"`**
+  (not a bespoke kind), so the template's error-lookup pattern stays identical to every other
+  required field in the app.
+
+**Surprises / gotchas:**
+- Updating (or creating, once the admin list/news queries are cached) invalidates
+  `queryKeys.adminNewsItem(id)`, and in edit mode this component's own `getAdminNewsItem(id)`
+  query is still an *active* observer for that exact key — so a successful PUT triggers a second,
+  automatic GET refetch of the same item before the component unmounts (`router.navigate` doesn't
+  actually navigate under `provideRouter([])` in the test, so the component stays mounted and the
+  query stays active). The edit-mode submit spec has to flush that follow-up GET too, or
+  `httpTesting.verify()` fails on a dangling request. This is correct real-world behaviour (the
+  admin would just see the row refresh before leaving the page), not a bug.
+- `linkedSignal`'s two-argument form needed an explicit `linkedSignal<S, D>` type argument (or an
+  explicit `computation` return type) — leaving it fully inferred made every downstream read of
+  `newsModel()` widen to `unknown`, which then broke `form()`'s `schemaPath` typing entirely.
+- `[formField]` on a `matInput` rejects a plain `maxlength` HTML attribute
+  (`NG8022: Setting the 'maxlength' attribute is not allowed on nodes using the '[formField]'
+  directive`) — length limits have to go through the schema (`maxLength(schemaPath.title, 255)`)
+  instead, which also gets its own `mat-error` branch.
+
+**Verification:**
+- `npx ng test` → 348 passed (68 files)
+- `npx ng lint` → clean
+- `npx tsc -p tsconfig.app.json` → clean
+- `npx prettier . --check` → clean
+- `npx knip` → clean
+
+**Left uncommitted for review:** yes
+
+**Next session should know:** Task 06 is the explicitly-designated "pattern task" for Tasks 08
+(offers) and 10 (knowledgebase) — reuse this component's shape (one component for create+edit,
+`linkedSignal` prefill guard, `fieldset`/`legend` around each rich text field, form-model type
+that diverges from the API request type for the datepicker/rich-text fields) rather than
+re-deriving it.
+
+**Follow-up fix (same session, still Task 06):** `hirek/uj` and `hirek/:id` are two separate
+route entries loading the same component — that's the normal Angular pattern (a literal segment
+always wins over a parameterized sibling), not a duplication smell. But `numericId` originally
+did a bare `Number(id())`, so any `hirek/:id` match that *isn't* numeric (e.g. a typo like
+`/admin/hirek/ujjjj`, which doesn't match the literal `hirek/uj` route and falls through to
+`:id`) produced `NaN` — which is `!== undefined`, so the item query still ran and fired
+`GET /admin/news/NaN`. Fixed: `numericId` now returns `undefined` for a non-integer id, and a new
+`hasInvalidId` computed (route had an `:id` segment, but it didn't parse) drives a
+`redirectOnInvalidIdEffect` that navigates back to `/admin/hirek` with `replaceUrl: true` —
+mirroring `NewsArticleComponent`'s existing `redirectOnInvalidIdEffect`/`/hirek` redirect for the
+public `hirek/:id` route, which the user pointed out was the more consistent choice than
+inventing a separate error-card path for this one form. Added a regression spec asserting the
+redirect happens and that no request is ever matched for `.../admin/news/NaN`. Verified again:
+349 tests passed, lint/tsc/prettier/knip clean.
+
+**Follow-up layout fix (same session, still Task 06):** the "Mégsem" cancel link rendered as a
+plain unstyled `<a>` instead of a Material button — `MatButton` was never added to the
+component's `imports`, so the `mat-button` attribute on `<a mat-button routerLink="...">` was
+inert (compare `admin-news.component.ts`, which does import `MatButton` for its own
+`<a mat-flat-button>`). Also widened/re-centered the form per feedback: the one-line fields
+(audience/title/publishedAt) cap at 500px (matching the app's other forms), the two rich text
+`fieldset`s cap at 1200px, and `.form-elements-container` itself is centered
+(`margin: 0 auto; max-width: 1200px`) instead of sitting flush left. No behavioural change, no
+new tests needed; full sweep re-verified: 349 tests, lint/tsc/prettier/knip clean.
+
+**Follow-up: extracted the layout into a mixin (same session, still Task 06).** Per feedback that
+Tasks 08/10 (offers, knowledgebase) will need the identical "short fields at 500px, rich text
+fieldsets at 1200px, left-aligned except a centered 500px action row" shape, moved it out of
+`admin-news-form.component.scss` into `shared/mixins.scss` as
+`zephyr-admin-rich-text-form`, next to the existing `zephyr-grid`/`zephyr-admin-main` mixins.
+Renamed the two component-scoped classes it targets to generic ones —
+`.admin-news-form-field-error` → `.admin-form-field-error`, `.admin-news-form-actions` →
+`.admin-form-actions` — so Tasks 08/10 can `@include mixins.zephyr-admin-rich-text-form;` and
+reuse the same class names verbatim instead of re-deriving the rules. `.form-elements-container`
+was already a shared class name (see `shared-register.form-layout`'s narrower forms), so it
+carried over unchanged. Pure refactor, no behavioural/test change; full sweep re-verified: 349
+tests, lint/tsc/prettier/knip clean.
+
+**Follow-up fix: missing datepicker toggle icon (same session, still Task 06).** The calendar
+icon on `mat-datepicker-toggle` wasn't rendering at all — not just mis-styled, absent from the
+DOM. Cause: `matIconSuffix` on `<mat-datepicker-toggle matIconSuffix [for]="...">` is the
+`MatSuffix` directive (`@angular/material/form-field`, selector
+`[matSuffix], [matIconSuffix], [matTextSuffix]`), which was never added to the component's
+`imports`. `MatFormField` projects prefix/suffix content by that marker; content not carrying it
+isn't projected into the form field at all, so the toggle button silently disappeared instead of
+just losing its positioning. Fixed by adding `MatSuffix` to `imports`. Verified the fix is real
+(not just cosmetic) by reverting the import and re-running: the new spec assertion
+(`getByRole("button", { name: "Open calendar" })`) failed RED with the import missing, passed
+GREEN with it restored. Full sweep re-verified: 350 tests, lint/tsc/prettier/knip clean.

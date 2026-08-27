@@ -2,16 +2,16 @@ import { type RequestMatch } from "@angular/common/http/testing";
 
 import { environment } from "../../../environments/environment";
 
-export function matchAdminNewsRequest(): RequestMatch {
+export function matchCreateAdminNewsRequest(): RequestMatch {
   return {
-    method: "GET",
+    method: "POST",
     url: `${environment.apiUrl}/admin/news`,
   };
 }
 
-export function matchAdminNewsItemRequest(id: number): RequestMatch {
+export function matchUpdateAdminNewsRequest(id: number): RequestMatch {
   return {
-    method: "GET",
+    method: "PUT",
     url: `${environment.apiUrl}/admin/news/${id}`,
   };
 }

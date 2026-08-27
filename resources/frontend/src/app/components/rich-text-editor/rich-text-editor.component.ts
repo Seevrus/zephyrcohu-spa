@@ -14,6 +14,7 @@ export class RichTextEditorComponent {
   readonly field = input.required<FieldTree<string>>();
 
   protected readonly init: EditorComponent["init"] = {
+    height: 550,
     promotion: false,
     language: "hu_HU",
     plugins: [
