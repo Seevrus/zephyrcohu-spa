@@ -594,3 +594,75 @@ endpoint identically (news, and by the same code path, offers once Task 08 ships
 — it is fixed at the interceptor level, so no per-feature workaround is needed. If a 500 with no
 matching server log entry turns up again, suspect the same 419-masking path before assuming the
 controller is at fault.
+
+## 2026-08-27 — Task 08: FE offers admin grid + form
+
+**Status:** done
+
+**Shipped:**
+- `types/admin-offers.ts` — `AdminOfferResponse` is a plain re-export of the existing public
+  `OfferResponse` (field-for-field identical, per the task's guidance), plus `AdminOfferItem`
+  (`Date`-typed timestamps), `AdminOfferCollectionResponse`/`AdminOfferItemResponse`, and
+  `SaveAdminOfferRequest`. `types/offers.ts` itself untouched.
+- `app/services/admin-offers.query.service.ts` — `AdminOffersQueryService`, a straight copy of
+  `AdminNewsQueryService`'s shape (`getAdminOffers`, `getAdminOfferItem`, `createAdminOffer`,
+  `updateAdminOffer`, `deleteAdminOffer`). Every mutation invalidates both the admin keys and the
+  public `queryKeys.offers()`/`offerItem(id)`.
+- `services/queryKeys.ts` — added `adminOffers`/`adminOfferItem`/`createAdminOffer`/
+  `updateAdminOffer`/`deleteAdminOffer` keys alongside the existing news ones.
+- `mocks/admin/offers/{adminOffersRequest,createGetAdminOffersOkResponse,
+  createGetAdminOfferItemOkResponse,saveAdminOfferRequest,deleteAdminOfferRequest}.ts` — same
+  shape as the news mocks.
+- `app/pages/admin/offers/admin-offers.component.{ts,html,scss,spec.ts}` — the offers grid.
+  Columns per the task's table (`Kiknek szól`/`Cím`/`Közzététel dátuma`/`Kezelés`, no readers
+  columns). No search box — the task's design section doesn't call for one on this grid, unlike
+  Task 05's news grid where it was an explicit user add-on.
+- `app/pages/admin/offer-form/admin-offer-form.component.{ts,html,scss,spec.ts}` — the offers
+  create/edit form, a direct copy of `AdminNewsFormComponent`'s final shape (post all of Task 06's
+  follow-up fixes): `linkedSignal` prefill guard, `fieldset`/`legend` rich text groups, the
+  `redirectOnInvalidIdEffect` + `numericId` `Number.isInteger` guard for a non-numeric `:id`, and
+  `MatSuffix` imported from the start (the datepicker-toggle bug Task 06 hit mid-session doesn't
+  recur here). Uses the `zephyr-admin-rich-text-form` mixin as-is — no new mixin needed.
+- `admin.routes.ts` — added `ajanlatok`, `ajanlatok/uj` (before `ajanlatok/:id`), `ajanlatok/:id`.
+- `app.component.spec.ts` — extended both `test.each` tables in the "Admin routes" describe block
+  with the three new offers paths.
+
+**Decisions made while implementing:** none beyond the task file — this was explicitly the
+"apply the pattern task" case (Task 06 for the form, Task 05 for the grid minus readers), and the
+task file's own design section fully specified the deltas (no readers, different route segment,
+different Hungarian copy). Followed it directly rather than re-deriving anything.
+
+**Surprises / gotchas:** none in this task itself — but see the cross-cutting bug fix entry
+directly above: the CSRF/`xsrfInterceptor` bug found while closing Task 07 would have hit this
+form's update/delete just as hard had it not already been fixed at the interceptor level.
+
+**Verification:**
+- `npx ng test` → 377 passed (71 files), all green on the first run (no red/green cycle needed
+  beyond the individual spec files' own TDD)
+- `npx ng lint` → clean
+- `npx tsc -p tsconfig.app.json` → clean
+- `npx prettier . --check` → clean
+- `npx knip` → clean
+
+**Left uncommitted for review:** yes
+
+**Next session should know:** Task 09/10 (knowledgebase admin API + FE) is next; it has *more*
+surface than offers (readers-equivalent tag sync per D7), so it's closer to Task 04/06's shape
+than Task 07/08's. Tasks 05/06/08 together are now the reference trio for any future
+content-entity admin screen (grid + create/edit form).
+
+**Follow-up (same session, still Task 08): added the title search box to the offers grid.** Task
+08's own design section didn't call for one (unlike Task 05's news grid, where it was an explicit
+user add-on), but the user asked for parity — "similarly to news - and kb will be the same".
+Ported `AdminNewsComponent`'s exact pattern into `AdminOffersComponent`: a `searchTerm` signal, a
+`toObservable`/`toSignal`+`debounceTime(SEARCH_DEBOUNCE_MS)` debounced signal, and a
+`filteredOffers` computed that title-filters case-insensitively; `[rowData]` now binds to
+`filteredOffers()` instead of the raw query data. Added the two matching spec cases (filters
+case-insensitively; debounces instead of re-filtering every keystroke). This is now duplicated
+verbatim across two grid components — noted for Task 10: if the knowledgebase grid needs the same
+box a third time (the user's "kb will be the same" suggests it will), that's the point to extract
+a shared debounced-search helper instead of copying a third time.
+
+**Verification:** `npx ng test` → 379 passed (71 files); lint/tsc/prettier/knip → clean.
+
+**Left uncommitted for review:** yes

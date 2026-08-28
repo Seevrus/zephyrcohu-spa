@@ -1,0 +1,28 @@
+@use "../../../../shared/mixins";
+
+:host(.app-admin-offers) {
+  @include mixins.zephyr-admin-main;
+
+  background-color: unset;
+
+  .admin-offers-component {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .admin-offers-header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .admin-offers-search {
+    max-width: 600px;
+  }
+
+  .admin-offers-grid {
+    @include mixins.zephyr-grid;
+  }
+}

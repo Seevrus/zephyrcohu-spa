@@ -324,6 +324,9 @@ describe("App Component", () => {
   describe("Admin routes", () => {
     test.each([
       { path: "/admin", testId: "admin-news-component" },
+      { path: "/admin/ajanlatok", testId: "admin-offers-component" },
+      { path: "/admin/ajanlatok/uj", testId: "admin-offer-form-component" },
+      { path: "/admin/ajanlatok/1", testId: "admin-offer-form-component" },
       { path: "/admin/hirek", testId: "admin-news-component" },
       { path: "/admin/hirek/uj", testId: "admin-news-form-component" },
       { path: "/admin/hirek/1", testId: "admin-news-form-component" },
@@ -343,6 +346,8 @@ describe("App Component", () => {
 
     test.each([
       { path: "/admin" },
+      { path: "/admin/ajanlatok" },
+      { path: "/admin/ajanlatok/uj" },
       { path: "/admin/hirek" },
       { path: "/admin/hirek/uj" },
     ])(
