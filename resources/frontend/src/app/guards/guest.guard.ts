@@ -11,7 +11,7 @@ export const guestGuard: CanActivateFn = async () => {
   const usersQueryService = inject(UsersQueryService);
 
   try {
-    const session = await queryClient.ensureQueryData({
+    const session = await queryClient.query({
       queryKey: queryKeys.session,
       queryFn: usersQueryService.session().queryFn,
     });
