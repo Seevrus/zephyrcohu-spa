@@ -213,7 +213,7 @@ These paths are exactly the ones the already-shipped `app-admin-nav` component l
 | 06 | FE | [News create/edit form](06-fe-news-form.md) | 05 | [x] |
 | 07 | BE | [Offers admin API](07-be-offers-crud.md) | 01 | [x] |
 | 08 | FE | [Offers admin grid + form](08-fe-offers.md) | 03, 06, 07 | [x] |
-| 09 | BE | [Knowledgebase admin API](09-be-knowledgebase-crud.md) | 01 | [ ] |
+| 09 | BE | [Knowledgebase admin API](09-be-knowledgebase-crud.md) | 01 | [x] |
 | 10 | FE | [Knowledgebase admin grid + form](10-fe-knowledgebase.md) | 03, 06, 09 | [ ] |
 | 11 | BE | [Tags admin API](11-be-tags-crud.md) | 01 | [ ] |
 | 12 | FE | [Tags admin page](12-fe-tags.md) | 03, 11 | [ ] |

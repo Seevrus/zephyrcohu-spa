@@ -666,3 +666,57 @@ a shared debounced-search helper instead of copying a third time.
 **Verification:** `npx ng test` → 379 passed (71 files); lint/tsc/prettier/knip → clean.
 
 **Left uncommitted for review:** yes
+
+## 2026-08-28 — Task 09: BE knowledgebase admin API
+
+**Status:** done
+
+**Shipped:**
+- `app/Http/Controllers/AdminKnowledgebaseController.php` — full CRUD, mirrors
+  `AdminNewsController`/`AdminOfferController`, plus a private `syncTags(Knowledgebase, array)`
+  helper shared by store/update: trims, filters blanks, de-dupes, `Tag::firstOrCreate`s each name,
+  then `$knowledgebase->tags()->sync($tagIds)` — all inside `DB::transaction`.
+- `app/Http/Requests/StoreKnowledgebaseRequest.php`, `UpdateKnowledgebaseRequest.php` — same
+  rules as news/offers plus `tags` (`array`) / `tags.*` (`string`, `max:255`).
+- `app/Http/Resources/AdminKnowledgebaseResource.php` — same shape as `AdminNewsResource` plus an
+  always-present `tags` key via `TagResource::collection($this->whenLoaded('tags'))`. Reused the
+  existing `TagResource` unchanged, per D7/self-review — no second tag resource.
+- `routes/api.php` — added `AdminKnowledgebaseController` import and an `admin/knowledgebase`
+  route group inside the existing `admin` middleware group, after `admin/offers`.
+- `tests/Feature/AdminKnowledgebaseController/{GetAdminKnowledgebaseTest,GetAdminKnowledgebaseItemTest,StoreKnowledgebaseTest,UpdateKnowledgebaseTest,DeleteKnowledgebaseTest}.php`
+  — full CRUD + tag-sync + guard coverage, seeded via `DB::table(...)->insert(...)`.
+
+**Decisions made while implementing:**
+- Extracted the `firstOrCreate` + `sync` block from the task file into `syncTags()` instead of
+  duplicating it across store and update — it's byte-for-byte identical in both per the task's
+  own contract, so inlining twice would just be copy-paste risk.
+- `AdminKnowledgebaseResource`'s `tags` key uses `whenLoaded` (not a bare `->tags` access) so the
+  key still resolves correctly for the store/update responses, which explicitly `load(['tags',
+  'readers'])` before serialising — kept consistent with the `readers` key's existing
+  `relationLoaded` guard pattern from `AdminNewsResource`.
+
+**Surprises / gotchas:**
+- `TagResource`'s `count` key uses `whenCounted`, which resolves to Laravel's `MissingValue` and
+  is dropped from the JSON entirely when not counted (not serialised as `null`) — the list/item
+  responses here never `withCount`, so `assertExactJson` expects `{id, name}` only, no `count`
+  key. Caught this before it caused a spurious RED.
+- An empty-string entry in a `tags` array (`['INTEGRA', ''])`) unexpectedly 422s: Laravel's
+  `ConvertEmptyStringsToNull` middleware turns `''` into `null` in the request body before
+  validation runs, which then fails the `string` rule on `tags.*`. Not a bug — the FE never
+  submits blank tag entries — so the "trims and de-duplicates" test uses two non-empty
+  duplicate/whitespace variants instead, which is what that behaviour actually needs to prove.
+
+**Verification:**
+- `php artisan test --compact --filter=AdminKnowledgebase` → 27 passed (73 assertions)
+- `php artisan test --compact --filter=KnowledgebaseController` → 48 passed (116 assertions,
+  public endpoints unaffected)
+- `php artisan test --compact` (full suite) → 222 passed (514 assertions)
+- `vendor/bin/pint --dirty --format agent` → clean
+
+**Left uncommitted for review:** yes
+
+**Next session should know:**
+- Task 10 (FE knowledgebase admin grid + form) is next, following Task 08's (offers) pattern —
+  including the debounced title-search box (see the Task 08 follow-up entry above: this is the
+  third occurrence, the flagged point to extract a shared debounced-search helper instead of
+  copying a third time), plus a tags multi-select/chip input the news/offers forms didn't need.

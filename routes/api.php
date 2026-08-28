@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminKnowledgebaseController;
 use App\Http\Controllers\AdminNewsController;
 use App\Http\Controllers\AdminOfferController;
 use App\Http\Controllers\CaptchaController;
@@ -65,6 +66,14 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 });
 
 Route::prefix('admin')->middleware('admin')->group(function () {
+    Route::controller(AdminKnowledgebaseController::class)->prefix('knowledgebase')->group(function () {
+        Route::get('/', 'getKnowledgebase');
+        Route::post('/', 'storeKnowledgebaseItem');
+        Route::get('/{knowledgebase}', 'getKnowledgebaseItem');
+        Route::put('/{knowledgebase}', 'updateKnowledgebaseItem');
+        Route::delete('/{knowledgebase}', 'deleteKnowledgebaseItem');
+    });
+
     Route::controller(AdminNewsController::class)->prefix('news')->group(function () {
         Route::get('/', 'getNews');
         Route::post('/', 'storeNews');
