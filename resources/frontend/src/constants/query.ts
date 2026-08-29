@@ -1,0 +1,1 @@
+export const QUERY_CLIENT_STALE_TIME = 30 * 60 * 1000;

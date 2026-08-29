@@ -22,6 +22,7 @@ import {
 import { provideNgxSkeletonLoader } from "ngx-skeleton-loader";
 
 import { ZephyrHttpError } from "../api/ZephyrHttpError";
+import { QUERY_CLIENT_STALE_TIME } from "../constants/query";
 import { environment } from "../environments/environment";
 import { routes } from "./app.routes";
 import { AppTitleStrategy } from "./app.title.strategy";
@@ -56,7 +57,7 @@ const queryClient = new QueryClient({
       retryDelay(attemptIndex) {
         return attemptIndex * 2 * 1000;
       },
-      staleTime: 30 * 60 * 1000,
+      staleTime: QUERY_CLIENT_STALE_TIME,
     },
   },
 });
