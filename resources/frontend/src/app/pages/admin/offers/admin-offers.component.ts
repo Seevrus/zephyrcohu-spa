@@ -140,9 +140,19 @@ export class AdminOffersComponent {
       field: "publishedAt",
       flex: 1,
       cellDataType: "date",
+      wrapText: true,
+      autoHeight: true,
       valueFormatter: ({ value }) => formatDisplayDateWithoutDay(value as Date),
-      cellClass: ({ data }) =>
-        data && data.publishedAt > new Date() ? "admin-offers-unpublished" : "",
+      cellClass: ({ data }) => {
+        const cellClass = [this.defaultColDef.cellClass as string];
+
+        const isUnpublished = data && data.publishedAt > new Date();
+        if (isUnpublished) {
+          cellClass.push("admin-grid-unpublished");
+        }
+
+        return cellClass;
+      },
     },
     {
       headerName: "Kezelés",

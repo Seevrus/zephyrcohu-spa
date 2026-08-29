@@ -720,3 +720,113 @@ a shared debounced-search helper instead of copying a third time.
   including the debounced title-search box (see the Task 08 follow-up entry above: this is the
   third occurrence, the flagged point to extract a shared debounced-search helper instead of
   copying a third time), plus a tags multi-select/chip input the news/offers forms didn't need.
+
+## 2026-08-28 — Task 10: FE knowledgebase admin grid + form
+
+**Status:** done
+
+**Shipped:**
+- `types/admin-knowledgebase.ts`, `app/services/admin-knowledgebase.query.service.ts`,
+  `queryKeys.ts` additions — mirror the offers/news pattern, plus a `tags` field on the item type
+  and `SaveAdminKnowledgebaseRequest`.
+- `mocks/admin/knowledgebase/*` — list/item matchers, OK-response builders, delete/save matchers,
+  mirroring the news/offers mock shape.
+- `pages/admin/knowledgebase/admin-knowledgebase.component.*` — grid with the third occurrence of
+  the debounced title-search box (see Task 08's follow-up note above — this is the flagged
+  trigger point, noted below rather than acted on), a "Címkék" column (`TagResponse[]`, formatted
+  sorted-and-joined), and readers/reader-count columns like the news grid. Header adds a
+  "Címkék kezelése" link to `/admin/tudasbazis/cimkek`, which has no route yet — Task 12 fills
+  that slot; until then it 302-redirects back to the grid via the same invalid-`:id` guard the
+  form already has, matching the "nav links 404/redirect until their task lands" convention.
+- `pages/admin/knowledgebase-form/admin-knowledgebase-form.component.*` — mirrors
+  `AdminNewsFormComponent`, plus a `mat-chip-grid` + `mat-autocomplete` tag input. `tags: string[]`
+  lives in the same signal-forms model as the other fields, but chip add/remove reads and writes
+  the field's `.value` signal directly (`knowledgebaseForm.tags().value.set(...)`) rather than
+  through a `[formField]` binding — signal forms has no native adapter for a chip-grid control,
+  and this keeps the array in the same model the rest of the form already uses (submit just reads
+  `this.knowledgebaseModel().tags`). The tag list itself is loaded via the **public**
+  `KnowledgebaseQueryService.getKnowledgebaseTags()` / `queryKeys.knowledgebaseTags`, per the task
+  file — no new admin endpoint.
+- `admin.routes.ts` — `tudasbazis`, `tudasbazis/uj`, `tudasbazis/:id` (in that order; `cimkek`'s
+  slot deliberately left open for Task 12, ahead of `:id` when it lands).
+- `app.component.spec.ts` — extended both "Admin routes" tables with the three new paths.
+
+**Decisions made while implementing:**
+- Tag chip removal doesn't need a custom Backspace/Delete handler — `MatChipRow` already calls
+  `remove()` (which emits `(removed)`) on Backspace/Delete when a chip has keyboard focus; wiring
+  `(removed)="onTagRemoved(tag)"` was enough to get keyboard removal for free, on top of the
+  explicit `matChipRemove` button per the task's design.
+
+**Surprises / gotchas:**
+- `MatChipInput`'s "Enter ends a chip" detection reads the deprecated `KeyboardEvent.keyCode`
+  (`_isSeparatorKey` in `@angular/material/chips`), but `@testing-library/user-event`'s `{enter}`
+  syntax deliberately omits that property — so `user.type(input, "name{enter}")` silently does
+  nothing to the chip grid under jsdom. Fixed in the specs with a small
+  `typeTagAndPressEnter()` helper: `user.type` for the text, then a plain
+  `fireEvent.keyDown(input, { key: "Enter", keyCode: 13 })` for the Enter itself. Cost real time
+  to isolate (looked first like the app's `addTag()` logic was broken, then like a signal-forms
+  array-field limitation) — worth remembering if a later task (or Task 12/14's own chip inputs, if
+  any) hits the same silent no-op.
+- Initially set `[matChipInputSeparatorKeyCodes]="[]"` on the tag input thinking it was inert
+  without an explicit value; it isn't — Material's own default is `[ENTER]`, and passing `[]`
+  overrides that default and disables Enter entirely. Removed the binding so the default applies.
+- Every knowledgebase mutation invalidates `queryKeys.knowledgebaseTags` (self-review requirement)
+  as well as the admin/public list and item keys — since the form's own tag-autocomplete query is
+  an active observer for that key, every successful create/update triggers an extra tags refetch
+  the specs have to flush, same shape as the existing item-requery pattern from the news/offers
+  forms.
+
+**Verification:**
+- `npx ng test` → 409 passed (73 files)
+- `npx ng lint` → clean (3 pre-existing `sonarjs/deprecation` errors in `guards/*.ts` are
+  unrelated to this task, confirmed via `git status` — not touched)
+- `npx tsc -p tsconfig.app.json` → clean
+- `npx prettier . --check` → clean
+- `npx knip` → clean
+
+**Left uncommitted for review:** yes
+
+**Next session should know:**
+- Task 11 (BE tags admin API) is next. It also unblocks Task 12 (FE tags admin page), which is
+  the point to finally fill in `/admin/tudasbazis/cimkek` — until then the "Címkék kezelése" link
+  added by this task redirects back to the grid instead of 404ing, since it hits the form route's
+  existing invalid-id guard rather than a true unmatched route.
+- Three grids now duplicate the debounced-search-box signal trio verbatim (news, offers,
+  knowledgebase). Still deferring the extraction per the Task 08 follow-up note — worth doing
+  before a fourth admin grid needs it.
+
+**Follow-up (same session, still Task 10): the "unpublished row" cell class was dead CSS for
+offers and knowledgebase.** The user asked what `admin-knowledgebase-unpublished` (applied by the
+grid's `cellClass` to a future-dated `publishedAt` cell) actually does — turned out only
+`admin-news-unpublished` had a matching rule in `ag-grid-overrides.scss`; `admin-offers-unpublished`
+(pre-existing, from Task 08) and the new `admin-knowledgebase-unpublished` were classes applied to
+the DOM with no style behind them. Generalised to one shared `.admin-grid-unpublished` rule and
+pointed all three grids' `cellClass` at it instead of a per-entity class name.
+
+**Verification:** `npx ng test` → 409/410 passed — the one failure
+(`App Component > Profile Component > redirects to a guard page if the user is not logged in`) is
+a **pre-existing flake**, confirmed by stashing all of this session's changes (tracked and
+untracked) and reproducing the same failure on unmodified `HEAD` (`bb075ce`); not caused by this
+fix. lint/tsc/prettier/knip → clean.
+
+**Left uncommitted for review:** yes
+
+**Follow-up (same session): root-caused and fixed the pre-existing `app.component.spec.ts` flake
+noted above.** The user asked what was wrong with the failing "redirects to a guard page" test.
+Root cause: `mocks/testQueryClient.ts`'s `QueryClient` never set `staleTime`, unlike the real
+app's client (`app.config.ts`, `staleTime: 30 * 60 * 1000`). `/profil` with no session runs
+`userGuard` (fetches `queryKeys.session`, sees none, redirects to `/regisztracio_szukseges`) →
+that route is itself guarded by `guestGuard`, which reads the **same** `queryKeys.session` key
+again. With the default `staleTime: 0` the test client had, that second read was already stale by
+the time it ran, so it silently refetched — a second, unflushed `GET /users/session` the test
+never resolves, hanging `guestGuard`'s `await` forever and timing out `findByTestId`. Not a race
+that "usually" passes; every affected test run hit it deterministically once triggered (confirmed
+by 4 consecutive clean reruns after the fix, and by reproducing the hang on unmodified `HEAD`
+before it). Fixed by giving `testQueryClient` the same `staleTime` as production, with a comment
+explaining why — a one-line change that also protects any other current or future guard chain
+that reads the same query key more than once per navigation.
+
+**Verification:** `npx ng test` → 410/410 passed, `app.component.spec.ts` reran clean 4x in a row;
+lint/tsc/prettier/knip → clean.
+
+**Left uncommitted for review:** yes

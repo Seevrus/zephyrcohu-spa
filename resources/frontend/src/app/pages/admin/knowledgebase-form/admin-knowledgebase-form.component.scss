@@ -1,0 +1,12 @@
+@use "../../../../shared/mixins";
+
+:host(.app-admin-knowledgebase-form) {
+  @include mixins.zephyr-admin-main;
+  @include mixins.zephyr-admin-rich-text-form;
+
+  background-color: unset;
+
+  .admin-knowledgebase-form-component {
+    width: 100%;
+  }
+}

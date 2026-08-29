@@ -1,0 +1,129 @@
+<div
+  data-testid="admin-knowledgebase-form-component"
+  class="admin-knowledgebase-form-component"
+>
+  <h1>{{ isEditMode() ? "Tudásbázis cikk szerkesztése" : "Új cikk írása" }}</h1>
+
+  @if (loadErrorMessage()) {
+    <app-form-unexpected-error />
+  } @else {
+    @if (errorMessage() === "INVALID_REQUEST_DATA") {
+      <p data-testid="invalid-data-message">
+        A megadott adatok nem megfelelőek.
+      </p>
+    } @else if (errorMessage()) {
+      <app-form-unexpected-error />
+    }
+
+    <form (submit)="onSubmit($event)">
+      <div class="form-elements-container">
+        <mat-form-field data-testid="audience">
+          <mat-label>Kiknek szól</mat-label>
+          <mat-select [formField]="knowledgebaseForm.audience">
+            <mat-option value="P">Mindenki</mat-option>
+            <mat-option value="A">Regisztrált felhasználók</mat-option>
+          </mat-select>
+          @if (
+            knowledgebaseForm.audience().touched() &&
+            knowledgebaseForm.audience().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field data-testid="title">
+          <mat-label>Cím</mat-label>
+          <input matInput [formField]="knowledgebaseForm.title" />
+          @if (
+            knowledgebaseForm.title().touched() &&
+            knowledgebaseForm.title().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          } @else if (
+            knowledgebaseForm.title().touched() &&
+            knowledgebaseForm.title().getError("maxLength")
+          ) {
+            <mat-error>A cím legfeljebb 255 karakter lehet</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field data-testid="tags">
+          <mat-label>Címkék</mat-label>
+          <mat-chip-grid #tagGrid aria-label="Címkék">
+            @for (tag of knowledgebaseForm.tags().value(); track tag) {
+              <mat-chip-row (removed)="onTagRemoved(tag)">
+                {{ tag }}
+                <button
+                  matChipRemove
+                  [attr.aria-label]="'Címke eltávolítása: ' + tag"
+                >
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
+            }
+          </mat-chip-grid>
+          <input
+            placeholder="Új címke hozzáadása"
+            [matChipInputFor]="tagGrid"
+            [matAutocomplete]="tagAuto"
+            (input)="onTagInputChange($event)"
+            (matChipInputTokenEnd)="onTagAdded($event)"
+          />
+          <mat-autocomplete
+            #tagAuto="matAutocomplete"
+            (optionSelected)="onTagOptionSelected($event)"
+          >
+            @for (tag of filteredTagOptions(); track tag.id) {
+              <mat-option [value]="tag.name">{{ tag.name }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field data-testid="publishedAt">
+          <mat-label>Közzététel dátuma</mat-label>
+          <input
+            matInput
+            [matDatepicker]="publishedAtPicker"
+            [formField]="knowledgebaseForm.publishedAt"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="publishedAtPicker" />
+          <mat-datepicker #publishedAtPicker />
+          @if (
+            knowledgebaseForm.publishedAt().touched() &&
+            knowledgebaseForm.publishedAt().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          }
+        </mat-form-field>
+
+        <fieldset data-testid="mainContent">
+          <legend>Cikk fő szövege</legend>
+          <app-rich-text-editor [field]="knowledgebaseForm.mainContent" />
+          @if (
+            knowledgebaseForm.mainContent().touched() &&
+            knowledgebaseForm.mainContent().getError("required")
+          ) {
+            <p class="admin-form-field-error" role="alert">Kötelező mező</p>
+          }
+        </fieldset>
+
+        <fieldset data-testid="additionalContent">
+          <legend>További szöveg (lenyitható)</legend>
+          <app-rich-text-editor [field]="knowledgebaseForm.additionalContent" />
+        </fieldset>
+
+        <div class="admin-form-actions">
+          <app-button-loadable
+            data-testid="submit-button"
+            type="submit"
+            [loading]="isSubmitting()"
+            [disabled]="isSubmitting() || knowledgebaseForm().invalid()"
+          >
+            {{ submitLabel() }}
+          </app-button-loadable>
+          <a mat-button routerLink="/admin/tudasbazis">Mégsem</a>
+        </div>
+      </div>
+    </form>
+  }
+</div>

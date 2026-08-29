@@ -23,7 +23,8 @@ import {
   adminPaginationPanels,
 } from "../../../../shared/admin-grid";
 import { zephyrGridTheme } from "../../../../shared/ag-grid-theme";
-import { type AdminNewsItem } from "../../../../types/admin-news";
+import { type AdminKnowledgebaseItem } from "../../../../types/admin-knowledgebase";
+import { type TagResponse } from "../../../../types/knowledgebase";
 import {
   type AdminActionParameters,
   AdminActionsCellRendererComponent,
@@ -34,12 +35,12 @@ import {
   type ConfirmDialogData,
 } from "../../../components/confirm-dialog/confirm-dialog.component";
 import { FormUnexpectedErrorComponent } from "../../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
-import { AdminNewsQueryService } from "../../../services/admin-news.query.service";
+import { AdminKnowledgebaseQueryService } from "../../../services/admin-knowledgebase.query.service";
 
 @Component({
-  selector: "app-admin-news",
+  selector: "app-admin-knowledgebase",
   host: {
-    class: "app-admin-news",
+    class: "app-admin-knowledgebase",
   },
   imports: [
     AgGridAngular,
@@ -51,20 +52,22 @@ import { AdminNewsQueryService } from "../../../services/admin-news.query.servic
     MatProgressBar,
     RouterLink,
   ],
-  templateUrl: "./admin-news.component.html",
-  styleUrl: "./admin-news.component.scss",
+  templateUrl: "./admin-knowledgebase.component.html",
+  styleUrl: "./admin-knowledgebase.component.scss",
 })
-export class AdminNewsComponent {
-  private readonly adminNewsQueryService = inject(AdminNewsQueryService);
+export class AdminKnowledgebaseComponent {
+  private readonly adminKnowledgebaseQueryService = inject(
+    AdminKnowledgebaseQueryService,
+  );
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
 
-  private readonly adminNewsQuery = injectQuery(() =>
-    this.adminNewsQueryService.getAdminNews(),
+  private readonly adminKnowledgebaseQuery = injectQuery(() =>
+    this.adminKnowledgebaseQueryService.getAdminKnowledgebase(),
   );
 
-  protected readonly deleteAdminNewsMutation = injectMutation(() =>
-    this.adminNewsQueryService.deleteAdminNews(),
+  protected readonly deleteAdminKnowledgebaseMutation = injectMutation(() =>
+    this.adminKnowledgebaseQueryService.deleteAdminKnowledgebase(),
   );
 
   protected readonly searchTerm = signal("");
@@ -74,40 +77,44 @@ export class AdminNewsComponent {
     { initialValue: "" },
   );
 
-  private readonly news = computed(() => this.adminNewsQuery.data() ?? []);
+  private readonly knowledgebase = computed(
+    () => this.adminKnowledgebaseQuery.data() ?? [],
+  );
 
-  protected readonly filteredNews = computed(() => {
+  protected readonly filteredKnowledgebase = computed(() => {
     const term = this.debouncedSearchTerm().trim().toLowerCase();
 
     if (!term) {
-      return this.news();
+      return this.knowledgebase();
     }
 
-    return this.news().filter((newsItem) =>
-      newsItem.title.toLowerCase().includes(term),
+    return this.knowledgebase().filter((article) =>
+      article.title.toLowerCase().includes(term),
     );
   });
 
   protected readonly isLoading = computed(() =>
-    this.adminNewsQuery.isPending(),
+    this.adminKnowledgebaseQuery.isPending(),
   );
 
   protected readonly isEmpty = computed(
-    () => this.adminNewsQuery.isSuccess() && this.news().length === 0,
+    () =>
+      this.adminKnowledgebaseQuery.isSuccess() &&
+      this.knowledgebase().length === 0,
   );
 
   /**
    * INTERNAL_SERVER_ERROR
    */
   protected readonly errorMessage = computed(
-    () => this.adminNewsQuery.error()?.code,
+    () => this.adminKnowledgebaseQuery.error()?.code,
   );
 
   /**
    * INTERNAL_SERVER_ERROR
    */
   protected readonly deleteErrorMessage = computed(() =>
-    this.deleteAdminNewsMutation.isError()
+    this.deleteAdminKnowledgebaseMutation.isError()
       ? "INTERNAL_SERVER_ERROR"
       : undefined,
   );
@@ -118,9 +125,9 @@ export class AdminNewsComponent {
   protected readonly paginationPanels = adminPaginationPanels;
   protected readonly localeText = adminGridLocaleText;
 
-  protected readonly columnDefinitions: ColDef<AdminNewsItem>[] = [
+  protected readonly columnDefinitions: ColDef<AdminKnowledgebaseItem>[] = [
     {
-      headerName: "Kinek szól",
+      headerName: "Kiknek szól",
       field: "audience",
       flex: 1,
       wrapText: true,
@@ -134,6 +141,18 @@ export class AdminNewsComponent {
       flex: 2,
       wrapText: true,
       autoHeight: true,
+    },
+    {
+      headerName: "Címkék",
+      field: "tags",
+      flex: 1.5,
+      wrapText: true,
+      autoHeight: true,
+      valueFormatter: ({ value }) =>
+        (value as TagResponse[])
+          .map((tag) => tag.name)
+          .sort((a, b) => a.localeCompare(b))
+          .join("; "),
     },
     {
       headerName: "Közzététel dátuma",
@@ -176,11 +195,11 @@ export class AdminNewsComponent {
       cellRenderer: AdminActionsCellRendererComponent,
       cellRendererParams: {
         actions: ["edit", "delete"] satisfies readonly AdminRowAction[],
-        rowLabel: (row: AdminNewsItem) => row.title,
-        onAction: (action: AdminRowAction, row: AdminNewsItem) => {
+        rowLabel: (row: AdminKnowledgebaseItem) => row.title,
+        onAction: (action: AdminRowAction, row: AdminKnowledgebaseItem) => {
           this.onRowAction(action, row);
         },
-      } satisfies Partial<AdminActionParameters<AdminNewsItem>>,
+      } satisfies Partial<AdminActionParameters<AdminKnowledgebaseItem>>,
     },
   ];
 
@@ -188,29 +207,29 @@ export class AdminNewsComponent {
     this.searchTerm.set((event.target as HTMLInputElement).value);
   }
 
-  private onRowAction(action: AdminRowAction, row: AdminNewsItem) {
+  private onRowAction(action: AdminRowAction, row: AdminKnowledgebaseItem) {
     if (action === "edit") {
-      this.router.navigate(["/admin/hirek", row.id]);
+      this.router.navigate(["/admin/tudasbazis", row.id]);
     } else if (action === "delete") {
-      this.onDeleteNews(row);
+      this.onDeleteKnowledgebaseItem(row);
     }
   }
 
-  private onDeleteNews(row: AdminNewsItem) {
+  private onDeleteKnowledgebaseItem(row: AdminKnowledgebaseItem) {
     const dialogRef = this.dialog.open<
       ConfirmDialogComponent,
       ConfirmDialogData,
       boolean
     >(ConfirmDialogComponent, {
       data: {
-        title: "Hír törlése",
-        message: `Biztosan törölni szeretnéd a(z) „${row.title}” című hírt?`,
+        title: "Tudásbázis cikk törlése",
+        message: `Biztosan törölni szeretnéd a(z) „${row.title}” című cikket?`,
       },
     });
 
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
-        this.deleteAdminNewsMutation.mutate(row.id);
+        this.deleteAdminKnowledgebaseMutation.mutate(row.id);
       }
     });
   }

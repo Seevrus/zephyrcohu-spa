@@ -56,4 +56,31 @@ export const adminRoutes: Routes = [
     },
     title: "Admin - Hír szerkesztése",
   },
+  {
+    path: "tudasbazis",
+    async loadComponent() {
+      const { AdminKnowledgebaseComponent } =
+        await import("./pages/admin/knowledgebase/admin-knowledgebase.component");
+      return AdminKnowledgebaseComponent;
+    },
+    title: "Admin - Tudásbázis",
+  },
+  {
+    path: "tudasbazis/uj",
+    async loadComponent() {
+      const { AdminKnowledgebaseFormComponent } =
+        await import("./pages/admin/knowledgebase-form/admin-knowledgebase-form.component");
+      return AdminKnowledgebaseFormComponent;
+    },
+    title: "Admin - Új tudásbázis cikk",
+  },
+  {
+    path: "tudasbazis/:id",
+    async loadComponent() {
+      const { AdminKnowledgebaseFormComponent } =
+        await import("./pages/admin/knowledgebase-form/admin-knowledgebase-form.component");
+      return AdminKnowledgebaseFormComponent;
+    },
+    title: "Admin - Tudásbázis cikk szerkesztése",
+  },
 ];

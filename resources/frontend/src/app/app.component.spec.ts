@@ -330,6 +330,15 @@ describe("App Component", () => {
       { path: "/admin/hirek", testId: "admin-news-component" },
       { path: "/admin/hirek/uj", testId: "admin-news-form-component" },
       { path: "/admin/hirek/1", testId: "admin-news-form-component" },
+      { path: "/admin/tudasbazis", testId: "admin-knowledgebase-component" },
+      {
+        path: "/admin/tudasbazis/uj",
+        testId: "admin-knowledgebase-form-component",
+      },
+      {
+        path: "/admin/tudasbazis/1",
+        testId: "admin-knowledgebase-form-component",
+      },
     ])(
       "renders the $testId for an admin at $path",
       async ({ path, testId }) => {
@@ -350,6 +359,8 @@ describe("App Component", () => {
       { path: "/admin/ajanlatok/uj" },
       { path: "/admin/hirek" },
       { path: "/admin/hirek/uj" },
+      { path: "/admin/tudasbazis" },
+      { path: "/admin/tudasbazis/uj" },
     ])(
       "renders the Not Found Component for a non-admin at $path",
       async ({ path }) => {
