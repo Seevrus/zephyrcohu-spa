@@ -19,6 +19,7 @@ import {
   RecaptchaModule,
   type RecaptchaSettings,
 } from "ng-recaptcha-2";
+import { provideNgxSkeletonLoader } from "ngx-skeleton-loader";
 
 import { ZephyrHttpError } from "../api/ZephyrHttpError";
 import { environment } from "../environments/environment";
@@ -77,5 +78,11 @@ export const appConfig: ApplicationConfig = {
         size: "invisible",
       } satisfies RecaptchaSettings,
     },
+    provideNgxSkeletonLoader({
+      theme: {
+        extendsFromRoot: true,
+        height: "30px",
+      },
+    }),
   ],
 };

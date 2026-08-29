@@ -24,6 +24,14 @@ class DummyComponent {}
 describe("Header", () => {
   const user = userEvent.setup();
 
+  test("should render a skeleton loader initially", async () => {
+    await renderHeader();
+
+    await expect(
+      screen.findByTestId("header-actions-loader"),
+    ).resolves.toBeInTheDocument();
+  });
+
   test("should have the correct user actions if the user is not logged in", async () => {
     const { httpTesting } = await renderHeader();
 
@@ -40,6 +48,10 @@ describe("Header", () => {
       "Bejelentkezés",
       "Regisztráció",
     ]);
+
+    expect(
+      screen.queryByTestId("header-actions-loader"),
+    ).not.toBeInTheDocument();
 
     httpTesting.verify();
   });

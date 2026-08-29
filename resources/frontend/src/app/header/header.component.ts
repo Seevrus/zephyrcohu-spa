@@ -12,6 +12,7 @@ import {
   injectMutation,
   injectQuery,
 } from "@tanstack/angular-query-experimental";
+import { NgxSkeletonLoaderComponent } from "ngx-skeleton-loader";
 import { filter, map } from "rxjs";
 
 import { BreadcrumbService } from "../services/breadcrumb.service";
@@ -29,6 +30,7 @@ import { MobileNavComponent } from "./mobile-nav/mobile-nav.component";
     MatButton,
     MobileNavComponent,
     NgOptimizedImage,
+    NgxSkeletonLoaderComponent,
     RouterLink,
     RouterLinkActive,
   ],
