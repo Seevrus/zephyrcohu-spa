@@ -215,7 +215,7 @@ These paths are exactly the ones the already-shipped `app-admin-nav` component l
 | 08 | FE | [Offers admin grid + form](08-fe-offers.md) | 03, 06, 07 | [x] |
 | 09 | BE | [Knowledgebase admin API](09-be-knowledgebase-crud.md) | 01 | [x] |
 | 10 | FE | [Knowledgebase admin grid + form](10-fe-knowledgebase.md) | 03, 06, 09 | [x] |
-| 11 | BE | [Tags admin API](11-be-tags-crud.md) | 01 | [ ] |
+| 11 | BE | [Tags admin API](11-be-tags-crud.md) | 01 | [x] |
 | 12 | FE | [Tags admin page](12-fe-tags.md) | 03, 11 | [ ] |
 | 13 | BE | [Links + link categories admin API](13-be-links-crud.md) | 01 | [ ] |
 | 14 | FE | [Links admin grid + form](14-fe-links.md) | 03, 13 | [ ] |

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminKnowledgebaseController;
 use App\Http\Controllers\AdminNewsController;
 use App\Http\Controllers\AdminOfferController;
+use App\Http\Controllers\AdminTagController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\KnowledgebaseController;
@@ -88,5 +89,11 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/{offer}', 'getOfferItem');
         Route::put('/{offer}', 'updateOffer');
         Route::delete('/{offer}', 'deleteOffer');
+    });
+
+    Route::controller(AdminTagController::class)->prefix('tags')->group(function () {
+        Route::get('/', 'getTags');
+        Route::put('/{tag}', 'updateTag');
+        Route::delete('/{tag}', 'deleteTag');
     });
 });

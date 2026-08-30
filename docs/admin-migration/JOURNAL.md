@@ -850,3 +850,33 @@ form; one unrelated pre-existing flake in `news.component.spec.ts` reran clean);
 knip → clean.
 
 **Left uncommitted for review:** yes
+
+## Task 11 — BE: tags admin API
+
+List/rename/delete knowledgebase tags, mirroring `AdminOfferController`'s structure. No create
+endpoint — tags are only ever created implicitly by Task 09's article save (`firstOrCreate`).
+
+- `AdminTagController::getTags` — `Tag::withCount('knowledgebase')->orderBy('tag_name')->get()`,
+  returned through the existing `TagResource` unchanged (`whenCounted('knowledgebase')` picked up
+  `knowledgebase_count` from `withCount('knowledgebase')` exactly as the task file expected — no
+  workaround needed).
+- `AdminTagController::updateTag` — `UpdateTagRequest` validates `name` with
+  `Rule::unique('tags', 'tag_name')->ignore($this->route('tag'))` (route-model-bound `Tag`), so
+  renaming a tag to its own current name succeeds while a collision with another tag's name 422s.
+  The controller reloads the count (`loadCount('knowledgebase')`) before responding so the updated
+  resource still carries an accurate `count`.
+- `AdminTagController::deleteTag` — plain `$tag->delete()`; `knowledgebase_tags` rows cascade via
+  the existing FK, articles are untouched (asserted directly in the test).
+- Route group added to the `admin` middleware block in `routes/api.php`, after `offers`, matching
+  the task's contract exactly.
+- Three new Pest files under `tests/Feature/AdminTagController/`: `GetAdminTagsTest`,
+  `UpdateTagTest`, `DeleteTagTest` — alphabetical ordering, zero-count tag, rename-to-self,
+  duplicate-name 422, pivot/article survival on delete, and the standard three guard cases per
+  endpoint (guest 404, non-admin 404, admin success).
+
+**Verification:** `php artisan test --compact --filter=AdminTag` → 14/14 passed;
+`--filter=GetKnowledgebaseTags` (public tag cloud) → 4/4 passed, unaffected;
+`--filter=AdminOffer` and `--filter=AdminKnowledgebase` reran clean too; `vendor/bin/pint --dirty
+--format agent` → clean.
+
+**Left uncommitted for review:** yes

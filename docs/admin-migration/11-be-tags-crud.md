@@ -68,14 +68,14 @@ Guest / non-admin → 404. Unknown id → 404.
 
 ## Steps
 
-- [ ] **Step 1:** `GetAdminTagsTest` — seed three tags, two articles, pivot rows; assert
+- [x] **Step 1:** `GetAdminTagsTest` — seed three tags, two articles, pivot rows; assert
       alphabetical order and correct counts (including a zero-count tag); guest/non-admin 404.
       Red → implement → green.
-- [ ] **Step 2:** `UpdateTagTest` — rename works; duplicate name → 422; unknown id → 404;
+- [x] **Step 2:** `UpdateTagTest` — rename works; duplicate name → 422; unknown id → 404;
       guest/non-admin 404.
-- [ ] **Step 3:** `DeleteTagTest` — tag row gone, pivot rows gone, articles still present;
+- [x] **Step 3:** `DeleteTagTest` — tag row gone, pivot rows gone, articles still present;
       unknown id 404; guest/non-admin 404.
-- [ ] **Step 4:** Pint, self review, journal, tick Task 11.
+- [x] **Step 4:** Pint, self review, journal, tick Task 11.
 
 ## Verification
 
@@ -87,10 +87,10 @@ vendor/bin/pint --dirty --format agent
 
 ## Self review
 
-- [ ] Deleting a tag never deletes an article.
-- [ ] The unique rule ignores the tag being renamed (renaming to its own name must succeed).
-- [ ] Counts come from `withCount`, not from loading the relation.
-- [ ] `TagResource` is reused unchanged; the public tag-cloud response shape is identical to
+- [x] Deleting a tag never deletes an article.
+- [x] The unique rule ignores the tag being renamed (renaming to its own name must succeed).
+- [x] Counts come from `withCount`, not from loading the relation.
+- [x] `TagResource` is reused unchanged; the public tag-cloud response shape is identical to
       before (a public test proves it).
 
 ## Done when
