@@ -5,6 +5,7 @@ import {
 } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
+import { Title } from "@angular/platform-browser";
 import { provideRouter, Router } from "@angular/router";
 import {
   provideTanStackQuery,
@@ -20,6 +21,7 @@ import {
 } from "../../../../mocks/admin/news/createAdminNewsRequest";
 import { createGetAdminNewsItemOkResponse } from "../../../../mocks/admin/news/createGetAdminNewsItemOkResponse";
 import { testQueryClient } from "../../../../mocks/testQueryClient";
+import { BreadcrumbService } from "../../../services/breadcrumb.service";
 import { queryKeys } from "../../../services/queryKeys";
 import { AdminNewsFormComponent } from "./admin-news-form.component";
 
@@ -189,6 +191,36 @@ describe("AdminNewsFormComponent", () => {
     expect(
       fixture.componentInstance.newsForm.publishedAt().value(),
     ).toStrictEqual(new Date("2026-03-01T00:00:00.000000Z"));
+
+    httpTesting.verify();
+  });
+
+  test("sets the specific page title and breadcrumb once the news item loads in edit mode", async () => {
+    const titleSetTitleSpy = vi.spyOn(Title.prototype, "setTitle");
+    const breadcrumbSetBreadcrumbSpy = vi.spyOn(
+      BreadcrumbService.prototype,
+      "setBreadcrumb",
+    );
+
+    const { httpTesting } = await renderAdminNewsForm("1");
+
+    const request = await waitFor(() =>
+      httpTesting.expectOne(matchAdminNewsItemRequest(1)),
+    );
+    request.flush(
+      createGetAdminNewsItemOkResponse({ id: 1, title: "Régi cím" }),
+    );
+
+    await waitFor(() => {
+      expect(titleSetTitleSpy).toHaveBeenCalledWith("Régi cím - Zephyr Bt.");
+    });
+
+    expect(breadcrumbSetBreadcrumbSpy).toHaveBeenCalledWith(
+      "Admin - Hír szerkesztése - Régi cím",
+    );
+
+    titleSetTitleSpy.mockRestore();
+    breadcrumbSetBreadcrumbSpy.mockRestore();
 
     httpTesting.verify();
   });

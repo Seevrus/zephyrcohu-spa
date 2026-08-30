@@ -5,6 +5,7 @@ import {
 } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
+import { Title } from "@angular/platform-browser";
 import { provideRouter, Router } from "@angular/router";
 import {
   provideTanStackQuery,
@@ -20,6 +21,7 @@ import {
   matchUpdateAdminOfferRequest,
 } from "../../../../mocks/admin/offers/saveAdminOfferRequest";
 import { testQueryClient } from "../../../../mocks/testQueryClient";
+import { BreadcrumbService } from "../../../services/breadcrumb.service";
 import { queryKeys } from "../../../services/queryKeys";
 import { AdminOfferFormComponent } from "./admin-offer-form.component";
 
@@ -183,6 +185,36 @@ describe("AdminOfferFormComponent", () => {
     expect(
       fixture.componentInstance.offerForm.publishedAt().value(),
     ).toStrictEqual(new Date("2026-03-01T00:00:00.000000Z"));
+
+    httpTesting.verify();
+  });
+
+  test("sets the specific page title and breadcrumb once the offer loads in edit mode", async () => {
+    const titleSetTitleSpy = vi.spyOn(Title.prototype, "setTitle");
+    const breadcrumbSetBreadcrumbSpy = vi.spyOn(
+      BreadcrumbService.prototype,
+      "setBreadcrumb",
+    );
+
+    const { httpTesting } = await renderAdminOfferForm("1");
+
+    const request = await waitFor(() =>
+      httpTesting.expectOne(matchAdminOfferItemRequest(1)),
+    );
+    request.flush(
+      createGetAdminOfferItemOkResponse({ id: 1, title: "Régi cím" }),
+    );
+
+    await waitFor(() => {
+      expect(titleSetTitleSpy).toHaveBeenCalledWith("Régi cím - Zephyr Bt.");
+    });
+
+    expect(breadcrumbSetBreadcrumbSpy).toHaveBeenCalledWith(
+      "Admin - Ajánlat szerkesztése - Régi cím",
+    );
+
+    titleSetTitleSpy.mockRestore();
+    breadcrumbSetBreadcrumbSpy.mockRestore();
 
     httpTesting.verify();
   });

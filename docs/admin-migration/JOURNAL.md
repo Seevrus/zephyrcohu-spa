@@ -830,3 +830,23 @@ that reads the same query key more than once per navigation.
 lint/tsc/prettier/knip → clean.
 
 **Left uncommitted for review:** yes
+
+**Follow-up (same session): admin edit-form page titles were generic, unlike the matching public
+`:id` pages.** The user pointed out that `/admin/hirek/:id`, `/admin/ajanlatok/:id` and
+`/admin/tudasbazis/:id` always show the route-level static title (e.g. "Admin - Hír szerkesztése -
+Zephyr Bt.") even once the item has loaded, whereas the public article pages
+(`NewsArticleComponent`, `OfferComponent`, `KnowledgebaseArticleComponent`) overwrite the tab
+title with the specific item title via a `Title.setTitle` effect once their query resolves.
+Mirrored that pattern — plus the breadcrumb half, which the admin section hadn't been using at
+all — in all three admin form components: a `pageTitleEffect` reads the loaded item's `title`
+and, once present, calls both `breadcrumbService.setBreadcrumb()` with the old generic label now
+carrying the specific title (e.g. `Admin - Hír szerkesztése - ${title}`) and `titleService.setTitle()`
+with just `${title} - Zephyr Bt.` — same split the public article pages use, tab title kept to the
+item's own name, the section/action context demoted to the breadcrumb. Create mode (no id, no
+query) is untouched, so it still shows the plain route title.
+
+**Verification:** `npx ng test` → 413/413 passed (3 title/breadcrumb-effect tests, one per admin
+form; one unrelated pre-existing flake in `news.component.spec.ts` reran clean); lint/tsc/prettier/
+knip → clean.
+
+**Left uncommitted for review:** yes

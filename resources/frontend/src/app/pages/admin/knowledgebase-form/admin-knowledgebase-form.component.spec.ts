@@ -5,6 +5,7 @@ import {
 } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
+import { Title } from "@angular/platform-browser";
 import { provideRouter, Router } from "@angular/router";
 import {
   provideTanStackQuery,
@@ -22,6 +23,7 @@ import { createGetAdminKnowledgebaseItemOkResponse } from "../../../../mocks/adm
 import { createGetKnowledgebaseTagsOkResponse } from "../../../../mocks/knowledgebase/createGetKnowledgebaseTagsOkResponse";
 import { matchKnowledgebaseTagsRequest } from "../../../../mocks/knowledgebase/knowledgebaseTagsRequest";
 import { testQueryClient } from "../../../../mocks/testQueryClient";
+import { BreadcrumbService } from "../../../services/breadcrumb.service";
 import { queryKeys } from "../../../services/queryKeys";
 import { AdminKnowledgebaseFormComponent } from "./admin-knowledgebase-form.component";
 
@@ -318,6 +320,41 @@ describe("AdminKnowledgebaseFormComponent", () => {
     expect(
       fixture.componentInstance.knowledgebaseForm.publishedAt().value(),
     ).toStrictEqual(new Date("2026-03-01T00:00:00.000000Z"));
+
+    httpTesting.verify();
+  });
+
+  test("sets the specific page title and breadcrumb once the article loads in edit mode", async () => {
+    const titleSetTitleSpy = vi.spyOn(Title.prototype, "setTitle");
+    const breadcrumbSetBreadcrumbSpy = vi.spyOn(
+      BreadcrumbService.prototype,
+      "setBreadcrumb",
+    );
+
+    const { httpTesting } = await renderAdminKnowledgebaseForm("1");
+
+    const request = await waitFor(() =>
+      httpTesting.expectOne(matchAdminKnowledgebaseItemRequest(1)),
+    );
+    request.flush(
+      createGetAdminKnowledgebaseItemOkResponse({ id: 1, title: "Régi cím" }),
+    );
+
+    const tagsRequest = await waitFor(() =>
+      httpTesting.expectOne(matchKnowledgebaseTagsRequest()),
+    );
+    tagsRequest.flush(createGetKnowledgebaseTagsOkResponse([]));
+
+    await waitFor(() => {
+      expect(titleSetTitleSpy).toHaveBeenCalledWith("Régi cím - Zephyr Bt.");
+    });
+
+    expect(breadcrumbSetBreadcrumbSpy).toHaveBeenCalledWith(
+      "Admin - Tudásbázis cikk szerkesztése - Régi cím",
+    );
+
+    titleSetTitleSpy.mockRestore();
+    breadcrumbSetBreadcrumbSpy.mockRestore();
 
     httpTesting.verify();
   });

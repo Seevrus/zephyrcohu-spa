@@ -34,6 +34,7 @@ import {
 } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { MatSelect } from "@angular/material/select";
+import { Title } from "@angular/platform-browser";
 import { Router, RouterLink } from "@angular/router";
 import {
   injectMutation,
@@ -50,6 +51,7 @@ import { ButtonLoadableComponent } from "../../../components/button-loadable/but
 import { FormUnexpectedErrorComponent } from "../../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { RichTextEditorComponent } from "../../../components/rich-text-editor/rich-text-editor.component";
 import { AdminOffersQueryService } from "../../../services/admin-offers.query.service";
+import { BreadcrumbService } from "../../../services/breadcrumb.service";
 import { richTextRequiredValidator } from "../../../validators/richTextRequiredValidator";
 
 type AdminOfferFormModel = {
@@ -100,7 +102,9 @@ const EMPTY_OFFER_MODEL: AdminOfferFormModel = {
 })
 export class AdminOfferFormComponent {
   private readonly adminOffersQueryService = inject(AdminOffersQueryService);
+  private readonly breadcrumbService = inject(BreadcrumbService);
   private readonly router = inject(Router);
+  private readonly titleService = inject(Title);
 
   readonly id = input<string>();
 
@@ -137,6 +141,16 @@ export class AdminOfferFormComponent {
   private readonly redirectOnInvalidIdEffect = effect(() => {
     if (this.hasInvalidId()) {
       this.router.navigate(["/admin/ajanlatok"], { replaceUrl: true });
+    }
+  });
+
+  private readonly pageTitleEffect = effect(() => {
+    const title = this.offerItemQuery.data()?.title;
+    if (title) {
+      this.breadcrumbService.setBreadcrumb(
+        `Admin - Ajánlat szerkesztése - ${title}`,
+      );
+      this.titleService.setTitle(`${title} - Zephyr Bt.`);
     }
   });
 

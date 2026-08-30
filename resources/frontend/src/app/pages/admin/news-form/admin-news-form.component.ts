@@ -34,6 +34,7 @@ import {
 } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { MatSelect } from "@angular/material/select";
+import { Title } from "@angular/platform-browser";
 import { Router, RouterLink } from "@angular/router";
 import {
   injectMutation,
@@ -50,6 +51,7 @@ import { ButtonLoadableComponent } from "../../../components/button-loadable/but
 import { FormUnexpectedErrorComponent } from "../../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { RichTextEditorComponent } from "../../../components/rich-text-editor/rich-text-editor.component";
 import { AdminNewsQueryService } from "../../../services/admin-news.query.service";
+import { BreadcrumbService } from "../../../services/breadcrumb.service";
 import { richTextRequiredValidator } from "../../../validators/richTextRequiredValidator";
 
 type AdminNewsFormModel = {
@@ -100,7 +102,9 @@ const EMPTY_NEWS_MODEL: AdminNewsFormModel = {
 })
 export class AdminNewsFormComponent {
   private readonly adminNewsQueryService = inject(AdminNewsQueryService);
+  private readonly breadcrumbService = inject(BreadcrumbService);
   private readonly router = inject(Router);
+  private readonly titleService = inject(Title);
 
   readonly id = input<string>();
 
@@ -136,6 +140,16 @@ export class AdminNewsFormComponent {
   private readonly redirectOnInvalidIdEffect = effect(() => {
     if (this.hasInvalidId()) {
       this.router.navigate(["/admin/hirek"], { replaceUrl: true });
+    }
+  });
+
+  private readonly pageTitleEffect = effect(() => {
+    const title = this.newsItemQuery.data()?.title;
+    if (title) {
+      this.breadcrumbService.setBreadcrumb(
+        `Admin - Hír szerkesztése - ${title}`,
+      );
+      this.titleService.setTitle(`${title} - Zephyr Bt.`);
     }
   });
 

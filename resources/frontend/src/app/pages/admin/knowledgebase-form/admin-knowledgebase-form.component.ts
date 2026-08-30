@@ -47,6 +47,7 @@ import {
 import { MatIcon } from "@angular/material/icon";
 import { MatInput } from "@angular/material/input";
 import { MatSelect } from "@angular/material/select";
+import { Title } from "@angular/platform-browser";
 import { Router, RouterLink } from "@angular/router";
 import {
   injectMutation,
@@ -63,6 +64,7 @@ import { ButtonLoadableComponent } from "../../../components/button-loadable/but
 import { FormUnexpectedErrorComponent } from "../../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { RichTextEditorComponent } from "../../../components/rich-text-editor/rich-text-editor.component";
 import { AdminKnowledgebaseQueryService } from "../../../services/admin-knowledgebase.query.service";
+import { BreadcrumbService } from "../../../services/breadcrumb.service";
 import { KnowledgebaseQueryService } from "../../../services/knowledgebase.query.service";
 import { richTextRequiredValidator } from "../../../validators/richTextRequiredValidator";
 
@@ -125,10 +127,12 @@ export class AdminKnowledgebaseFormComponent {
   private readonly adminKnowledgebaseQueryService = inject(
     AdminKnowledgebaseQueryService,
   );
+  private readonly breadcrumbService = inject(BreadcrumbService);
   private readonly knowledgebaseQueryService = inject(
     KnowledgebaseQueryService,
   );
   private readonly router = inject(Router);
+  private readonly titleService = inject(Title);
 
   readonly id = input<string>();
 
@@ -174,6 +178,16 @@ export class AdminKnowledgebaseFormComponent {
   private readonly redirectOnInvalidIdEffect = effect(() => {
     if (this.hasInvalidId()) {
       this.router.navigate(["/admin/tudasbazis"], { replaceUrl: true });
+    }
+  });
+
+  private readonly pageTitleEffect = effect(() => {
+    const title = this.knowledgebaseItemQuery.data()?.title;
+    if (title) {
+      this.breadcrumbService.setBreadcrumb(
+        `Admin - Tudásbázis cikk szerkesztése - ${title}`,
+      );
+      this.titleService.setTitle(`${title} - Zephyr Bt.`);
     }
   });
 
