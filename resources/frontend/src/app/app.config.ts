@@ -79,11 +79,6 @@ export const appConfig: ApplicationConfig = {
         size: "invisible",
       } satisfies RecaptchaSettings,
     },
-    provideNgxSkeletonLoader({
-      theme: {
-        extendsFromRoot: true,
-        height: "30px",
-      },
-    }),
+    provideNgxSkeletonLoader(),
   ],
 };
