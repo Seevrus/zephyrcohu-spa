@@ -66,6 +66,15 @@ export const adminRoutes: Routes = [
     title: "Admin - Tudásbázis",
   },
   {
+    path: "tudasbazis/cimkek",
+    async loadComponent() {
+      const { AdminTagsComponent } =
+        await import("./pages/admin/tags/admin-tags.component");
+      return AdminTagsComponent;
+    },
+    title: "Admin - Tudásbázis címkék",
+  },
+  {
     path: "tudasbazis/uj",
     async loadComponent() {
       const { AdminKnowledgebaseFormComponent } =

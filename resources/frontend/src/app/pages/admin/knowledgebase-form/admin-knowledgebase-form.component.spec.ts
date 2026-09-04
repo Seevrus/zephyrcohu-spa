@@ -146,6 +146,7 @@ describe("AdminKnowledgebaseFormComponent", () => {
     const queryClient = TestBed.inject(QueryClient);
     queryClient.setQueryData(queryKeys.adminKnowledgebase, []);
     queryClient.setQueryData(queryKeys.knowledgebase(), []);
+    queryClient.setQueryData(queryKeys.adminTags, []);
 
     const tagsRequest = await waitFor(() =>
       httpTesting.expectOne(matchKnowledgebaseTagsRequest()),
@@ -196,6 +197,9 @@ describe("AdminKnowledgebaseFormComponent", () => {
     expect(
       queryClient.getQueryState(queryKeys.knowledgebase())?.isInvalidated,
     ).toBe(true);
+    expect(queryClient.getQueryState(queryKeys.adminTags)?.isInvalidated).toBe(
+      true,
+    );
 
     // The create mutation also invalidates `knowledgebaseTags`, and this
     // component's own tag-list query is still an active observer for that
@@ -366,6 +370,9 @@ describe("AdminKnowledgebaseFormComponent", () => {
     const router = TestBed.inject(Router);
     const navigateSpy = vi.spyOn(router, "navigate");
 
+    const queryClient = TestBed.inject(QueryClient);
+    queryClient.setQueryData(queryKeys.adminTags, []);
+
     const getRequest = await waitFor(() =>
       httpTesting.expectOne(matchAdminKnowledgebaseItemRequest(1)),
     );
@@ -407,6 +414,13 @@ describe("AdminKnowledgebaseFormComponent", () => {
       httpTesting.expectOne(matchKnowledgebaseTagsRequest()),
     );
     tagsRefetchRequest.flush(createGetKnowledgebaseTagsOkResponse([]));
+
+    // The admin tags grid isn't mounted here, so `adminTags` has no active
+    // observer to refetch it — but it must still be marked invalidated, or
+    // the tags page would show stale counts after an article's tags change.
+    expect(queryClient.getQueryState(queryKeys.adminTags)?.isInvalidated).toBe(
+      true,
+    );
 
     httpTesting.verify();
   });

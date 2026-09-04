@@ -56,13 +56,13 @@ Route: `{ path: "tudasbazis/cimkek", …, title: "Admin - Címkék" }` — **bef
 
 ## Steps
 
-- [ ] **Step 1:** Write `rename-dialog.component.spec.ts` (renders label + initial value; Save
+- [x] **Step 1:** Write `rename-dialog.component.spec.ts` (renders label + initial value; Save
       returns the trimmed value; Cancel returns `undefined`; empty value disables Save; an error
       message can be displayed) and implement the dialog.
-- [ ] **Step 2:** Mocks, then `admin-tags.component.spec.ts`, then service + page.
-- [ ] **Step 3:** Route + `app.component.spec.ts` case, making sure `/admin/tudasbazis/cimkek`
+- [x] **Step 2:** Mocks, then `admin-tags.component.spec.ts`, then service + page.
+- [x] **Step 3:** Route + `app.component.spec.ts` case, making sure `/admin/tudasbazis/cimkek`
       renders the tags page and **not** the article form.
-- [ ] **Step 4:** Verify, self review, journal, tick Task 12.
+- [x] **Step 4:** Verify, self review, journal, tick Task 12.
 
 ## Tests to write
 
@@ -86,11 +86,11 @@ npx ng test && npx ng lint && npx tsc -p tsconfig.app.json && npx prettier . --c
 
 ## Self review
 
-- [ ] `RenameDialogComponent` has no tag-specific wording baked in (Task 15 reuses it).
-- [ ] Both dialogs manage focus and can be dismissed with `Escape`.
-- [ ] Public knowledgebase queries are invalidated after a rename — a stale tag cloud in the same
+- [x] `RenameDialogComponent` has no tag-specific wording baked in (Task 15 reuses it).
+- [x] Both dialogs manage focus and can be dismissed with `Escape`.
+- [x] Public knowledgebase queries are invalidated after a rename — a stale tag cloud in the same
       tab would be a visible bug.
-- [ ] The route sits before `tudasbazis/:id` and a spec proves the ordering.
+- [x] The route sits before `tudasbazis/:id` and a spec proves the ordering.
 
 ## Done when
 

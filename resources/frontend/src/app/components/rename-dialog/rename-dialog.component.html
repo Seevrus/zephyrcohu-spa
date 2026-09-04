@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+<form (submit)="onSubmit($event)">
+  <mat-dialog-content>
+    @if (data.errorMessage) {
+      <p class="rename-dialog-error" role="alert">{{ data.errorMessage }}</p>
+    }
+    <mat-form-field>
+      <mat-label>{{ data.label }}</mat-label>
+      <input matInput [formField]="renameForm.value" />
+      @if (
+        renameForm.value().touched() && renameForm.value().getError("required")
+      ) {
+        <mat-error>Kötelező mező</mat-error>
+      }
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="onCancel()">
+      {{ cancelLabel }}
+    </button>
+    <button mat-flat-button type="submit" [disabled]="renameForm().invalid()">
+      {{ confirmLabel }}
+    </button>
+  </mat-dialog-actions>
+</form>

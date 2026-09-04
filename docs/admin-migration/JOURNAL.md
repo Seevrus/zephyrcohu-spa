@@ -880,3 +880,77 @@ endpoint — tags are only ever created implicitly by Task 09's article save (`f
 --format agent` → clean.
 
 **Left uncommitted for review:** yes
+
+## Task 12 — FE: tags admin page
+
+`/admin/tudasbazis/cimkek` — a grid of knowledgebase tags with inline rename and delete, no
+create screen. Route registered *before* `tudasbazis/:id` in `admin.routes.ts` (proven by an
+`app.component.spec.ts` case).
+
+- `RenameDialogComponent` (`components/rename-dialog/`) — generic single-text-field dialog, no
+  tag wording baked in (Task 15 reuses it for link categories). Data contract: `title`, `label`,
+  `initialValue`, optional `confirmLabel`/`cancelLabel`/`errorMessage`. A signal form with one
+  `required` field; Save is disabled while invalid; submitting the `<form>` (click or Enter)
+  closes the dialog with the trimmed value, Cancel/Escape close it with `undefined` — mirroring
+  `ConfirmDialogComponent`'s boolean-or-undefined contract.
+- **Deviation from the task file:** the task says a 422 "shows the message inside the dialog and
+  keeps it open." The dialog itself stays deliberately dumb (no HTTP knowledge, so it can stay
+  generic) — the actual mutation runs in `AdminTagsComponent`, fired from
+  `dialogRef.afterClosed()`, the same fire-and-forget `.mutate()` pattern every other admin grid
+  in this codebase uses. On a 422 the component **reopens** the same dialog with the just-typed
+  value as `initialValue` and the duplicate-name message as `errorMessage`, so the visible result
+  (same field, same typed text, error shown) matches the spec's intent without the dialog owning
+  an async save. This wasn't a style preference: an earlier version had the dialog `await` a
+  caller-supplied `save(value): Promise<void>` and stay open across it, which under zoneless CD
+  hit `NG0101: ApplicationRef.tick is called recursively` intermittently (roughly 1-in-3 runs) —
+  two components each independently reacting to the same TanStack mutation signals inside one
+  user-event click. The close/reopen redesign removed the second async layer and the crash with
+  it (5/5 clean reruns after).
+- **jsdom gotcha, not a bug:** `user.type()` into the dialog's field is unreliable when the
+  dialog is opened through the real `MatDialog` overlay — the CDK focus trap moves focus
+  asynchronously after open, jsdom has no layout so the trap's tabbable check finds nothing and
+  focus lands on the dialog container instead of the input, and keystrokes typed after that are
+  lost (this is what looked like flaky mid-word truncation while writing the tests). Two fixes
+  landed: `rename-dialog.component.spec.ts` renders the component directly (no `MatDialog.open`,
+  no overlay, no focus trap) to test typing/trim/Enter/Escape behaviour for real; the outer
+  `admin-tags.component.spec.ts`, which does open the real dialog, fills the field with a single
+  `fireEvent.input(...)` instead of `user.type()` — one event, no focus dependency. Both files
+  say why in a comment so the next session doesn't "fix" the workaround back into the bug.
+- `AdminTagsComponent` — `ag-grid` with three columns (Címke/wrap, Cikkek száma/numeric, Kezelés).
+  Empty state "Még nincsenek címkék.", `<h1>Tudásbázis címkék</h1>`. Delete uses the shared
+  `ConfirmDialogComponent`, with the "N cikkről kerül eltávolításra" warning only when
+  `count > 0`. Two error banners: `deleteErrorMessage` (unchanged pattern) and
+  `renameErrorMessage`, which only surfaces non-422 mutation failures — a 422 is absorbed by the
+  dialog-reopen path above, never the banner.
+- `AdminTagsQueryService` — `getAdminTags()`, `updateAdminTag()`, `deleteAdminTag()`; both
+  mutations invalidate `queryKeys.adminTags`, the public `queryKeys.knowledgebaseTags`, and
+  `queryKeys.knowledgebase()` (article payloads embed tags), per the task's contract.
+- `types/admin-tags.ts` stayed a flat `AdminTagResponse` (no `AdminTagItem`/date-mapping split
+  like offers/knowledgebase) — tags have no date fields, so the extra alias would have been
+  pure ceremony.
+
+**Verification:** `npx ng test` → 436/436 passed, reran 5x in a row clean (0 unhandled errors,
+confirming the `NG0101` flake above is gone); `npx ng lint`, `npx tsc -p tsconfig.app.json`,
+`npx prettier . --check`, `npx knip` → all clean. No backend files touched.
+
+**Left uncommitted for review:** yes
+
+**Follow-up (same session): the admin tags page went stale after a knowledgebase article's tags
+changed.** Reported by the user directly. Cause: `AdminKnowledgebaseQueryService`'s
+`invalidateKnowledgebaseQueries()` (shared by create/update/delete) invalidated
+`adminKnowledgebase`, `knowledgebase()` and the public `knowledgebaseTags`, but never
+`queryKeys.adminTags` — so creating a new tag on an article, or changing an article's tag set,
+left the admin tags grid's counts (and its list, for a brand-new tag) stale until a hard reload.
+Fixed with a one-line addition to that same private method, so all three mutations pick it up.
+Added `queryKeys.adminTags` assertions to the existing create/update invalidation checks in
+`admin-knowledgebase-form.component.spec.ts` (seeding the key with `setQueryData` first, same as
+the two pre-existing assertions there — `invalidateQueries` only marks a state that already
+exists in the cache, so an unseeded key's `getQueryState()` stays `undefined` rather than
+`{ isInvalidated: true }`, which is what the first attempt at this test got wrong). Delete's own
+spec still doesn't assert invalidation, matching the pre-existing convention (offers/news do the
+same) — not something this fix changed.
+
+**Verification:** `npx ng test` → 436/436 passed, reran 3x clean; `npx ng lint`, `npx tsc -p
+tsconfig.app.json`, `npx prettier . --check`, `npx knip` → all clean.
+
+**Left uncommitted for review:** yes

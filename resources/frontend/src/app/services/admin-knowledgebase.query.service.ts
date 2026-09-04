@@ -150,6 +150,7 @@ export class AdminKnowledgebaseQueryService {
     this.queryClient.invalidateQueries({
       queryKey: queryKeys.knowledgebaseTags,
     });
+    this.queryClient.invalidateQueries({ queryKey: queryKeys.adminTags });
 
     if (id !== undefined) {
       this.queryClient.invalidateQueries({

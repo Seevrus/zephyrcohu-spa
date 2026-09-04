@@ -331,6 +331,7 @@ describe("App Component", () => {
       { path: "/admin/hirek/uj", testId: "admin-news-form-component" },
       { path: "/admin/hirek/1", testId: "admin-news-form-component" },
       { path: "/admin/tudasbazis", testId: "admin-knowledgebase-component" },
+      { path: "/admin/tudasbazis/cimkek", testId: "admin-tags-component" },
       {
         path: "/admin/tudasbazis/uj",
         testId: "admin-knowledgebase-form-component",
@@ -360,6 +361,7 @@ describe("App Component", () => {
       { path: "/admin/hirek" },
       { path: "/admin/hirek/uj" },
       { path: "/admin/tudasbazis" },
+      { path: "/admin/tudasbazis/cimkek" },
       { path: "/admin/tudasbazis/uj" },
     ])(
       "renders the Not Found Component for a non-admin at $path",

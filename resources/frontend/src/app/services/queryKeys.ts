@@ -8,6 +8,7 @@ export const mutationKeys = {
   deleteAdminKnowledgebase: ["delete_admin_knowledgebase"],
   deleteAdminNews: ["delete_admin_news"],
   deleteAdminOffer: ["delete_admin_offer"],
+  deleteAdminTag: ["delete_admin_tag"],
   deleteProfile: ["delete_profile"],
   downloadIntegraDocument: ["download_integra_document"],
   login: ["login"],
@@ -23,6 +24,7 @@ export const mutationKeys = {
   updateAdminKnowledgebase: ["update_admin_knowledgebase"],
   updateAdminNews: ["update_admin_news"],
   updateAdminOffer: ["update_admin_offer"],
+  updateAdminTag: ["update_admin_tag"],
   updateProfile: ["update_profile"],
   updateProfileConfirmEmail: ["update_profile_confirm_email"],
 };
@@ -40,6 +42,7 @@ export const queryKeys = {
   adminOfferItem(id?: number) {
     return id ? ["admin_offer_item", id] : ["admin_offer_item"];
   },
+  adminTags: ["admin_tags"],
   integra(category?: IntegraCategory) {
     return category ? ["documents", category] : ["documents"];
   },

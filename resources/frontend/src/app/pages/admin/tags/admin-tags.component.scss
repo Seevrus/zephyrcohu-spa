@@ -1,0 +1,18 @@
+@use "../../../../shared/mixins";
+
+:host(.app-admin-tags) {
+  @include mixins.zephyr-admin-main;
+
+  background-color: unset;
+
+  .admin-tags-component {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .admin-tags-grid {
+    @include mixins.zephyr-grid;
+  }
+}
