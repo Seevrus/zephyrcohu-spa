@@ -62,14 +62,6 @@ type AdminNewsFormModel = {
   publishedAt: Date | null;
 };
 
-const EMPTY_NEWS_MODEL: AdminNewsFormModel = {
-  audience: "P",
-  title: "",
-  mainContent: "",
-  additionalContent: "",
-  publishedAt: null,
-};
-
 @Component({
   selector: "app-admin-news-form",
   host: {
@@ -164,7 +156,13 @@ export class AdminNewsFormComponent {
       }
 
       if (!data) {
-        return EMPTY_NEWS_MODEL;
+        return {
+          audience: "P",
+          title: "",
+          mainContent: "",
+          additionalContent: "",
+          publishedAt: new Date(),
+        };
       }
 
       return {

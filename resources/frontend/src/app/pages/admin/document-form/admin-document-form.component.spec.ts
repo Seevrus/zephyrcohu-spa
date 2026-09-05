@@ -53,6 +53,17 @@ describe("AdminDocumentFormComponent", () => {
       .value.set(new Date(2026, 1, 10));
   }
 
+  test("defaults the publish date to today in create mode", async () => {
+    const { fixture } = await renderAdminDocumentForm();
+
+    expect(
+      fixture.componentInstance.documentForm
+        .publishedAt()
+        .value()
+        ?.toDateString(),
+    ).toBe(new Date().toDateString());
+  });
+
   test("blocks a create submit until a file is chosen and shows the required message", async () => {
     const { httpTesting, fixture } = await renderAdminDocumentForm();
 

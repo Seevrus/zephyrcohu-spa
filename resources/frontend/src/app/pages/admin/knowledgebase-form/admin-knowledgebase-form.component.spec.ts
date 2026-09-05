@@ -42,6 +42,17 @@ describe("AdminKnowledgebaseFormComponent", () => {
     httpTesting.verify();
   });
 
+  test("defaults the publish date to today in create mode", async () => {
+    const { fixture } = await renderAdminKnowledgebaseForm();
+
+    expect(
+      fixture.componentInstance.knowledgebaseForm
+        .publishedAt()
+        .value()
+        ?.toDateString(),
+    ).toBe(new Date().toDateString());
+  });
+
   test("the submit button is disabled while the form is invalid", async () => {
     await renderAdminKnowledgebaseForm();
 

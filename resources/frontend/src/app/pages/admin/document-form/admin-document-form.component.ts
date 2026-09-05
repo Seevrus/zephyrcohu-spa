@@ -69,13 +69,6 @@ const MAX_FILE_SIZE_BYTES = 51200 * 1024;
 const MAX_FILE_SIZE_MESSAGE =
   "A feltöltött fájl legfeljebb 50 MB méretű lehet.";
 
-const EMPTY_DOCUMENT_MODEL: AdminDocumentFormModel = {
-  category: "",
-  displayName: "",
-  version: "",
-  publishedAt: null,
-};
-
 @Component({
   selector: "app-admin-document-form",
   host: {
@@ -176,7 +169,12 @@ export class AdminDocumentFormComponent {
       }
 
       if (!data) {
-        return EMPTY_DOCUMENT_MODEL;
+        return {
+          category: "",
+          displayName: "",
+          version: "",
+          publishedAt: new Date(),
+        };
       }
 
       return {

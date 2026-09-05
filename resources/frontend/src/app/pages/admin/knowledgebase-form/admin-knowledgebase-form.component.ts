@@ -77,15 +77,6 @@ type AdminKnowledgebaseFormModel = {
   publishedAt: Date | null;
 };
 
-const EMPTY_KNOWLEDGEBASE_MODEL: AdminKnowledgebaseFormModel = {
-  audience: "P",
-  title: "",
-  tags: [],
-  mainContent: "",
-  additionalContent: "",
-  publishedAt: null,
-};
-
 @Component({
   selector: "app-admin-knowledgebase-form",
   host: {
@@ -202,7 +193,14 @@ export class AdminKnowledgebaseFormComponent {
       }
 
       if (!data) {
-        return EMPTY_KNOWLEDGEBASE_MODEL;
+        return {
+          audience: "P",
+          title: "",
+          tags: [],
+          mainContent: "",
+          additionalContent: "",
+          publishedAt: new Date(),
+        };
       }
 
       return {

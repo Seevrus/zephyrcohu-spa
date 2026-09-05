@@ -1433,3 +1433,18 @@ Both are the kind of regression a same-origin production deploy hides completely
 why they belong in the suite.
 
 **Verification:** `php artisan test --compact` → 317 passed; `vendor/bin/pint --dirty` clean.
+
+### Follow-up 5: publish date pickers default to today
+
+**Ask:** in the offers, news, knowledgebase and INTEGRA document create forms, the publish-date
+datepicker started empty, forcing the admin to pick a date they'd almost always leave as today.
+
+**Shipped:** each form's `linkedSignal` computation (`admin-offer-form`, `admin-news-form`,
+`admin-knowledgebase-form`, `admin-document-form`) now seeds `publishedAt: new Date()` instead of
+`null` when there's no loaded item to prefill from — i.e. only in create mode; edit mode is
+unaffected since it prefills from the fetched item as before.
+
+**Tests:** one new spec per form asserting the datepicker's initial value is today
+(`toDateString()` comparison, to stay independent of time-of-day).
+
+**Verification:** `npx ng test` → 504 passed; lint / tsc / prettier / knip clean.

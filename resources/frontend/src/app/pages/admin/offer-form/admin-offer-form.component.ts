@@ -62,14 +62,6 @@ type AdminOfferFormModel = {
   publishedAt: Date | null;
 };
 
-const EMPTY_OFFER_MODEL: AdminOfferFormModel = {
-  audience: "P",
-  title: "",
-  mainContent: "",
-  additionalContent: "",
-  publishedAt: null,
-};
-
 @Component({
   selector: "app-admin-offer-form",
   host: {
@@ -165,7 +157,13 @@ export class AdminOfferFormComponent {
       }
 
       if (!data) {
-        return EMPTY_OFFER_MODEL;
+        return {
+          audience: "P",
+          title: "",
+          mainContent: "",
+          additionalContent: "",
+          publishedAt: new Date(),
+        };
       }
 
       return {

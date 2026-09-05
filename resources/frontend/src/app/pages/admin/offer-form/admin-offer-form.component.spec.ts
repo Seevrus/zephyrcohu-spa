@@ -36,6 +36,14 @@ describe("AdminOfferFormComponent", () => {
     httpTesting.verify();
   });
 
+  test("defaults the publish date to today in create mode", async () => {
+    const { fixture } = await renderAdminOfferForm();
+
+    expect(
+      fixture.componentInstance.offerForm.publishedAt().value()?.toDateString(),
+    ).toBe(new Date().toDateString());
+  });
+
   test("the submit button is disabled while the form is invalid", async () => {
     await renderAdminOfferForm();
 
