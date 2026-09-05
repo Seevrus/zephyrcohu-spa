@@ -66,6 +66,15 @@ export const adminRoutes: Routes = [
     title: "Admin - Hasznos linkek",
   },
   {
+    path: "linkek/kategoriak",
+    async loadComponent() {
+      const { AdminLinkCategoriesComponent } =
+        await import("./pages/admin/link-categories/admin-link-categories.component");
+      return AdminLinkCategoriesComponent;
+    },
+    title: "Admin - Link kategóriák",
+  },
+  {
     path: "linkek/uj",
     async loadComponent() {
       const { AdminLinkFormComponent } =

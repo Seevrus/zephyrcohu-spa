@@ -56,11 +56,11 @@ Route: `{ path: "linkek/kategoriak", …, title: "Admin - Link kategóriák" }` 
 
 ## Steps
 
-- [ ] **Step 1:** Mocks for `PUT`/`DELETE /admin/link_categories/:id`.
-- [ ] **Step 2:** Spec first (cases below), then the page.
-- [ ] **Step 3:** Route + an `app.component.spec.ts` case proving `/admin/linkek/kategoriak`
+- [x] **Step 1:** Mocks for `PUT`/`DELETE /admin/link_categories/:id`.
+- [x] **Step 2:** Spec first (cases below), then the page.
+- [x] **Step 3:** Route + an `app.component.spec.ts` case proving `/admin/linkek/kategoriak`
       renders the categories page and not the link form.
-- [ ] **Step 4:** Verify, self review, journal, tick Task 15.
+- [x] **Step 4:** Verify, self review, journal, tick Task 15.
 
 ## Tests to write
 
@@ -85,11 +85,11 @@ npx ng test && npx ng lint && npx tsc -p tsconfig.app.json && npx prettier . --c
 
 ## Self review
 
-- [ ] The delete dialog states the exact number of links and that they survive under "Egyéb" —
+- [x] The delete dialog states the exact number of links and that they survive under "Egyéb" —
       no wording implying deletion.
-- [ ] `RenameDialogComponent` was reused, not forked.
-- [ ] Both the admin links grid and the public links page are invalidated after a delete.
-- [ ] The route precedes `linkek/:id`, proven by a spec.
+- [x] `RenameDialogComponent` was reused, not forked.
+- [x] Both the admin links grid and the public links page are invalidated after a delete.
+- [x] The route precedes `linkek/:id`, proven by a spec.
 
 ## Done when
 

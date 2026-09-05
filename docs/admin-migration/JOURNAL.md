@@ -1150,3 +1150,47 @@ Reviewer testing surfaced two gaps, both fixed in place (no new task number):
 **Verification:** `npx ng test` → 462/462 passed (one new test: reserved name blocks submit);
 `npx ng lint` → clean; `npx tsc -p tsconfig.app.json` → clean; `npx prettier . --check` → clean;
 `npx knip` → clean.
+
+## 2026-09-05 — Task 15: FE link categories admin page
+
+**Status:** done
+
+**Shipped:**
+- `resources/frontend/src/app/pages/admin/link-categories/admin-link-categories.component.*` —
+  `/admin/linkek/kategoriak` grid (Kategória / Linkek száma / Kezelés), reusing
+  `RenameDialogComponent` (Task 12) and `ConfirmDialogComponent` (D5) exactly like
+  `admin-tags.component`.
+- `admin-links.query.service.ts` — added `updateAdminLinkCategory()` and
+  `deleteAdminLinkCategory()`, both routed through the existing `invalidateLinkQueries()` so a
+  rename/delete invalidates `adminLinks`, `adminLinkCategories` and the public `links` in one
+  place.
+- `queryKeys.ts` — `updateAdminLinkCategory`/`deleteAdminLinkCategory` mutation keys.
+- `types/admin-links.ts` — `AdminLinkCategoryItemResponse`, `SaveAdminLinkCategoryRequest`.
+- `mocks/admin/links/adminLinkCategoryRequests.ts` — `PUT`/`DELETE` request matchers.
+- `admin.routes.ts` — `linkek/kategoriak` registered before `linkek/:id`.
+- `app.component.spec.ts` — proves `/admin/linkek/kategoriak` renders the categories page (not
+  the link form) for an admin, and 404s for a non-admin.
+
+**Decisions made while implementing:**
+- The reserved-name vs. duplicate-name 422 message is picked **client-side**, not parsed out of
+  the API response: `throwHttpError` collapses every validation failure to a bare
+  `INVALID_REQUEST_DATA` with no body, so the only way to tell "Ez a kategórianév foglalt." (the
+  reserved `Link::UNCATEGORISED_NAME`, `"Egyéb"`) apart from an ordinary duplicate-name 422 is to
+  compare the submitted name against the same reserved constant already used in
+  `admin-links.component.ts` and `admin-link-form.component.ts`. This mirrors how the create-link
+  form validates the same reserved name (Task 14 follow-up) rather than inventing a new pattern.
+- Delete confirmation reuses the `warning` slot for a *reassurance*, not a danger notice — worded
+  "A kategóriához tartozó N link megmarad, és az „Egyéb” csoportba kerül." with no wording
+  implying loss, per D8 (a null category reads back as "Egyéb").
+
+**Surprises / gotchas:**
+- None — this task is structurally identical to Task 12 (tags), just with a second numeric column
+  and the client-side reserved-name branch above.
+
+**Verification:** `npx ng test` → 477/477 passed (15 new tests); `npx ng lint` → clean;
+`npx tsc -p tsconfig.app.json` → clean; `npx prettier . --check` → clean; `npx knip` → clean.
+
+**Left uncommitted for review:** yes
+
+**Next session should know:** Task 16 (BE: Integra documents admin API) is next and has no FE
+dependency on this task beyond routing conventions already established.

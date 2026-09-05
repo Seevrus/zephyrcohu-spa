@@ -25,3 +25,7 @@ export type AdminLinkCategoryResponse = {
 export type AdminLinkCategoryCollectionResponse = {
   data: AdminLinkCategoryResponse[];
 };
+
+export type AdminLinkCategoryItemResponse = { data: AdminLinkCategoryResponse };
+
+export type SaveAdminLinkCategoryRequest = { name: string };

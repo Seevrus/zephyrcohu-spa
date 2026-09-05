@@ -219,7 +219,7 @@ These paths are exactly the ones the already-shipped `app-admin-nav` component l
 | 12 | FE | [Tags admin page](12-fe-tags.md) | 03, 11 | [x] |
 | 13 | BE | [Links + link categories admin API](13-be-links-crud.md) | 01 | [x] |
 | 14 | FE | [Links admin grid + form](14-fe-links.md) | 03, 13 | [x] |
-| 15 | FE | [Link categories admin page](15-fe-link-categories.md) | 14 | [ ] |
+| 15 | FE | [Link categories admin page](15-fe-link-categories.md) | 14 | [x] |
 | 16 | BE | [Integra documents admin API](16-be-integra-documents.md) | 01 | [ ] |
 | 17 | FE | [Integra documents admin grid + upload form](17-fe-integra.md) | 03, 16 | [ ] |
 | 18 | BE | [Users admin API + mails](18-be-users-admin.md) | 01 | [ ] |

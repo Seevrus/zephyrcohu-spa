@@ -11,10 +11,12 @@ import { type ZephyrHttpError } from "../../api/ZephyrHttpError";
 import { environment } from "../../environments/environment";
 import {
   type AdminLinkCategoryCollectionResponse,
+  type AdminLinkCategoryItemResponse,
   type AdminLinkCategoryResponse,
   type AdminLinkCollectionResponse,
   type AdminLinkItemResponse,
   type AdminLinkResponse,
+  type SaveAdminLinkCategoryRequest,
   type SaveAdminLinkRequest,
 } from "../../types/admin-links";
 import { throwHttpError } from "../../utils/throwHttpError";
@@ -152,6 +154,52 @@ export class AdminLinksQueryService {
         ),
       onSuccess: (_data, id) => {
         this.invalidateLinkQueries(id);
+      },
+    });
+  }
+
+  updateAdminLinkCategory() {
+    return mutationOptions<
+      AdminLinkCategoryResponse,
+      ZephyrHttpError,
+      { id: number; request: SaveAdminLinkCategoryRequest }
+    >({
+      mutationKey: mutationKeys.updateAdminLinkCategory,
+      mutationFn: ({ id, request }) =>
+        lastValueFrom(
+          this.http
+            .put<AdminLinkCategoryItemResponse>(
+              `${environment.apiUrl}/admin/link_categories/${id}`,
+              request,
+            )
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+              map((response) => response.data),
+            ),
+        ),
+      onSuccess: () => {
+        this.invalidateLinkQueries();
+      },
+    });
+  }
+
+  deleteAdminLinkCategory() {
+    return mutationOptions<void, ZephyrHttpError, number>({
+      mutationKey: mutationKeys.deleteAdminLinkCategory,
+      mutationFn: (id) =>
+        lastValueFrom(
+          this.http
+            .delete<void>(`${environment.apiUrl}/admin/link_categories/${id}`)
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
+      onSuccess: () => {
+        this.invalidateLinkQueries();
       },
     });
   }
