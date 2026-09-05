@@ -7,12 +7,12 @@ describe('Request offer request', function () {
         $response = $this->postJson('/api/offers/request', []);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.required (and 3 more errors)',
+            'message' => 'A(z) név mező kitöltése kötelező. (and 3 more errors)',
             'errors' => [
-                'name' => ['validation.required'],
-                'email' => ['validation.required'],
-                'subject' => ['validation.required'],
-                'message' => ['validation.required'],
+                'name' => ['A(z) név mező kitöltése kötelező.'],
+                'email' => ['A(z) email cím mező kitöltése kötelező.'],
+                'subject' => ['A(z) tárgy mező kitöltése kötelező.'],
+                'message' => ['A(z) üzenet mező kitöltése kötelező.'],
             ],
         ]);
     });
@@ -27,9 +27,9 @@ describe('Request offer request', function () {
         $response = $this->postJson('/api/offers/request', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.email',
+            'message' => 'A(z) email cím mező nem érvényes email cím.',
             'errors' => [
-                'email' => ['validation.email'],
+                'email' => ['A(z) email cím mező nem érvényes email cím.'],
             ],
         ]);
     });
@@ -44,9 +44,9 @@ describe('Request offer request', function () {
         $response = $this->postJson('/api/offers/request', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'The selected subject is invalid.',
+            'message' => 'A kiválasztott tárgy érvénytelen.',
             'errors' => [
-                'subject' => ['The selected subject is invalid.'],
+                'subject' => ['A kiválasztott tárgy érvénytelen.'],
             ],
         ]);
     });

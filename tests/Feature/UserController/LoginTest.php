@@ -14,10 +14,10 @@ describe('Login Request', function () {
     test('checks for required fields', function () {
         $response = $this->postJson('/api/users/login', []);
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.required (and 1 more error)',
+            'message' => 'A(z) email cím mező kitöltése kötelező. (and 1 more error)',
             'errors' => [
-                'email' => ['validation.required'],
-                'password' => ['validation.required'],
+                'email' => ['A(z) email cím mező kitöltése kötelező.'],
+                'password' => ['A(z) jelszó mező kitöltése kötelező.'],
             ],
         ]);
     });
@@ -27,9 +27,9 @@ describe('Login Request', function () {
         $response = $this->postJson('/api/users/login', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.email',
+            'message' => 'A(z) email cím mező nem érvényes email cím.',
             'errors' => [
-                'email' => ['validation.email'],
+                'email' => ['A(z) email cím mező nem érvényes email cím.'],
             ],
         ]);
     });
@@ -39,9 +39,9 @@ describe('Login Request', function () {
         $response = $this->postJson('/api/users/login', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.regex',
+            'message' => 'A(z) jelszó mező formátuma érvénytelen.',
             'errors' => [
-                'password' => ['validation.regex'],
+                'password' => ['A(z) jelszó mező formátuma érvénytelen.'],
             ],
         ]);
     });

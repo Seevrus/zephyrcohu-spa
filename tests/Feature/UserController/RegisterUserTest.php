@@ -16,11 +16,11 @@ describe('Register User Request', function () {
     test('checks for required fields', function () {
         $response = $this->postJson('/api/users/register', []);
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.required (and 2 more errors)',
+            'message' => 'A(z) email cím mező kitöltése kötelező. (and 2 more errors)',
             'errors' => [
-                'email' => ['validation.required'],
-                'password' => ['validation.required'],
-                'newsletter' => ['validation.required'],
+                'email' => ['A(z) email cím mező kitöltése kötelező.'],
+                'password' => ['A(z) jelszó mező kitöltése kötelező.'],
+                'newsletter' => ['A(z) hírlevél mező kitöltése kötelező.'],
             ],
         ]);
     });
@@ -30,9 +30,9 @@ describe('Register User Request', function () {
         $response = $this->postJson('/api/users/register', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.email',
+            'message' => 'A(z) email cím mező nem érvényes email cím.',
             'errors' => [
-                'email' => ['validation.email'],
+                'email' => ['A(z) email cím mező nem érvényes email cím.'],
             ],
         ]);
     });
@@ -42,9 +42,9 @@ describe('Register User Request', function () {
         $response = $this->postJson('/api/users/register', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.regex',
+            'message' => 'A(z) jelszó mező formátuma érvénytelen.',
             'errors' => [
-                'password' => ['validation.regex'],
+                'password' => ['A(z) jelszó mező formátuma érvénytelen.'],
             ],
         ]);
     })->with(['abc', 'abc1234', 'abc1234!!!']);
@@ -54,9 +54,9 @@ describe('Register User Request', function () {
         $response = $this->postJson('/api/users/register', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.boolean',
+            'message' => 'A(z) hírlevél mező értéke csak igaz vagy hamis lehet.',
             'errors' => [
-                'newsletter' => ['validation.boolean'],
+                'newsletter' => ['A(z) hírlevél mező értéke csak igaz vagy hamis lehet.'],
             ],
         ]);
     });

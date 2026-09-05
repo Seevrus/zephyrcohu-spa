@@ -21,9 +21,9 @@ describe('Update Profile Request', function () {
         $response = $this->actingAs($user)->postJson('/api/users/profile/update', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.boolean',
+            'message' => 'A(z) hírlevél mező értéke csak igaz vagy hamis lehet.',
             'errors' => [
-                'newsletter' => ['validation.boolean'],
+                'newsletter' => ['A(z) hírlevél mező értéke csak igaz vagy hamis lehet.'],
             ],
         ]);
     });
@@ -34,9 +34,9 @@ describe('Update Profile Request', function () {
         $response = $this->actingAs($user)->postJson('/api/users/profile/update', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.email',
+            'message' => 'A(z) email cím mező nem érvényes email cím.',
             'errors' => [
-                'email' => ['validation.email'],
+                'email' => ['A(z) email cím mező nem érvényes email cím.'],
             ],
         ]);
     });
@@ -47,9 +47,9 @@ describe('Update Profile Request', function () {
         $response = $this->actingAs($user)->postJson('/api/users/profile/update', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.regex',
+            'message' => 'A(z) jelszó mező formátuma érvénytelen.',
             'errors' => [
-                'password' => ['validation.regex'],
+                'password' => ['A(z) jelszó mező formátuma érvénytelen.'],
             ],
         ]);
     })->with(['abc', 'abc1234', 'abc1234!!!']);

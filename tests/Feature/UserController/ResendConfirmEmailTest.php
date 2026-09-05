@@ -9,9 +9,9 @@ describe('Resend Confirm Email Request', function () {
         $response = $this->postJson('/api/users/register/resend_confirm_email', []);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.required',
+            'message' => 'A(z) email cím mező kitöltése kötelező.',
             'errors' => [
-                'email' => ['validation.required'],
+                'email' => ['A(z) email cím mező kitöltése kötelező.'],
             ],
         ]);
     });
@@ -21,9 +21,9 @@ describe('Resend Confirm Email Request', function () {
         $response = $this->postJson('/api/users/register/resend_confirm_email', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.email',
+            'message' => 'A(z) email cím mező nem érvényes email cím.',
             'errors' => [
-                'email' => ['validation.email'],
+                'email' => ['A(z) email cím mező nem érvényes email cím.'],
             ],
         ]);
     });

@@ -7,9 +7,9 @@ describe('Request new password request', function () {
         $response = $this->postJson('/api/users/profile/request_new_password', []);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.required',
+            'message' => 'A(z) email cím mező kitöltése kötelező.',
             'errors' => [
-                'email' => ['validation.required'],
+                'email' => ['A(z) email cím mező kitöltése kötelező.'],
             ],
         ]);
     });
@@ -19,9 +19,9 @@ describe('Request new password request', function () {
         $response = $this->postJson('/api/users/profile/request_new_password', $request);
 
         $response->assertStatus(422)->assertExactJson([
-            'message' => 'validation.email',
+            'message' => 'A(z) email cím mező nem érvényes email cím.',
             'errors' => [
-                'email' => ['validation.email'],
+                'email' => ['A(z) email cím mező nem érvényes email cím.'],
             ],
         ]);
     });
