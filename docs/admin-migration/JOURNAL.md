@@ -172,7 +172,7 @@ per reviewer direction, to match the existing `create*OkResponse` pattern).
   4 consecutive full-suite runs (316/316 each time).
 
 **Verification:**
-- `npx ng test` (full suite) → 316 passed, 64 files (run twice to confirm the fix wasn't luck)
+- `npx ng test` (full suite) → 317 passed, 64 files (run twice to confirm the fix wasn't luck)
 - `npx eslint` on all changed/new files → clean (fixed 3 unnecessary type-assertion errors in
   the guard spec; the pre-existing 783 `ng lint` errors are all in `src/assets/tinymce` vendor
   files, unrelated)
@@ -1251,3 +1251,185 @@ dependency on this task beyond routing conventions already established.
 - Task 17 (FE: Integra documents admin grid + upload form) is next and depends on this task plus
   Task 03's UI kit. It will need a multipart-aware mutation (`FormData`, not JSON) — no existing
   admin FE service does file upload yet, so that pattern is new for Task 17, not reused.
+
+## 2026-09-05 — Task 17: FE Integra documents admin grid + upload form
+
+**Status:** done
+
+**Shipped:**
+- `resources/frontend/src/types/integra.ts` — added `INTEGRA_CATEGORY_LABELS` (API category →
+  Hungarian label).
+- `resources/frontend/src/types/admin-documents.ts` — response/item/save types, `publishedAt`
+  mapped to a `Date` on the item type as with offers.
+- `resources/frontend/src/api/ZephyrValidationHttpError.ts` — a `ZephyrHttpError` subclass that
+  keeps the backend's per-field 422 messages.
+- `resources/frontend/src/app/services/admin-documents.query.service.ts` — list, item, create,
+  update (`POST`, D9), delete; `FormData` bodies; invalidates `adminDocuments`,
+  `adminDocumentItem(id)` and the public `integra()` key of all five categories.
+- `resources/frontend/src/mocks/admin/documents/` — request matchers and OK-response builders.
+- `pages/admin/documents/admin-documents.component.*` — grid (Kategória / Név / Fájl / Verzió /
+  Közzététel dátuma / Kezelés), empty state, delete dialog with the extra file warning.
+- `pages/admin/document-form/admin-document-form.component.*` — signal form plus a separate
+  file-input signal; create/edit both supported.
+- `admin.routes.ts` (`integra`, `integra/uj`, `integra/:id`), `app.component.spec.ts`,
+  `queryKeys.ts`.
+
+**Decisions made while implementing:**
+- `BreadcrumbService` was **not** refactored onto `INTEGRA_CATEGORY_LABELS`: its map is keyed by
+  URL slug (`tajekoztato`), the new one by API category (`integra-flyer`), so they are not
+  interchangeable. The task doc explicitly allows leaving it alone, and its spec stays green.
+- The task doc's "read `error.error.errors` in the component's catch block" is not literally
+  possible — `throwHttpError` has already collapsed the `HttpErrorResponse` into a
+  `ZephyrHttpError` by then, dropping the messages. Instead the documents service alone throws
+  `ZephyrValidationHttpError` (a subclass, so the mutation's error type is unchanged) and the
+  form reads `messageFor("file")` off it. `throwHttpError` is untouched, so no other screen
+  changes behaviour.
+- No search box on the grid (the task doc doesn't ask for one, and the links grid has none
+  either), so the grid follows `admin-links` rather than `admin-offers`.
+- The file input is a plain labelled `<input type="file">` with an `aria-live="polite"` line
+  announcing the chosen file, validated in `onSubmit` (`fileError` signal) rather than by the
+  signal-forms schema — required on create, optional on edit.
+
+**Surprises / gotchas:**
+- `queryClient.getQueryState(key)?.isInvalidated` is `undefined` unless that key already has a
+  cache entry, so the invalidation test has to `setQueryData` the keys first (the offers form
+  spec does the same). Worth remembering: an invalidation assertion against an unseeded key
+  passes vacuously in neither direction — it just reads `undefined`.
+- The Material datepicker still doesn't render usable controls under jsdom, so the form spec sets
+  `documentForm.publishedAt().value` through the component instance, as the offers spec does.
+
+**Verification:**
+- `npx ng test` → 498 passed (81 files)
+- `npx ng lint`, `npx tsc -p tsconfig.app.json`, `npx prettier . --check`, `npx knip` → all clean
+
+**Left uncommitted for review:** yes
+
+**Next session should know:**
+- Task 18 (BE: Users admin API + mails) is next. It has no dependency on this task.
+- `ZephyrValidationHttpError` now exists and is the pattern to reuse whenever a screen needs the
+  backend's own 422 wording; `throwHttpError` still collapses 422 everywhere else on purpose.
+
+### Follow-up (same day): Hungarian validation messages
+
+Testing a >50 MB upload against the new Integra form returned
+`{"message":"validation.max.file","errors":{"file":["validation.max.file"]}}`. The `max:51200`
+rule was working; the *message* was not. `app.locale` and `app.fallback_locale` are both `hu` and
+the repository had **no `lang/` directory at all**, so every built-in Laravel validation message
+resolved to its raw translation key. This was app-wide and pre-existing — it stayed invisible
+because `throwHttpError` collapses 422s and discards the body, so the Integra form (the first
+screen to render backend validation text) was simply the first place it showed.
+
+**Shipped:**
+- `lang/hu/validation.php` — full Hungarian translation of the default messages, plus an
+  `attributes` map giving Hungarian names to the camelCase request keys (`displayName` →
+  „megjelenő név”, `publishedAt` → „közzététel dátuma”, …) and a `custom.file.max` line naming
+  the 50 MB limit in MB rather than kilobytes.
+- Ten existing test files updated: they asserted the raw keys verbatim
+  (`'message' => 'validation.required'`), which was encoding the bug. `RequestOfferTest` also had
+  one assertion on an English message.
+
+**Decisions:**
+- `php artisan lang:publish` was used to get the canonical key list, then `lang/en` was deleted:
+  with both locale and fallback set to `hu` it is never consulted, and an untranslated English
+  tree sitting next to the Hungarian one would only invite drift.
+- Translated centrally rather than adding `messages()` overrides to the two document requests
+  (the workaround used by `StoreLinkRequest` / `UpdateLinkRequest` / `UpdateLinkCategoryRequest`).
+  Those three overrides still work — a request's `messages()` beats the language file — and can be
+  retired opportunistically.
+
+**Verification:** `php artisan test --compact` → 312 passed; `vendor/bin/pint --dirty` clean.
+
+**Worth knowing:** PHP's own `upload_max_filesize` and `post_max_size` are both 256M here, so the
+50 MB app rule is what a user actually hits first. If those were ever lowered below 50 MB, an
+oversized upload would arrive with an empty `$_FILES` and be reported as a *missing* file rather
+than an oversized one.
+
+### Follow-up 2: file error styling + client-side size check
+
+Two small fixes on the back of the upload testing above.
+
+- The `file` error rendered as plain black text: `.admin-form-field-error` is defined inside the
+  `zephyr-admin-rich-text-form` mixin, which the document form does not include (it uses the
+  register `form-layout` like the link form). The rule is now declared in the document form's own
+  stylesheet. Worth knowing for any future admin form built on `form-layout` rather than the
+  rich-text mixin — the class name alone is not enough.
+- Added a client-side size check: `MAX_FILE_SIZE_BYTES = 51200 * 1024`, kept in sync with the
+  `max:51200` rule (Laravel counts kilobytes, `File.size` bytes). It fires on selection — not just
+  on submit — so the user sees the message immediately, and `onSubmit` re-checks and refuses to
+  send. The backend rule stays authoritative; this only avoids a pointless 50 MB round trip.
+- Specs: an oversized file shows the message and fires no request, and choosing a valid file
+  afterwards clears it and submits normally. Oversized files are simulated with
+  `Object.defineProperty(file, "size", …)` rather than allocating 50 MB in jsdom.
+
+**Verification:** `npx ng test` → 500 passed; lint / tsc / prettier / knip clean.
+
+### Follow-up 3: DocumentCategory values are now the Hungarian slugs (decision D16)
+
+An upload into the "Egyéb" category created `storage/app/public/integra/integra-other/` next to
+the seeded `integra/egyeb/`. That was Task 16 behaving as written — the doc says
+`integra/{category}` and `{category}` was the enum value — but two folder vocabularies on one disk
+is not something to carry into Task 27's legacy import, so the vocabulary was unified instead.
+
+**The change:** `DocumentCategory`'s *values* became the slugs the SPA already used in its URLs
+(`integra-flyer` → `tajekoztato`, `integra-trial` → `probaverzio`, `integra-update` →
+`programfrissites`, `integra-documentation` → `dokumentacio`, `integra-other` → `egyeb`). Case
+names are unchanged. The storage directory then needs no separate slug map, and the API path
+`/api/documents/integra/{category}` finally matches the SPA route `/integra/{kategoria}`.
+
+**Shipped:**
+- `app/DocumentCategory.php`, `database/seeders/DocumentSeeder.php`.
+- No migration. One was written to rewrite existing `documents.category` values, but the reviewer
+  dropped it: the app is not live and the only data is seeded locally, so re-seeding is enough.
+- FE: `types/integra.ts` lost the slug→category map entirely — `INTEGRA_CATEGORIES` is now a
+  readonly tuple of slugs, `IntegraCategorySlug` is gone and `IntegraCategory` is the single type,
+  `isIntegraCategorySlug` became `isIntegraCategory`. `IntegraComponent`'s slug→category
+  `computed` disappeared, and `BreadcrumbService` now shares `INTEGRA_CATEGORY_LABELS` instead of
+  keeping its own copy — the refactor the Task 17 doc originally asked for, which was impossible
+  while the two maps were keyed differently.
+- Category literals updated across six Pest files and six FE spec/mock files.
+
+**Surprises / gotchas:**
+- A blind find-and-replace over the tests corrupted one assertion: `StoreDocumentTest` uploads
+  `Integra Flyer 2026.pdf`, whose *slugified filename* is `integra-flyer-2026.pdf` — same string as
+  the old category, but nothing to do with it. Restored by hand. Worth remembering that
+  `integra-flyer` appeared in those files in two unrelated roles.
+- `GetAdminDocumentsTest`'s expected order changed: the list sorts by the raw category string, and
+  `programfrissites` sorts before `tajekoztato` where `integra-flyer` sorted before
+  `integra-update`. The admin grid's default category ordering is therefore now
+  Hungarian-alphabetical. The grid is sortable, so this is cosmetic — but it is a visible change.
+
+**Verification:** `php artisan test --compact` → 312 passed; `vendor/bin/pint --dirty` clean;
+`npx ng test` → 500 passed; lint / tsc / prettier / knip clean. Checked against the dev database:
+30 rows per category, all five folders Hungarian, the stray `integra-other` folder gone after the
+reviewer deleted its document through the admin UI.
+
+### Follow-up 4: downloads kept the file name (CORS `exposed_headers`)
+
+**Symptom:** every downloaded document landed as `document` (with the right extension, which the
+browser infers from the MIME type) instead of its real file name.
+
+**Cause:** not the download itself. `DocumentController::downloadDocument` sends
+`Content-Disposition: attachment; filename="…"` correctly — `DownloadDocumentTest`'s
+`assertDownload()` has been proving that all along. But `IntegraQueryService.saveDownloadedDocument`
+reads that header off the `HttpResponse` in the browser, and `config/cors.php` had
+`'exposed_headers' => []`. A cross-origin response (SPA on `:4200`, API on `:8000`) only lets JS
+read the CORS-safelisted headers, so `headers.get("Content-Disposition")` returned `null` and the
+`?? "document"` fallback took over. Nothing was broken in the FE parsing — it simply never saw the
+header.
+
+**Shipped:** `config/cors.php` — `'exposed_headers' => ['Content-Disposition']`.
+
+**Second bug, found while in that file:** `allowed_methods` was `['GET', 'OPTIONS', 'POST']`, but
+`php artisan route:list --path=api` shows the API also serves `PUT` and `DELETE`. A preflight probe
+confirmed the server answers `Access-Control-Allow-Methods: GET, OPTIONS, POST` for a `DELETE
+/api/admin/documents/1` preflight, so every admin delete and every `PUT`-based edit is blocked by
+the browser before the request is even sent. This had gone unnoticed because the deletes done so
+far were done through the *legacy* admin app (`zephyrcohu-admin-ui`), which is a separate PHP
+application and never touches this API. Fixed to `['DELETE', 'GET', 'OPTIONS', 'POST', 'PUT']`.
+
+**Tests:** new `tests/Feature/CorsTest.php` — a dataset covering one route per HTTP method the API
+uses, asserting each preflight advertises that method, plus the `Content-Disposition` expose case.
+Both are the kind of regression a same-origin production deploy hides completely, which is exactly
+why they belong in the suite.
+
+**Verification:** `php artisan test --compact` → 317 passed; `vendor/bin/pint --dirty` clean.

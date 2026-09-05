@@ -109,13 +109,13 @@ category.
 
 ## Steps
 
-- [ ] **Step 1:** Add `INTEGRA_CATEGORY_LABELS`; keep `breadcrumb.service.spec.ts` green.
-- [ ] **Step 2:** Mocks, grid spec, service + grid.
-- [ ] **Step 3:** Form spec (cases below), then the form. Use
+- [x] **Step 1:** Add `INTEGRA_CATEGORY_LABELS`; keep `breadcrumb.service.spec.ts` green.
+- [x] **Step 2:** Mocks, grid spec, service + grid.
+- [x] **Step 3:** Form spec (cases below), then the form. Use
       `new File(["x"], "test.pdf", { type: "application/pdf" })` and
       `userEvent.upload(input, file)` to drive the file input.
-- [ ] **Step 4:** Routes + `app.component.spec.ts` case for `/admin/integra`.
-- [ ] **Step 5:** Verify, self review, journal, tick Task 17.
+- [x] **Step 4:** Routes + `app.component.spec.ts` case for `/admin/integra`.
+- [x] **Step 5:** Verify, self review, journal, tick Task 17.
 
 ## Tests to write
 
@@ -142,11 +142,11 @@ npx ng test && npx ng lint && npx tsc -p tsconfig.app.json && npx prettier . --c
 
 ## Self review
 
-- [ ] The file input has a programmatically associated label and its selected file is announced.
-- [ ] `Content-Type` is never set manually for the multipart requests.
-- [ ] Edit submits to `POST /admin/documents/:id`, matching the backend (a PUT would 405).
-- [ ] Public Integra queries are invalidated for **all five** categories after a mutation.
-- [ ] `BreadcrumbService` still passes its spec after the label refactor.
+- [x] The file input has a programmatically associated label and its selected file is announced.
+- [x] `Content-Type` is never set manually for the multipart requests.
+- [x] Edit submits to `POST /admin/documents/:id`, matching the backend (a PUT would 405).
+- [x] Public Integra queries are invalidated for **all five** categories after a mutation.
+- [x] `BreadcrumbService` still passes its spec after the label refactor.
 
 ## Done when
 
