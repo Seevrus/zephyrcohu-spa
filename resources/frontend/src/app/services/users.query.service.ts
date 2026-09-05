@@ -9,7 +9,6 @@ import { catchError, lastValueFrom, map, of, throwError } from "rxjs";
 
 import { type ZephyrHttpError } from "../../api/ZephyrHttpError";
 import { environment } from "../../environments/environment";
-import { INTEGRA_CATEGORIES } from "../../types/integra";
 import {
   type ConfirmOrRevokeEmailRequest,
   type CreateUserRequest,
@@ -341,7 +340,7 @@ export class UsersQueryService {
    */
   private invalidateContentQueries() {
     this.queryClient.invalidateQueries({
-      queryKey: queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
+      queryKey: queryKeys.integra("programfrissites"),
     });
     this.queryClient.invalidateQueries({
       queryKey: queryKeys.news(),

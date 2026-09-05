@@ -14,13 +14,13 @@ describe('Delete Document', function () {
     test('deletes the row and the file', function () {
         Sanctum::actingAs(User::find(2));
 
-        Storage::disk('public')->put('integra/integra-flyer/flyer-2026.pdf', 'flyer contents');
+        Storage::disk('public')->put('integra/tajekoztato/flyer-2026.pdf', 'flyer contents');
 
         $response = $this->deleteJson('/api/admin/documents/1');
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('documents', ['id' => 1]);
-        Storage::disk('public')->assertMissing('integra/integra-flyer/flyer-2026.pdf');
+        Storage::disk('public')->assertMissing('integra/tajekoztato/flyer-2026.pdf');
     });
 
     test('deletes the row even when the file is already missing from disk', function () {
@@ -89,10 +89,10 @@ function resetDeleteDocumentTestData(): void {
 
     DB::table('documents')->insert([
         'id' => 1,
-        'category' => 'integra-flyer',
+        'category' => 'tajekoztato',
         'display_name' => 'Flyer 2026',
         'version' => '2.0',
-        'path' => 'integra/integra-flyer/flyer-2026.pdf',
+        'path' => 'integra/tajekoztato/flyer-2026.pdf',
         'published_at' => '2026-02-10 00:00:00',
         'created_at' => '2026-02-10 00:00:00',
         'updated_at' => '2026-02-10 00:00:00',

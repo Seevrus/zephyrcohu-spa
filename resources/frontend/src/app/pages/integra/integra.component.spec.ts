@@ -13,7 +13,7 @@ import { createGetIntegraDocumentsErrorResponse } from "../../../mocks/integra/c
 import { createGetIntegraDocumentsOkResponse } from "../../../mocks/integra/createGetIntegraDocumentsOkResponse";
 import { matchIntegraDocumentsRequest } from "../../../mocks/integra/integraDocumentsRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
-import { type IntegraCategorySlug } from "../../../types/integra";
+import { type IntegraCategory } from "../../../types/integra";
 import { BreadcrumbService } from "../../services/breadcrumb.service";
 import { IntegraComponent } from "./integra.component";
 
@@ -22,7 +22,7 @@ describe("IntegraComponent", () => {
     const { httpTesting } = await renderIntegra("tajekoztato");
 
     const documentsTestRequest = await waitFor(() =>
-      httpTesting.expectOne(matchIntegraDocumentsRequest("integra-flyer")),
+      httpTesting.expectOne(matchIntegraDocumentsRequest("tajekoztato")),
     );
 
     await expect(screen.findByRole("progressbar")).resolves.toBeInTheDocument();
@@ -40,7 +40,7 @@ describe("IntegraComponent", () => {
     const { httpTesting } = await renderIntegra("tajekoztato");
 
     const documentsTestRequest = await waitFor(() =>
-      httpTesting.expectOne(matchIntegraDocumentsRequest("integra-flyer")),
+      httpTesting.expectOne(matchIntegraDocumentsRequest("tajekoztato")),
     );
 
     documentsTestRequest.flush(
@@ -59,7 +59,7 @@ describe("IntegraComponent", () => {
     const { httpTesting } = await renderIntegra("tajekoztato");
 
     const documentsTestRequest = await waitFor(() =>
-      httpTesting.expectOne(matchIntegraDocumentsRequest("integra-flyer")),
+      httpTesting.expectOne(matchIntegraDocumentsRequest("tajekoztato")),
     );
 
     documentsTestRequest.flush(
@@ -78,7 +78,7 @@ describe("IntegraComponent", () => {
     const { httpTesting } = await renderIntegra("tajekoztato");
 
     const documentsTestRequest = await waitFor(() =>
-      httpTesting.expectOne(matchIntegraDocumentsRequest("integra-flyer")),
+      httpTesting.expectOne(matchIntegraDocumentsRequest("tajekoztato")),
     );
 
     documentsTestRequest.flush(createGetIntegraDocumentsOkResponse([]));
@@ -94,7 +94,7 @@ describe("IntegraComponent", () => {
     const { httpTesting, container } = await renderIntegra("tajekoztato");
 
     const documentsTestRequest = await waitFor(() =>
-      httpTesting.expectOne(matchIntegraDocumentsRequest("integra-flyer")),
+      httpTesting.expectOne(matchIntegraDocumentsRequest("tajekoztato")),
     );
 
     documentsTestRequest.flush(
@@ -122,12 +122,10 @@ describe("IntegraComponent", () => {
     const { httpTesting } = await renderIntegra("dokumentacio");
 
     const documentsTestRequest = await waitFor(() =>
-      httpTesting.expectOne(
-        matchIntegraDocumentsRequest("integra-documentation"),
-      ),
+      httpTesting.expectOne(matchIntegraDocumentsRequest("dokumentacio")),
     );
 
-    expect(documentsTestRequest.request.url).toContain("integra-documentation");
+    expect(documentsTestRequest.request.url).toContain("dokumentacio");
 
     documentsTestRequest.flush(createGetIntegraDocumentsOkResponse());
 
@@ -149,9 +147,7 @@ describe("IntegraComponent", () => {
     breadcrumbSetIntegraBreadcrumbSpy.mockRestore();
 
     const documentsTestRequest = await waitFor(() =>
-      httpTesting.expectOne(
-        matchIntegraDocumentsRequest("integra-documentation"),
-      ),
+      httpTesting.expectOne(matchIntegraDocumentsRequest("dokumentacio")),
     );
 
     documentsTestRequest.flush(createGetIntegraDocumentsOkResponse());
@@ -160,7 +156,7 @@ describe("IntegraComponent", () => {
   });
 });
 
-async function renderIntegra(kategoria: IntegraCategorySlug) {
+async function renderIntegra(kategoria: IntegraCategory) {
   const renderResult = await render(IntegraComponent, {
     inputs: { kategoria },
     providers: [

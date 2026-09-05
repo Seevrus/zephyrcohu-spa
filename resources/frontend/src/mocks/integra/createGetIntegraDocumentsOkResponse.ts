@@ -13,7 +13,7 @@ export function createGetIntegraDocumentsOkResponse(
 
 const defaultDocument: IntegraResponse = {
   id: 1,
-  category: "integra-flyer",
+  category: "tajekoztato",
   displayName: "Test document",
   version: "1.0.0",
   publishedAt: "2026-02-08T18:26:00.000000Z",

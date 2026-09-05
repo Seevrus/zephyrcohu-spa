@@ -1,17 +1,31 @@
-export const INTEGRA_CATEGORIES = {
-  tajekoztato: "integra-flyer",
-  probaverzio: "integra-trial",
-  programfrissites: "integra-update",
-  dokumentacio: "integra-documentation",
-  egyeb: "integra-other",
-} as const;
+/**
+ * The API, the SPA route (`/integra/{kategoria}`) and the storage directory all
+ * use the same Hungarian slug, so there is no slug-to-category mapping to do.
+ */
+export const INTEGRA_CATEGORIES = [
+  "tajekoztato",
+  "probaverzio",
+  "programfrissites",
+  "dokumentacio",
+  "egyeb",
+] as const;
 
-export type IntegraCategorySlug = keyof typeof INTEGRA_CATEGORIES;
+export type IntegraCategory = (typeof INTEGRA_CATEGORIES)[number];
 
-export type IntegraCategory = (typeof INTEGRA_CATEGORIES)[IntegraCategorySlug];
+export const INTEGRA_CATEGORY_LABELS: Record<IntegraCategory, string> = {
+  tajekoztato: "Tájékoztató",
+  probaverzio: "Próbaverzió",
+  programfrissites: "Programfrissítés",
+  dokumentacio: "Dokumentáció",
+  egyeb: "Egyéb",
+};
 
-export function isIntegraCategorySlug(value: string | null) {
-  return value !== null && Object.keys(INTEGRA_CATEGORIES).includes(value);
+export function isIntegraCategory(
+  value: string | null,
+): value is IntegraCategory {
+  return (
+    value !== null && INTEGRA_CATEGORIES.includes(value as IntegraCategory)
+  );
 }
 
 export type IntegraResponse = {

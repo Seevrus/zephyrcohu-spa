@@ -15,10 +15,7 @@ import {
 
 import { formatDisplayDateWithoutDay } from "../../../mappers/dates";
 import { zephyrGridTheme } from "../../../shared/ag-grid-theme";
-import {
-  INTEGRA_CATEGORIES,
-  type IntegraCategorySlug,
-} from "../../../types/integra";
+import { type IntegraCategory } from "../../../types/integra";
 import { IntegraDocumentLinkCellRendererComponent } from "../../components/ag-grid/integra-document-link-cell-renderer/integra-document-link-cell-renderer.component";
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { NoIntegraDocumentsAvailableComponent } from "../../components/no-integra-documents-available/no-integra-documents-available.component";
@@ -45,22 +42,17 @@ export class IntegraComponent {
   private readonly breadcrumbService = inject(BreadcrumbService);
   private readonly integraQueryService = inject(IntegraQueryService);
 
-  readonly kategoria = input<IntegraCategorySlug>();
-
-  private readonly category = computed(() => {
-    const slug = this.kategoria();
-    return slug ? INTEGRA_CATEGORIES[slug] : undefined;
-  });
+  readonly kategoria = input<IntegraCategory>();
 
   private readonly breadcrumbEffect = effect(() => {
-    const slug = this.kategoria();
-    if (slug) {
-      this.breadcrumbService.setIntegraBreadcrumb(slug);
+    const category = this.kategoria();
+    if (category) {
+      this.breadcrumbService.setIntegraBreadcrumb(category);
     }
   });
 
   private readonly integraDocumentsQuery = injectQuery(() =>
-    this.integraQueryService.getIntegraDocuments(this.category()),
+    this.integraQueryService.getIntegraDocuments(this.kategoria()),
   );
 
   protected readonly documents = computed(

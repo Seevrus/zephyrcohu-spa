@@ -15,8 +15,16 @@ describe('Get Admin Documents', function () {
 
         $response->assertStatus(200)->assertExactJson(['data' => [
             [
+                'id' => 2,
+                'category' => 'programfrissites',
+                'displayName' => 'Update 2026.1',
+                'version' => '2026.1',
+                'fileName' => 'update-2026-1.zip',
+                'publishedAt' => '2026-02-28T23:00:00.000000Z',
+            ],
+            [
                 'id' => 3,
-                'category' => 'integra-flyer',
+                'category' => 'tajekoztato',
                 'displayName' => 'Flyer 2025',
                 'version' => '1.0',
                 'fileName' => 'flyer-2025.pdf',
@@ -24,7 +32,7 @@ describe('Get Admin Documents', function () {
             ],
             [
                 'id' => 1,
-                'category' => 'integra-flyer',
+                'category' => 'tajekoztato',
                 'displayName' => 'Flyer 2026',
                 'version' => '2.0',
                 'fileName' => 'flyer-2026.pdf',
@@ -32,19 +40,11 @@ describe('Get Admin Documents', function () {
             ],
             [
                 'id' => 4,
-                'category' => 'integra-flyer',
+                'category' => 'tajekoztato',
                 'displayName' => 'Flyer 2027',
                 'version' => '3.0',
                 'fileName' => 'flyer-2027.pdf',
                 'publishedAt' => '2098-12-31T23:00:00.000000Z',
-            ],
-            [
-                'id' => 2,
-                'category' => 'integra-update',
-                'displayName' => 'Update 2026.1',
-                'version' => '2026.1',
-                'fileName' => 'update-2026-1.zip',
-                'publishedAt' => '2026-02-28T23:00:00.000000Z',
             ],
         ]]);
     });
@@ -82,7 +82,7 @@ describe('Get Admin Document', function () {
 
         $response->assertStatus(200)->assertExactJson(['data' => [
             'id' => 1,
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'displayName' => 'Flyer 2026',
             'version' => '2.0',
             'fileName' => 'flyer-2026.pdf',
@@ -148,40 +148,40 @@ function resetAdminDocumentsTestData(): void {
     DB::table('documents')->insert([
         [
             'id' => 1,
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'display_name' => 'Flyer 2026',
             'version' => '2.0',
-            'path' => 'integra/integra-flyer/flyer-2026.pdf',
+            'path' => 'integra/tajekoztato/flyer-2026.pdf',
             'published_at' => '2026-02-10 00:00:00',
             'created_at' => '2026-02-10 00:00:00',
             'updated_at' => '2026-02-10 00:00:00',
         ],
         [
             'id' => 2,
-            'category' => 'integra-update',
+            'category' => 'programfrissites',
             'display_name' => 'Update 2026.1',
             'version' => '2026.1',
-            'path' => 'integra/integra-update/update-2026-1.zip',
+            'path' => 'integra/programfrissites/update-2026-1.zip',
             'published_at' => '2026-03-01 00:00:00',
             'created_at' => '2026-03-01 00:00:00',
             'updated_at' => '2026-03-01 00:00:00',
         ],
         [
             'id' => 3,
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'display_name' => 'Flyer 2025',
             'version' => '1.0',
-            'path' => 'integra/integra-flyer/flyer-2025.pdf',
+            'path' => 'integra/tajekoztato/flyer-2025.pdf',
             'published_at' => '2026-01-10 00:00:00',
             'created_at' => '2026-01-10 00:00:00',
             'updated_at' => '2026-01-10 00:00:00',
         ],
         [
             'id' => 4,
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'display_name' => 'Flyer 2027',
             'version' => '3.0',
-            'path' => 'integra/integra-flyer/flyer-2027.pdf',
+            'path' => 'integra/tajekoztato/flyer-2027.pdf',
             'published_at' => '2099-01-01 00:00:00',
             'created_at' => '2099-01-01 00:00:00',
             'updated_at' => '2099-01-01 00:00:00',

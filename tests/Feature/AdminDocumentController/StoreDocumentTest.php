@@ -16,7 +16,7 @@ describe('Store Document', function () {
         Sanctum::actingAs(User::find(2));
 
         $response = $this->post('/api/admin/documents', [
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'displayName' => 'Flyer 2026',
             'version' => '2.0',
             'publishedAt' => '2026-02-10 00:00:00',
@@ -24,18 +24,18 @@ describe('Store Document', function () {
         ]);
 
         $response->assertStatus(201)->assertJson(['data' => [
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'displayName' => 'Flyer 2026',
             'version' => '2.0',
             'fileName' => 'integra-flyer-2026.pdf',
         ]]);
 
-        Storage::disk('public')->assertExists('integra/integra-flyer/integra-flyer-2026.pdf');
-        Storage::disk('local')->assertMissing('integra/integra-flyer/integra-flyer-2026.pdf');
+        Storage::disk('public')->assertExists('integra/tajekoztato/integra-flyer-2026.pdf');
+        Storage::disk('local')->assertMissing('integra/tajekoztato/integra-flyer-2026.pdf');
 
         $this->assertDatabaseHas('documents', [
-            'category' => 'integra-flyer',
-            'path' => 'integra/integra-flyer/integra-flyer-2026.pdf',
+            'category' => 'tajekoztato',
+            'path' => 'integra/tajekoztato/integra-flyer-2026.pdf',
         ]);
     });
 
@@ -43,7 +43,7 @@ describe('Store Document', function () {
         Sanctum::actingAs(User::find(2));
 
         $response = $this->post('/api/admin/documents', [
-            'category' => 'integra-update',
+            'category' => 'programfrissites',
             'displayName' => 'Update 2026.1',
             'version' => '2026.1',
             'publishedAt' => '2026-03-01 00:00:00',
@@ -52,17 +52,17 @@ describe('Store Document', function () {
 
         $response->assertStatus(201);
 
-        Storage::disk('local')->assertExists('integra/integra-update/update-2026-1.zip');
-        Storage::disk('public')->assertMissing('integra/integra-update/update-2026-1.zip');
+        Storage::disk('local')->assertExists('integra/programfrissites/update-2026-1.zip');
+        Storage::disk('public')->assertMissing('integra/programfrissites/update-2026-1.zip');
     });
 
     test('rejects a duplicate filename in the same category without overwriting it', function () {
         Sanctum::actingAs(User::find(2));
 
-        Storage::disk('public')->put('integra/integra-flyer/flyer-2026.pdf', 'existing contents');
+        Storage::disk('public')->put('integra/tajekoztato/flyer-2026.pdf', 'existing contents');
 
         $response = $this->postJson('/api/admin/documents', [
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'displayName' => 'Flyer 2026',
             'version' => '2.0',
             'publishedAt' => '2026-02-10 00:00:00',
@@ -71,7 +71,7 @@ describe('Store Document', function () {
 
         $response->assertStatus(422)->assertJsonValidationErrors(['file']);
 
-        expect(Storage::disk('public')->get('integra/integra-flyer/flyer-2026.pdf'))
+        expect(Storage::disk('public')->get('integra/tajekoztato/flyer-2026.pdf'))
             ->toBe('existing contents');
         $this->assertDatabaseCount('documents', 0);
     });
@@ -80,13 +80,47 @@ describe('Store Document', function () {
         Sanctum::actingAs(User::find(2));
 
         $response = $this->postJson('/api/admin/documents', [
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'displayName' => 'Flyer 2026',
             'version' => '2.0',
             'publishedAt' => '2026-02-10 00:00:00',
         ]);
 
         $response->assertStatus(422)->assertJsonValidationErrors(['file']);
+    });
+
+    test('rejects a file over the size limit with a translated message', function () {
+        Sanctum::actingAs(User::find(2));
+
+        $response = $this->post('/api/admin/documents', [
+            'category' => 'tajekoztato',
+            'displayName' => 'Flyer 2026',
+            'version' => '2.0',
+            'publishedAt' => '2026-02-10 00:00:00',
+            'file' => UploadedFile::fake()->create('flyer-2026.pdf', 51201),
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors([
+            'file' => 'A feltöltött fájl legfeljebb 50 MB méretű lehet.',
+        ]);
+
+        Storage::disk('public')->assertMissing('integra/tajekoztato/flyer-2026.pdf');
+        $this->assertDatabaseCount('documents', 0);
+    });
+
+    test('answers a failed validation in Hungarian rather than with a translation key', function () {
+        Sanctum::actingAs(User::find(2));
+
+        $response = $this->postJson('/api/admin/documents', [
+            'category' => 'tajekoztato',
+            'displayName' => 'Flyer 2026',
+            'publishedAt' => '2026-02-10 00:00:00',
+            'file' => UploadedFile::fake()->create('flyer-2026.pdf', 120),
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors([
+            'version' => 'A(z) verzió mező kitöltése kötelező.',
+        ]);
     });
 
     test('rejects an unknown category', function () {
@@ -107,7 +141,7 @@ describe('Store Document', function () {
         Sanctum::actingAs(User::find(2));
 
         $response = $this->postJson('/api/admin/documents', [
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'displayName' => 'Flyer 2026',
             'publishedAt' => '2026-02-10 00:00:00',
             'file' => UploadedFile::fake()->create('flyer-2026.pdf', 120),
@@ -120,7 +154,7 @@ describe('Store Document', function () {
         Sanctum::actingAs(User::find(2));
 
         $this->post('/api/admin/documents', [
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'displayName' => 'Flyer 2026',
             'version' => '2.0',
             'publishedAt' => '2026-02-10 00:00:00',
@@ -137,7 +171,7 @@ describe('Store Document', function () {
 
     test('returns 404 for a guest', function () {
         $response = $this->postJson('/api/admin/documents', [
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'displayName' => 'Flyer 2026',
             'version' => '2.0',
             'publishedAt' => '2026-02-10 00:00:00',
@@ -154,7 +188,7 @@ describe('Store Document', function () {
         Sanctum::actingAs(User::find(1));
 
         $response = $this->postJson('/api/admin/documents', [
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'displayName' => 'Flyer 2026',
             'version' => '2.0',
             'publishedAt' => '2026-02-10 00:00:00',

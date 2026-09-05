@@ -14,11 +14,11 @@ class DocumentSeeder extends Seeder {
      * @var array<string, array{path: string, displayName: string}>
      */
     private const array CATEGORY_FIXTURES = [
-        'integra-flyer' => ['path' => 'integra/tajekoztato/test-flyer-01.pdf', 'displayName' => 'Flyer'],
-        'integra-trial' => ['path' => 'integra/probaverzio/test-trial-01.zip', 'displayName' => 'Trial Version'],
-        'integra-update' => ['path' => 'integra/programfrissites/test-update-01.zip', 'displayName' => 'Update'],
-        'integra-documentation' => ['path' => 'integra/dokumentacio/test-documentation-01.pdf', 'displayName' => 'Documentation'],
-        'integra-other' => ['path' => 'integra/egyeb/test-other-01.txt', 'displayName' => 'Other Document'],
+        'tajekoztato' => ['path' => 'integra/tajekoztato/test-flyer-01.pdf', 'displayName' => 'Flyer'],
+        'probaverzio' => ['path' => 'integra/probaverzio/test-trial-01.zip', 'displayName' => 'Trial Version'],
+        'programfrissites' => ['path' => 'integra/programfrissites/test-update-01.zip', 'displayName' => 'Update'],
+        'dokumentacio' => ['path' => 'integra/dokumentacio/test-documentation-01.pdf', 'displayName' => 'Documentation'],
+        'egyeb' => ['path' => 'integra/egyeb/test-other-01.txt', 'displayName' => 'Other Document'],
     ];
 
     private const int ITEMS_PER_CATEGORY = 30;

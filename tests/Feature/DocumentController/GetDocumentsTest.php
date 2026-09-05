@@ -9,19 +9,19 @@ describe('Get Documents', function () {
     });
 
     test('retrieves documents for a public category in published_at desc order for guest users', function () {
-        $response = $this->getJson('/api/documents/integra/integra-flyer');
+        $response = $this->getJson('/api/documents/integra/tajekoztato');
 
         $response->assertStatus(200)->assertExactJson(['data' => [
             [
                 'id' => 2,
-                'category' => 'integra-flyer',
+                'category' => 'tajekoztato',
                 'displayName' => 'Flyer 2026',
                 'version' => '2.0',
                 'publishedAt' => '2026-02-09T23:00:00.000000Z',
             ],
             [
                 'id' => 1,
-                'category' => 'integra-flyer',
+                'category' => 'tajekoztato',
                 'displayName' => 'Flyer 2025',
                 'version' => '1.0',
                 'publishedAt' => '2026-01-09T23:00:00.000000Z',
@@ -30,7 +30,7 @@ describe('Get Documents', function () {
     });
 
     test('returns 401 for the update category when the user is not logged in', function () {
-        $response = $this->getJson('/api/documents/integra/integra-update');
+        $response = $this->getJson('/api/documents/integra/programfrissites');
 
         $response->assertStatus(401)->assertExactJson([
             'code' => 'GENERIC_UNAUTHORIZED',
@@ -41,12 +41,12 @@ describe('Get Documents', function () {
     test('returns the update category documents for a logged in user', function () {
         Sanctum::actingAs(User::find(1));
 
-        $response = $this->getJson('/api/documents/integra/integra-update');
+        $response = $this->getJson('/api/documents/integra/programfrissites');
 
         $response->assertStatus(200)->assertExactJson(['data' => [
             [
                 'id' => 3,
-                'category' => 'integra-update',
+                'category' => 'programfrissites',
                 'displayName' => 'Update 2026.1',
                 'version' => '2026.1',
                 'publishedAt' => '2026-02-28T23:00:00.000000Z',
@@ -63,28 +63,28 @@ describe('Get Documents', function () {
     test('excludes documents that are not published yet', function () {
         DB::table('documents')->insert([
             'id' => 4,
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'display_name' => 'Flyer 2027',
             'version' => '3.0',
-            'path' => 'documents/integra-flyer/flyer-2027.pdf',
+            'path' => 'documents/tajekoztato/flyer-2027.pdf',
             'published_at' => '2099-01-01 00:00:00',
             'created_at' => '2099-01-01 00:00:00',
             'updated_at' => '2099-01-01 00:00:00',
         ]);
 
-        $response = $this->getJson('/api/documents/integra/integra-flyer');
+        $response = $this->getJson('/api/documents/integra/tajekoztato');
 
         $response->assertStatus(200)->assertExactJson(['data' => [
             [
                 'id' => 2,
-                'category' => 'integra-flyer',
+                'category' => 'tajekoztato',
                 'displayName' => 'Flyer 2026',
                 'version' => '2.0',
                 'publishedAt' => '2026-02-09T23:00:00.000000Z',
             ],
             [
                 'id' => 1,
-                'category' => 'integra-flyer',
+                'category' => 'tajekoztato',
                 'displayName' => 'Flyer 2025',
                 'version' => '1.0',
                 'publishedAt' => '2026-01-09T23:00:00.000000Z',
@@ -107,30 +107,30 @@ function resetGetDocumentsTestData(): void {
     DB::table('documents')->insert([
         [
             'id' => 1,
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'display_name' => 'Flyer 2025',
             'version' => '1.0',
-            'path' => 'documents/integra-flyer/flyer-2025.pdf',
+            'path' => 'documents/tajekoztato/flyer-2025.pdf',
             'published_at' => '2026-01-10 00:00:00',
             'created_at' => '2026-01-10 00:00:00',
             'updated_at' => '2026-01-10 00:00:00',
         ],
         [
             'id' => 2,
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'display_name' => 'Flyer 2026',
             'version' => '2.0',
-            'path' => 'documents/integra-flyer/flyer-2026.pdf',
+            'path' => 'documents/tajekoztato/flyer-2026.pdf',
             'published_at' => '2026-02-10 00:00:00',
             'created_at' => '2026-02-10 00:00:00',
             'updated_at' => '2026-02-10 00:00:00',
         ],
         [
             'id' => 3,
-            'category' => 'integra-update',
+            'category' => 'programfrissites',
             'display_name' => 'Update 2026.1',
             'version' => '2026.1',
-            'path' => 'documents/integra-update/update-2026-1.zip',
+            'path' => 'documents/programfrissites/update-2026-1.zip',
             'published_at' => '2026-03-01 00:00:00',
             'created_at' => '2026-03-01 00:00:00',
             'updated_at' => '2026-03-01 00:00:00',

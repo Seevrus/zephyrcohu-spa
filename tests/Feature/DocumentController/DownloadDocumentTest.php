@@ -12,7 +12,7 @@ describe('Download Document', function () {
     });
 
     test('downloads a public category document for a guest', function () {
-        Storage::disk('public')->put('documents/integra-flyer/flyer-2026.pdf', 'flyer contents');
+        Storage::disk('public')->put('documents/tajekoztato/flyer-2026.pdf', 'flyer contents');
 
         $response = $this->get('/api/documents/integra/1/download');
 
@@ -21,7 +21,7 @@ describe('Download Document', function () {
     });
 
     test('returns 401 for an update document when the user is not logged in', function () {
-        Storage::disk('local')->put('documents/integra-update/update-2026-1.zip', 'update contents');
+        Storage::disk('local')->put('documents/programfrissites/update-2026-1.zip', 'update contents');
 
         $response = $this->getJson('/api/documents/integra/2/download');
 
@@ -33,7 +33,7 @@ describe('Download Document', function () {
 
     test('downloads an update document for a logged in user', function () {
         Sanctum::actingAs(User::find(1));
-        Storage::disk('local')->put('documents/integra-update/update-2026-1.zip', 'update contents');
+        Storage::disk('local')->put('documents/programfrissites/update-2026-1.zip', 'update contents');
 
         $response = $this->get('/api/documents/integra/2/download');
 
@@ -50,15 +50,15 @@ describe('Download Document', function () {
     test('returns 404 for a document that is not published yet', function () {
         DB::table('documents')->insert([
             'id' => 3,
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'display_name' => 'Flyer 2027',
             'version' => '3.0',
-            'path' => 'documents/integra-flyer/flyer-2027.pdf',
+            'path' => 'documents/tajekoztato/flyer-2027.pdf',
             'published_at' => '2099-01-01 00:00:00',
             'created_at' => '2099-01-01 00:00:00',
             'updated_at' => '2099-01-01 00:00:00',
         ]);
-        Storage::disk('public')->put('documents/integra-flyer/flyer-2027.pdf', 'flyer contents');
+        Storage::disk('public')->put('documents/tajekoztato/flyer-2027.pdf', 'flyer contents');
 
         $response = $this->getJson('/api/documents/integra/3/download');
 
@@ -83,20 +83,20 @@ function resetDownloadDocumentTestData(): void {
     DB::table('documents')->insert([
         [
             'id' => 1,
-            'category' => 'integra-flyer',
+            'category' => 'tajekoztato',
             'display_name' => 'Flyer 2026',
             'version' => '2.0',
-            'path' => 'documents/integra-flyer/flyer-2026.pdf',
+            'path' => 'documents/tajekoztato/flyer-2026.pdf',
             'published_at' => '2026-02-10 00:00:00',
             'created_at' => '2026-02-10 00:00:00',
             'updated_at' => '2026-02-10 00:00:00',
         ],
         [
             'id' => 2,
-            'category' => 'integra-update',
+            'category' => 'programfrissites',
             'display_name' => 'Update 2026.1',
             'version' => '2026.1',
-            'path' => 'documents/integra-update/update-2026-1.zip',
+            'path' => 'documents/programfrissites/update-2026-1.zip',
             'published_at' => '2026-03-01 00:00:00',
             'created_at' => '2026-03-01 00:00:00',
             'updated_at' => '2026-03-01 00:00:00',

@@ -24,13 +24,12 @@ import { loginRequest } from "../../mocks/users/loginRequest";
 import { logoutRequest } from "../../mocks/users/logoutRequest";
 import { resetPasswordRequest } from "../../mocks/users/resetPasswordRequest";
 import { updateProfileConfirmEmailRequest } from "../../mocks/users/updateProfileConfirmEmailRequest";
-import { INTEGRA_CATEGORIES } from "../../types/integra";
 import { queryKeys } from "./queryKeys";
 import { UsersQueryService } from "./users.query.service";
 
 function contentQueryKeys() {
   return [
-    queryKeys.integra(INTEGRA_CATEGORIES.programfrissites),
+    queryKeys.integra("programfrissites"),
     queryKeys.news(),
     queryKeys.newsItem(),
     queryKeys.offers(),

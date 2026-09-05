@@ -1,5 +1,10 @@
 import { Service, signal } from "@angular/core";
 
+import {
+  INTEGRA_CATEGORY_LABELS,
+  isIntegraCategory,
+} from "../../types/integra";
+
 @Service()
 export class BreadcrumbService {
   readonly breadcrumb = signal<string | undefined>(undefined);
@@ -10,8 +15,11 @@ export class BreadcrumbService {
   }
 
   setIntegraBreadcrumb(category: string) {
-    const breadcrumb = BreadcrumbService.integraCategories[category];
-    this.breadcrumb.set(`Integra - ${breadcrumb ?? category}`);
+    const breadcrumb = isIntegraCategory(category)
+      ? INTEGRA_CATEGORY_LABELS[category]
+      : category;
+
+    this.breadcrumb.set(`Integra - ${breadcrumb}`);
   }
 
   private static readonly breadcrumbsByTitle: Record<string, string> = {
@@ -25,13 +33,5 @@ export class BreadcrumbService {
     Regisztráció: "Regisztráció",
     "Regisztráció elvetése": "Regisztráció elvetése",
     "Regisztráció megerősítése": "Regisztráció megerősítése",
-  };
-
-  private static readonly integraCategories: Record<string, string> = {
-    tajekoztato: "Tájékoztató",
-    probaverzio: "Próbaverzió",
-    programfrissites: "Programfrissítés",
-    dokumentacio: "Dokumentáció",
-    egyeb: "Egyéb",
   };
 }

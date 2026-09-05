@@ -18,7 +18,7 @@ import { IntegraDocumentLinkCellRendererComponent } from "./integra-document-lin
 describe("IntegraDocumentLinkCellRendererComponent", () => {
   const testDocument: IntegraItem = {
     id: 42,
-    category: "integra-flyer",
+    category: "tajekoztato",
     displayName: "Test document",
     version: "1.0.0",
     publishedAt: new Date("2026-02-08T18:26:00.000000Z"),
