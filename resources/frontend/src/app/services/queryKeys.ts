@@ -2,10 +2,12 @@ import { type IntegraCategory } from "../../types/integra";
 
 export const mutationKeys = {
   checkRecaptchaToken: ["check_recaptcha_token"],
+  createAdminDocument: ["create_admin_document"],
   createAdminKnowledgebase: ["create_admin_knowledgebase"],
   createAdminLink: ["create_admin_link"],
   createAdminNews: ["create_admin_news"],
   createAdminOffer: ["create_admin_offer"],
+  deleteAdminDocument: ["delete_admin_document"],
   deleteAdminKnowledgebase: ["delete_admin_knowledgebase"],
   deleteAdminLink: ["delete_admin_link"],
   deleteAdminNews: ["delete_admin_news"],
@@ -24,6 +26,7 @@ export const mutationKeys = {
   registerRevoke: ["register_revoke"],
   requestNewPassword: ["request_new_password"],
   requestOffer: ["request_offer"],
+  updateAdminDocument: ["update_admin_document"],
   updateAdminKnowledgebase: ["update_admin_knowledgebase"],
   updateAdminLink: ["update_admin_link"],
   updateAdminLinkCategory: ["update_admin_link_category"],
@@ -35,6 +38,10 @@ export const mutationKeys = {
 };
 
 export const queryKeys = {
+  adminDocuments: ["admin_documents"],
+  adminDocumentItem(id?: number) {
+    return id ? ["admin_document_item", id] : ["admin_document_item"];
+  },
   adminKnowledgebase: ["admin_knowledgebase"],
   adminKnowledgebaseItem(id?: number) {
     return id ? ["admin_knowledgebase_item", id] : ["admin_knowledgebase_item"];

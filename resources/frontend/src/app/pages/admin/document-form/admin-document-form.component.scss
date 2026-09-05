@@ -1,0 +1,47 @@
+@use "../../../../shared/mixins";
+@use "../../login/shared-register";
+
+:host(.app-admin-document-form) {
+  @include mixins.zephyr-main;
+
+  .admin-document-form-component {
+    width: 100%;
+
+    @include shared-register.form-layout;
+
+    .document-file-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      width: 100%;
+
+      .document-file-label {
+        font-weight: 600;
+      }
+
+      .document-file-info {
+        font-size: 0.875rem;
+        margin: 0;
+      }
+    }
+
+    .admin-form-field-error {
+      color: var(--mat-sys-error);
+      font-size: 0.75rem;
+      margin: 0.25rem 0 0;
+    }
+
+    .admin-form-actions {
+      align-items: center;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      width: 100%;
+
+      app-button-loadable.submit-button {
+        margin: 0;
+        width: unset;
+      }
+    }
+  }
+}

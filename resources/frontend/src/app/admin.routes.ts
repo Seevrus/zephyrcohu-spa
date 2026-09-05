@@ -57,6 +57,33 @@ export const adminRoutes: Routes = [
     title: "Admin - Hír szerkesztése",
   },
   {
+    path: "integra",
+    async loadComponent() {
+      const { AdminDocumentsComponent } =
+        await import("./pages/admin/documents/admin-documents.component");
+      return AdminDocumentsComponent;
+    },
+    title: "Admin - INTEGRA",
+  },
+  {
+    path: "integra/uj",
+    async loadComponent() {
+      const { AdminDocumentFormComponent } =
+        await import("./pages/admin/document-form/admin-document-form.component");
+      return AdminDocumentFormComponent;
+    },
+    title: "Admin - Új INTEGRA fájl",
+  },
+  {
+    path: "integra/:id",
+    async loadComponent() {
+      const { AdminDocumentFormComponent } =
+        await import("./pages/admin/document-form/admin-document-form.component");
+      return AdminDocumentFormComponent;
+    },
+    title: "Admin - INTEGRA fájl szerkesztése",
+  },
+  {
     path: "linkek",
     async loadComponent() {
       const { AdminLinksComponent } =

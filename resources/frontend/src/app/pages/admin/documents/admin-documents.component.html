@@ -1,0 +1,33 @@
+<div data-testid="admin-documents-component" class="admin-documents-component">
+  <div class="admin-documents-header">
+    <h1>Feltöltések</h1>
+    <a mat-flat-button routerLink="/admin/integra/uj">Új fájl feltöltése</a>
+  </div>
+
+  @if (errorMessage()) {
+    <app-form-unexpected-error />
+  } @else if (isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  } @else if (isEmpty()) {
+    <p>Még nincsenek feltöltött fájlok.</p>
+  } @else {
+    @if (deleteErrorMessage()) {
+      <app-form-unexpected-error />
+    }
+
+    <div class="admin-documents-grid">
+      <ag-grid-angular
+        [theme]="theme"
+        [modules]="gridModules"
+        domLayout="autoHeight"
+        [rowData]="documents()"
+        [columnDefs]="columnDefinitions"
+        [defaultColDef]="defaultColDef"
+        [localeText]="localeText"
+        [pagination]="true"
+        [paginationPanels]="paginationPanels"
+        [paginationPageSizeSelector]="[25, 50, 100]"
+      />
+    </div>
+  }
+</div>

@@ -1,0 +1,136 @@
+<div
+  data-testid="admin-document-form-component"
+  class="admin-document-form-component"
+>
+  <h1>
+    {{ isEditMode() ? "Feltöltött fájl szerkesztése" : "Új fájl feltöltése" }}
+  </h1>
+
+  @if (loadErrorMessage()) {
+    <app-form-unexpected-error />
+  } @else {
+    @if (errorMessage() === "INVALID_REQUEST_DATA") {
+      <app-error-card
+        data-testid="invalid-data-message"
+        title="Érvénytelen adatok"
+      >
+        <p>{{ validationMessage() || "A megadott adatok nem megfelelőek." }}</p>
+      </app-error-card>
+    } @else if (errorMessage()) {
+      <app-form-unexpected-error />
+    }
+
+    <form (submit)="onSubmit($event)">
+      <div class="form-elements-container">
+        <mat-form-field data-testid="category">
+          <mat-label>Kategória</mat-label>
+          <mat-select [formField]="documentForm.category">
+            @for (option of categoryOptions; track option.category) {
+              <mat-option [value]="option.category">
+                {{ option.label }}
+              </mat-option>
+            }
+          </mat-select>
+          @if (
+            documentForm.category().touched() &&
+            documentForm.category().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field data-testid="displayName">
+          <mat-label>Honlapon megjelenő név</mat-label>
+          <input matInput [formField]="documentForm.displayName" />
+          @if (
+            documentForm.displayName().touched() &&
+            documentForm.displayName().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          } @else if (
+            documentForm.displayName().touched() &&
+            documentForm.displayName().getError("maxLength")
+          ) {
+            <mat-error>A név legfeljebb 255 karakter lehet</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="document-file-field" data-testid="file">
+          <label class="document-file-label" for="document-file">
+            Feltöltendő fájl
+          </label>
+          <input
+            id="document-file"
+            type="file"
+            (change)="onFileSelected($event)"
+          />
+
+          @if (isEditMode() && currentFileName()) {
+            <p class="document-file-info">
+              Jelenlegi fájl: {{ currentFileName() }}
+            </p>
+            <p class="document-file-info">
+              Csak akkor válassz fájlt, ha cserélni szeretnéd.
+            </p>
+          }
+
+          <p class="document-file-info" aria-live="polite">
+            @if (selectedFileName()) {
+              Kiválasztott fájl: {{ selectedFileName() }}
+            }
+          </p>
+
+          @if (fileError()) {
+            <p class="admin-form-field-error" role="alert">{{ fileError() }}</p>
+          }
+        </div>
+
+        <mat-form-field data-testid="version">
+          <mat-label>Verzió</mat-label>
+          <input matInput [formField]="documentForm.version" />
+          @if (
+            documentForm.version().touched() &&
+            documentForm.version().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          } @else if (
+            documentForm.version().touched() &&
+            documentForm.version().getError("maxLength")
+          ) {
+            <mat-error>A verzió legfeljebb 255 karakter lehet</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field data-testid="publishedAt">
+          <mat-label>Közzététel dátuma</mat-label>
+          <input
+            matInput
+            [matDatepicker]="publishedAtPicker"
+            [formField]="documentForm.publishedAt"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="publishedAtPicker" />
+          <mat-datepicker #publishedAtPicker />
+          @if (
+            documentForm.publishedAt().touched() &&
+            documentForm.publishedAt().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="admin-form-actions">
+          <app-button-loadable
+            data-testid="submit-button"
+            class="submit-button"
+            type="submit"
+            [loading]="isSubmitting()"
+            [disabled]="isSubmitting() || documentForm().invalid()"
+          >
+            {{ submitLabel() }}
+          </app-button-loadable>
+          <a mat-button routerLink="/admin/integra">Mégsem</a>
+        </div>
+      </div>
+    </form>
+  }
+</div>

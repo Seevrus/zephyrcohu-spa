@@ -330,6 +330,9 @@ describe("App Component", () => {
       { path: "/admin/hirek", testId: "admin-news-component" },
       { path: "/admin/hirek/uj", testId: "admin-news-form-component" },
       { path: "/admin/hirek/1", testId: "admin-news-form-component" },
+      { path: "/admin/integra", testId: "admin-documents-component" },
+      { path: "/admin/integra/uj", testId: "admin-document-form-component" },
+      { path: "/admin/integra/1", testId: "admin-document-form-component" },
       { path: "/admin/linkek", testId: "admin-links-component" },
       {
         path: "/admin/linkek/kategoriak",
@@ -367,6 +370,8 @@ describe("App Component", () => {
       { path: "/admin/ajanlatok/uj" },
       { path: "/admin/hirek" },
       { path: "/admin/hirek/uj" },
+      { path: "/admin/integra" },
+      { path: "/admin/integra/uj" },
       { path: "/admin/linkek" },
       { path: "/admin/linkek/kategoriak" },
       { path: "/admin/linkek/uj" },
