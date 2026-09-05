@@ -1194,3 +1194,60 @@ Reviewer testing surfaced two gaps, both fixed in place (no new task number):
 
 **Next session should know:** Task 16 (BE: Integra documents admin API) is next and has no FE
 dependency on this task beyond routing conventions already established.
+
+## 2026-09-05 — Task 16: BE Integra documents admin API
+
+**Status:** done
+
+**Shipped:**
+- `app/Http/Controllers/AdminDocumentController.php` — `getDocuments`, `getDocument`,
+  `storeDocument`, `updateDocument`, `deleteDocument`.
+- `app/Http/Requests/StoreDocumentRequest.php`, `UpdateDocumentRequest.php` — `category`
+  validated with `Rule::enum(DocumentCategory::class)`, `file` required on store / nullable on
+  update, 50 MB max.
+- `app/Http/Resources/AdminDocumentResource.php` — `fileName` derived via `basename($path)`.
+- `routes/api.php` — `Route::controller(AdminDocumentController::class)->prefix('documents')`
+  group added first inside the existing `admin` group (alphabetically before `knowledgebase`).
+- `tests/Feature/AdminDocumentController/` — `GetAdminDocumentsTest.php` (list + single item),
+  `StoreDocumentTest.php`, `UpdateDocumentTest.php`, `DeleteDocumentTest.php`.
+
+**Decisions made while implementing:**
+- Storage path convention: `integra/{category}/{slugified-filename}` (e.g.
+  `integra/integra-flyer/flyer-2026.pdf`), matching the task doc's contract literally. Note this
+  differs from the already-seeded `DocumentSeeder` fixtures, which use legacy Hungarian folder
+  names (`integra/tajekoztato/…`) and from the ad-hoc `documents/{category}/…` paths used only
+  inside the public `DocumentController`'s fake-storage tests. Both are fine since `path` is an
+  opaque disk-relative string; no migration of existing seeded rows was requested or done.
+- `diskFor()` builds a throwaway `new Document(['category' => $category])` and calls its own
+  `disk()` method rather than duplicating the `IntegraUpdate → local` rule — keeps the disk
+  decision in exactly one place.
+- On a category move or file replacement, the new file is written and the row updated *before*
+  the old file is deleted, and any failure after the write rolls back the just-written file and
+  aborts with 500, leaving the original file/row untouched — satisfies "no orphan files/rows"
+  from both this task's self-review and the general D-series risk-aversion around file handling.
+- `deleteDocument` logs (not throws) when the file is already missing from disk, then still
+  deletes the row — explicitly required so a missing file can never leave a row unreachable
+  (the legacy failure mode called out in the task doc).
+- Added `getDocument`/`GetAdminDocumentsTest`'s second `describe` block for the single-item route
+  even though the task doc's file list only names 4 spec files — the route is part of the
+  contract and Task 17 (FE edit form) will need it, so it gets guard + 404 + happy-path coverage
+  inline in `GetAdminDocumentsTest.php` rather than a fifth file.
+
+**Surprises / gotchas:**
+- None structural. One test-authoring slip: a `published_at` fixture of `2099-01-01 00:00:00`
+  serializes to `2098-12-31T23:00:00.000000Z` in the app's non-UTC local timezone — same
+  off-by-one-hour class of issue as prior tasks, just requires reading `publishedAt` from the
+  actual response rather than eyeballing the input date when a test spans a timezone boundary.
+
+**Verification:**
+- `php artisan test --compact --filter=AdminDocument` → 29 passed
+- `php artisan test --compact --filter=DocumentController` → 39 passed (public side unchanged)
+- `php artisan test --compact` (full suite) → 310 passed
+- `vendor/bin/pint --dirty --format agent` → clean (one auto-fix pass, cosmetic only)
+
+**Left uncommitted for review:** yes
+
+**Next session should know:**
+- Task 17 (FE: Integra documents admin grid + upload form) is next and depends on this task plus
+  Task 03's UI kit. It will need a multipart-aware mutation (`FormData`, not JSON) — no existing
+  admin FE service does file upload yet, so that pattern is new for Task 17, not reused.

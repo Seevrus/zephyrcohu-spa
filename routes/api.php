@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminDocumentController;
 use App\Http\Controllers\AdminKnowledgebaseController;
 use App\Http\Controllers\AdminLinkCategoryController;
 use App\Http\Controllers\AdminLinkController;
@@ -69,6 +70,14 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 });
 
 Route::prefix('admin')->middleware('admin')->group(function () {
+    Route::controller(AdminDocumentController::class)->prefix('documents')->group(function () {
+        Route::get('/', 'getDocuments');
+        Route::post('/', 'storeDocument');
+        Route::get('/{document}', 'getDocument');
+        Route::post('/{document}', 'updateDocument');
+        Route::delete('/{document}', 'deleteDocument');
+    });
+
     Route::controller(AdminKnowledgebaseController::class)->prefix('knowledgebase')->group(function () {
         Route::get('/', 'getKnowledgebase');
         Route::post('/', 'storeKnowledgebaseItem');

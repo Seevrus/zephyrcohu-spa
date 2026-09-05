@@ -102,14 +102,14 @@ Guest / non-admin → 404. Unknown id → 404.
 
 ## Steps
 
-- [ ] **Step 1:** `GetAdminDocumentsTest` — seed documents in three categories incl. a future
+- [x] **Step 1:** `GetAdminDocumentsTest` — seed documents in three categories incl. a future
       `published_at`; assert ordering, `fileName`, guard cases. Red → implement → green.
-- [ ] **Step 2:** `StoreDocumentTest` with `Storage::fake('public')` and `Storage::fake('local')`
+- [x] **Step 2:** `StoreDocumentTest` with `Storage::fake('public')` and `Storage::fake('local')`
       plus `UploadedFile::fake()->create('Integra Flyer 2026.pdf', 120)`. Cases below.
-- [ ] **Step 3:** `UpdateDocumentTest` — metadata-only, category move (including the
+- [x] **Step 3:** `UpdateDocumentTest` — metadata-only, category move (including the
       public→local move for `integra-update`), file replacement, duplicate-at-destination 422.
-- [ ] **Step 4:** `DeleteDocumentTest` — row and file gone; missing file still deletes the row.
-- [ ] **Step 5:** Pint, self review, journal, tick Task 16.
+- [x] **Step 4:** `DeleteDocumentTest` — row and file gone; missing file still deletes the row.
+- [x] **Step 5:** Pint, self review, journal, tick Task 16.
 
 ## Tests to write
 
@@ -135,13 +135,13 @@ vendor/bin/pint --dirty --format agent
 
 ## Self review
 
-- [ ] `path` is stored **relative to the disk root**, exactly as `downloadDocument` expects
+- [x] `path` is stored **relative to the disk root**, exactly as `downloadDocument` expects
       (compare with a row created by the existing seed data or public test fixtures).
-- [ ] `integra-update` files land on the `local` (private) disk — a public URL must never expose
+- [x] `integra-update` files land on the `local` (private) disk — a public URL must never expose
       them.
-- [ ] No orphan files after a failed insert; no orphan rows after a failed upload.
-- [ ] Uploaded filenames are slugified, so spaces and accented characters cannot break the path.
-- [ ] The 50 MB limit matches (or is deliberately different from) the PHP `upload_max_filesize`
+- [x] No orphan files after a failed insert; no orphan rows after a failed upload.
+- [x] Uploaded filenames are slugified, so spaces and accented characters cannot break the path.
+- [x] The 50 MB limit matches (or is deliberately different from) the PHP `upload_max_filesize`
       of the target environment — if it cannot be verified, note the assumption in the journal.
 
 ## Done when
