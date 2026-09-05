@@ -17,7 +17,7 @@ return [
 
     'paths' => ['api/*', 'sanctum/*'],
 
-    'allowed_methods' => ['GET', 'OPTIONS', 'POST'],
+    'allowed_methods' => ['DELETE', 'GET', 'OPTIONS', 'POST', 'PUT'],
 
     'allowed_origins' => [env('APP_ORIGIN')],
 
@@ -25,7 +25,7 @@ return [
 
     'allowed_headers' => ['Content-Type', 'X-XSRF-Token'],
 
-    'exposed_headers' => [],
+    'exposed_headers' => ['Content-Disposition'],
 
     'max_age' => 300,
 
