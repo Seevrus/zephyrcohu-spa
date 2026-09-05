@@ -1,0 +1,25 @@
+@use "../../../../shared/mixins";
+@use "../../login/shared-register";
+
+:host(.app-admin-link-form) {
+  @include mixins.zephyr-main;
+
+  .admin-link-form-component {
+    width: 100%;
+
+    @include shared-register.form-layout;
+
+    .admin-form-actions {
+      align-items: center;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      width: 100%;
+
+      app-button-loadable.submit-button {
+        margin: 0;
+        width: unset;
+      }
+    }
+  }
+}

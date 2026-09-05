@@ -57,6 +57,33 @@ export const adminRoutes: Routes = [
     title: "Admin - Hír szerkesztése",
   },
   {
+    path: "linkek",
+    async loadComponent() {
+      const { AdminLinksComponent } =
+        await import("./pages/admin/links/admin-links.component");
+      return AdminLinksComponent;
+    },
+    title: "Admin - Hasznos linkek",
+  },
+  {
+    path: "linkek/uj",
+    async loadComponent() {
+      const { AdminLinkFormComponent } =
+        await import("./pages/admin/link-form/admin-link-form.component");
+      return AdminLinkFormComponent;
+    },
+    title: "Admin - Új link",
+  },
+  {
+    path: "linkek/:id",
+    async loadComponent() {
+      const { AdminLinkFormComponent } =
+        await import("./pages/admin/link-form/admin-link-form.component");
+      return AdminLinkFormComponent;
+    },
+    title: "Admin - Link szerkesztése",
+  },
+  {
     path: "tudasbazis",
     async loadComponent() {
       const { AdminKnowledgebaseComponent } =

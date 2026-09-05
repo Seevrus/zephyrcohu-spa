@@ -1,0 +1,117 @@
+<div data-testid="admin-link-form-component" class="admin-link-form-component">
+  <h1>{{ isEditMode() ? "Link szerkesztése" : "Új link felvétele" }}</h1>
+
+  @if (loadErrorMessage()) {
+    <app-form-unexpected-error />
+  } @else {
+    @if (errorMessage() === "INVALID_REQUEST_DATA") {
+      <app-error-card
+        data-testid="invalid-data-message"
+        title="Érvénytelen adatok"
+      >
+        <p>A megadott adatok nem megfelelőek.</p>
+      </app-error-card>
+    } @else if (errorMessage()) {
+      <app-form-unexpected-error />
+    }
+
+    <form (submit)="onSubmit($event)">
+      <div class="form-elements-container">
+        <mat-form-field data-testid="category">
+          <mat-label>Kategória</mat-label>
+          <mat-select
+            [formField]="linkForm.categorySelection"
+            (selectionChange)="onCategorySelectionChange($event)"
+          >
+            <mat-option value="none">Egyéb (nincs kategória)</mat-option>
+            @for (category of categories(); track category.id) {
+              <mat-option [value]="category.id">{{ category.name }}</mat-option>
+            }
+            <mat-option value="new">+ Új kategória</mat-option>
+          </mat-select>
+          @if (
+            linkForm.categorySelection().touched() &&
+            linkForm.categorySelection().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          }
+        </mat-form-field>
+
+        @if (isNewCategory()) {
+          <mat-form-field data-testid="newCategoryName">
+            <mat-label>Új kategória neve</mat-label>
+            <input matInput [formField]="linkForm.newCategoryName" />
+            @if (
+              linkForm.newCategoryName().touched() &&
+              linkForm.newCategoryName().getError("required")
+            ) {
+              <mat-error>Kötelező mező</mat-error>
+            } @else if (
+              linkForm.newCategoryName().touched() &&
+              linkForm.newCategoryName().getError("maxLength")
+            ) {
+              <mat-error
+                >A kategórianév legfeljebb 255 karakter lehet</mat-error
+              >
+            } @else if (
+              linkForm.newCategoryName().touched() &&
+              linkForm.newCategoryName().getError("reserved")
+            ) {
+              <mat-error>Ez a kategórianév foglalt.</mat-error>
+            }
+          </mat-form-field>
+        }
+
+        <mat-form-field data-testid="title">
+          <mat-label>Hivatkozás szövege</mat-label>
+          <input matInput [formField]="linkForm.title" />
+          @if (
+            linkForm.title().touched() && linkForm.title().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          } @else if (
+            linkForm.title().touched() && linkForm.title().getError("maxLength")
+          ) {
+            <mat-error>A szöveg legfeljebb 500 karakter lehet</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field data-testid="url">
+          <mat-label>Hivatkozás URI címe</mat-label>
+          <input matInput [formField]="linkForm.url" />
+          <mat-hint
+            >Kötelezően a protokollal együtt! (pl.: „https://”)</mat-hint
+          >
+          @if (
+            linkForm.url().touched() && linkForm.url().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          } @else if (
+            linkForm.url().touched() && linkForm.url().getError("maxLength")
+          ) {
+            <mat-error>A cím legfeljebb 500 karakter lehet</mat-error>
+          } @else if (
+            linkForm.url().touched() && linkForm.url().getError("pattern")
+          ) {
+            <mat-error
+              >A cím protokollal együtt adható meg (pl.: https://)</mat-error
+            >
+          }
+        </mat-form-field>
+
+        <div class="admin-form-actions">
+          <app-button-loadable
+            data-testid="submit-button"
+            class="submit-button"
+            type="submit"
+            [loading]="isSubmitting()"
+            [disabled]="isSubmitting() || linkForm().invalid()"
+          >
+            {{ submitLabel() }}
+          </app-button-loadable>
+          <a mat-button routerLink="/admin/linkek">Mégsem</a>
+        </div>
+      </div>
+    </form>
+  }
+</div>

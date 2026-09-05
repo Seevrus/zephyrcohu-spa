@@ -80,10 +80,10 @@ created) and the public `queryKeys.links`.
 
 ## Steps
 
-- [ ] **Step 1:** Mocks, grid spec, service + grid.
-- [ ] **Step 2:** Form spec (cases below), then the form.
-- [ ] **Step 3:** Routes + `app.component.spec.ts` case for `/admin/linkek`.
-- [ ] **Step 4:** Verify, self review, journal, tick Task 14.
+- [x] **Step 1:** Mocks, grid spec, service + grid.
+- [x] **Step 2:** Form spec (cases below), then the form.
+- [x] **Step 3:** Routes + `app.component.spec.ts` case for `/admin/linkek`.
+- [x] **Step 4:** Verify, self review, journal, tick Task 14.
 
 ## Tests to write
 
@@ -110,11 +110,11 @@ npx ng test && npx ng lint && npx tsc -p tsconfig.app.json && npx prettier . --c
 
 ## Self review
 
-- [ ] External links carry `rel="noopener noreferrer"` with `target="_blank"`.
-- [ ] The "new category" input is only required while that branch is selected, and is cleared
+- [x] External links carry `rel="noopener noreferrer"` with `target="_blank"`.
+- [x] The "new category" input is only required while that branch is selected, and is cleared
       when the admin switches back to an existing category.
-- [ ] The public links query is invalidated by every mutation.
-- [ ] Grid actions have aria-labels naming the link.
+- [x] The public links query is invalidated by every mutation.
+- [x] Grid actions have aria-labels naming the link.
 
 ## Done when
 

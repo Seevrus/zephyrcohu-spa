@@ -23,11 +23,6 @@
   width: 100%;
 }
 
-/* Layout for admin content forms that mix short one-line fields with one or
- more rich text editors.
- One-line fields cap at 500px (matching the app's other forms), rich text
- fieldsets get the full 1200px, everything left-aligns except the action
- buttons, which stay centered as their own 500px group.*/
 @mixin zephyr-admin-rich-text-form {
   .form-elements-container {
     align-items: flex-start;

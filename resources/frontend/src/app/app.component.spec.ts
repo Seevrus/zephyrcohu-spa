@@ -330,6 +330,9 @@ describe("App Component", () => {
       { path: "/admin/hirek", testId: "admin-news-component" },
       { path: "/admin/hirek/uj", testId: "admin-news-form-component" },
       { path: "/admin/hirek/1", testId: "admin-news-form-component" },
+      { path: "/admin/linkek", testId: "admin-links-component" },
+      { path: "/admin/linkek/uj", testId: "admin-link-form-component" },
+      { path: "/admin/linkek/1", testId: "admin-link-form-component" },
       { path: "/admin/tudasbazis", testId: "admin-knowledgebase-component" },
       { path: "/admin/tudasbazis/cimkek", testId: "admin-tags-component" },
       {
@@ -360,6 +363,8 @@ describe("App Component", () => {
       { path: "/admin/ajanlatok/uj" },
       { path: "/admin/hirek" },
       { path: "/admin/hirek/uj" },
+      { path: "/admin/linkek" },
+      { path: "/admin/linkek/uj" },
       { path: "/admin/tudasbazis" },
       { path: "/admin/tudasbazis/cimkek" },
       { path: "/admin/tudasbazis/uj" },

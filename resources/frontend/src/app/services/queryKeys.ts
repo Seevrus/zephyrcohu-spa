@@ -3,9 +3,11 @@ import { type IntegraCategory } from "../../types/integra";
 export const mutationKeys = {
   checkRecaptchaToken: ["check_recaptcha_token"],
   createAdminKnowledgebase: ["create_admin_knowledgebase"],
+  createAdminLink: ["create_admin_link"],
   createAdminNews: ["create_admin_news"],
   createAdminOffer: ["create_admin_offer"],
   deleteAdminKnowledgebase: ["delete_admin_knowledgebase"],
+  deleteAdminLink: ["delete_admin_link"],
   deleteAdminNews: ["delete_admin_news"],
   deleteAdminOffer: ["delete_admin_offer"],
   deleteAdminTag: ["delete_admin_tag"],
@@ -22,6 +24,7 @@ export const mutationKeys = {
   requestNewPassword: ["request_new_password"],
   requestOffer: ["request_offer"],
   updateAdminKnowledgebase: ["update_admin_knowledgebase"],
+  updateAdminLink: ["update_admin_link"],
   updateAdminNews: ["update_admin_news"],
   updateAdminOffer: ["update_admin_offer"],
   updateAdminTag: ["update_admin_tag"],
@@ -33,6 +36,11 @@ export const queryKeys = {
   adminKnowledgebase: ["admin_knowledgebase"],
   adminKnowledgebaseItem(id?: number) {
     return id ? ["admin_knowledgebase_item", id] : ["admin_knowledgebase_item"];
+  },
+  adminLinkCategories: ["admin_link_categories"],
+  adminLinks: ["admin_links"],
+  adminLinkItem(id?: number) {
+    return id ? ["admin_link_item", id] : ["admin_link_item"];
   },
   adminNews: ["admin_news"],
   adminNewsItem(id?: number) {

@@ -1,0 +1,29 @@
+@use "../../../../shared/mixins";
+
+:host(.app-admin-links) {
+  @include mixins.zephyr-admin-main;
+
+  background-color: unset;
+
+  .admin-links-component {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .admin-links-header {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+
+    h1 {
+      margin-right: auto;
+    }
+  }
+
+  .admin-links-grid {
+    @include mixins.zephyr-grid;
+  }
+}

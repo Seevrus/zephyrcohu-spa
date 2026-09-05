@@ -1056,3 +1056,97 @@ with the same name. Only a DB-level constraint closes that gap.
 with the new constraints); `vendor/bin/pint --dirty --format agent` → clean.
 
 **Left uncommitted for review:** yes
+
+## 2026-09-05 — Task 14: FE links admin grid + form
+
+**Status:** done
+
+**Shipped:**
+- `types/admin-links.ts`, `services/admin-links.query.service.ts` (`getAdminLinks`,
+  `getAdminLink`, `getAdminLinkCategories`, `createAdminLink`, `updateAdminLink`,
+  `deleteAdminLink`), plus `queryKeys.ts`/`mutationKeys` entries — mirrors the offers/tags
+  services exactly. Every mutation invalidates `adminLinks`, `adminLinkCategories` (a mutation
+  may create or empty a category) and the public `links` key.
+- `mocks/admin/links/*` — request matchers + OK-response factories for links and link
+  categories, following the offers mock shape.
+- `components/ag-grid/link-url-cell-renderer/` — a small `ICellRendererAngularComp` rendering
+  the row's URL as `<a target="_blank" rel="noopener noreferrer">`. Deliberately not modelled on
+  `integra-document-link-cell-renderer` (that one drives a download mutation); this is a plain
+  outbound link with no request behind the click.
+- `pages/admin/links/admin-links.component.*` — grid with Kategória (falls back to "Egyéb"
+  client-side for a `null` category, per the API contract), Hivatkozás szövege, the URL cell
+  renderer, and the shared `AdminActionsCellRendererComponent` Kezelés column. Header carries
+  both "Új link felvétele" and "Kategóriák" buttons; the latter points at
+  `/admin/linkek/kategoriak`, which 404s until Task 15 lands — expected per `00-overview.md`'s
+  "Project state" note.
+- `pages/admin/link-form/admin-link-form.component.*` — `mat-select` with "Egyéb (nincs
+  kategória)", the loaded categories, and "+ Új kategória"; picking the last reveals a text
+  input for the new name. Whatever is picked/typed resolves to `categoryName: string | null`
+  in the request, exactly as the Task 13 API expects.
+- Routes: `linkek`, `linkek/uj`, `linkek/:id` added to `admin.routes.ts` (literal segments
+  before `:id`, per the existing convention). `linkek/kategoriak` is **not** registered yet —
+  its component doesn't exist until Task 15; adding the route now would 500 on navigation
+  instead of the accepted 404. `app.component.spec.ts` extended with the matching
+  admin/non-admin cases.
+
+**Decisions made while implementing:**
+- The "new category required only while that branch is selected" rule turned out not to need
+  the manual-`onSubmit`-validation fallback the task doc allowed for: `@angular/forms/signals`
+  (v22 as installed) ships a `when` option on `required()` (`required(path, { when: (ctx) =>
+  ctx.valueOf(otherPath) === ... } )`), so it's a schema-level conditional validator like any
+  other field, not something bolted on in `onSubmit`. No `applyWhen` function exists in this
+  version — `required`'s `when` covers the same need for this case.
+- The URL protocol check uses the built-in `pattern()` signal-forms validator (available in this
+  version) rather than a hand-rolled `validate()` function — same idea as
+  `richTextRequiredValidator` but no custom function needed here.
+- The "Kategória" grid column reads `category?.name ?? "Egyéb"` via a `valueFormatter`, keeping
+  the "Egyéb" fallback wording entirely client-side, as the task doc specifies (the admin API
+  itself only ever sends `category: null`).
+- Reused `zephyr-admin-rich-text-form` (despite its name) for the link form's layout — it's the
+  only admin-form layout mixin in the codebase and works fine with zero rich-text fieldsets;
+  introducing a second, near-duplicate mixin for a form with no rich text felt like the wrong
+  trade.
+
+**Surprises / gotchas:**
+- A handful of `ng test` runs report 4 "Unhandled Rejection: NG04002: Cannot match any routes"
+  entries attributed to `admin-link-form.component.spec.ts`, even though every test in that file
+  passes. Root-caused to the existing (pre-Task-14) pattern shared by every admin form —
+  `this.router.navigate([...])` is fired without `await` in `onSubmit`, and the test harness's
+  `provideRouter([])` has no routes to match, so the navigation promise always rejects; offer/
+  news/knowledgebase forms do the exact same thing and are presumably equally exposed, but
+  whether it surfaces as a reported "unhandled rejection" depends on which test happens to be
+  running in the same Vitest worker when that promise settles. Not a regression introduced here
+  and not affecting pass/fail — flagged for whoever eventually hardens the admin forms' test
+  harness (e.g. giving `provideRouter` real routes, or awaiting/catching the navigation).
+
+**Verification:** `cd resources/frontend && npx ng test` → 461/461 passed (up from 436);
+`npx ng lint` → clean (auto-fixed two spec-file spacing warnings); `npx tsc -p
+tsconfig.app.json` → clean; `npx prettier . --check` → clean (auto-fixed formatting on the new
+files); `npx knip` → clean (one initially-unused exported type inlined away).
+
+**Left uncommitted for review:** yes
+
+### Review follow-up (same day)
+
+Reviewer testing surfaced two gaps, both fixed in place (no new task number):
+
+- **Missing client-side validation for the reserved category name.** The task doc had already
+  called for this ("keep the '+ Új kategória' input from submitting it in the first place") but
+  the first pass only relied on the backend's 422. Added a `validate()` on
+  `linkForm.newCategoryName` (active only while `categorySelection === "new"`, via the same
+  `valueOf()` sibling-read used by the conditional `required`) that rejects the exact reserved
+  name kept in sync with `Link::UNCATEGORISED_NAME` (`"Egyéb"`), showing the same
+  "Ez a kategórianév foglalt." message the backend would have returned, and disabling submit.
+  Typing an *existing* category's name into "+ Új kategória" is intentionally left unvalidated —
+  the backend resolves it to that category via `firstOrCreate` rather than erroring, which is
+  the documented, correct behaviour, not a bug.
+- **The 422 message read as plain text, not a card.** Swapped the bare
+  `<p data-testid="invalid-data-message">` for the shared `app-error-card` (title "Érvénytelen
+  adatok"), matching `FormUnexpectedErrorComponent`'s look. This only touches the links form —
+  `admin-offer-form`/`admin-news-form`/`admin-knowledgebase-form` still use the plain-text
+  version, so the two styles now coexist. Worth unifying across all admin forms later, but that
+  wasn't asked for here.
+
+**Verification:** `npx ng test` → 462/462 passed (one new test: reserved name blocks submit);
+`npx ng lint` → clean; `npx tsc -p tsconfig.app.json` → clean; `npx prettier . --check` → clean;
+`npx knip` → clean.
