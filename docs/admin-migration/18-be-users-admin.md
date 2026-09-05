@@ -136,14 +136,14 @@ Guest / non-admin → 404 on every route. Unknown id → 404.
 
 ## Steps
 
-- [ ] **Step 1:** `GetAdminUsersTest` first (ordering, flags, `isAdmin`, guard cases) →
+- [x] **Step 1:** `GetAdminUsersTest` first (ordering, flags, `isAdmin`, guard cases) →
       implement `getUsers` + `AdminUserResource`.
-- [ ] **Step 2:** Write the three mailables and their views, modelled on `UserDeleted` /
+- [x] **Step 2:** Write the three mailables and their views, modelled on `UserDeleted` /
       `resources/views/mail/user_deleted/`. Keep the Hungarian copy from the legacy templates.
-- [ ] **Step 3:** `UpdateUserTest` with `Mail::fake()` — cases below → implement `updateUser`.
-- [ ] **Step 4:** `DeleteUserTest` with `Mail::fake()` → implement `deleteUser`.
-- [ ] **Step 5:** `SendUserEmailTest` with `Mail::fake()` → implement `sendUserEmail`.
-- [ ] **Step 6:** Pint, self review, journal, tick Task 18.
+- [x] **Step 3:** `UpdateUserTest` with `Mail::fake()` — cases below → implement `updateUser`.
+- [x] **Step 4:** `DeleteUserTest` with `Mail::fake()` → implement `deleteUser`.
+- [x] **Step 5:** `SendUserEmailTest` with `Mail::fake()` → implement `sendUserEmail`.
+- [x] **Step 6:** Pint, self review, journal, tick Task 18.
 
 ## Tests to write
 
@@ -167,16 +167,16 @@ vendor/bin/pint --dirty --format agent
 
 ## Self review
 
-- [ ] The generated password is never logged and never returned in the HTTP response — only
+- [x] The generated password is never logged and never returned in the HTTP response — only
       mailed.
-- [ ] The notification mail tells the user to change the generated password after logging in.
-- [ ] An admin cannot delete themselves or another admin.
-- [ ] A mail failure on update does not roll back a committed change; a mail failure on the
+- [x] The notification mail tells the user to change the generated password after logging in.
+- [x] An admin cannot delete themselves or another admin.
+- [x] A mail failure on update does not roll back a committed change; a mail failure on the
       "write to user" endpoint *is* surfaced.
-- [ ] Email uniqueness ignores the user being edited.
-- [ ] The three mail views render in both `html` and `text` variants (Laravel will throw if a
+- [x] Email uniqueness ignores the user being edited.
+- [x] The three mail views render in both `html` and `text` variants (Laravel will throw if a
       view is missing — a test proves each one renders).
-- [ ] `UserResource`, `UserPolicy` and the public user endpoints are untouched.
+- [x] `UserResource`, `UserPolicy` and the public user endpoints are untouched.
 
 ## Done when
 

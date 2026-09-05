@@ -1448,3 +1448,60 @@ unaffected since it prefills from the fetched item as before.
 (`toDateString()` comparison, to stay independent of time-of-day).
 
 **Verification:** `npx ng test` → 504 passed; lint / tsc / prettier / knip clean.
+
+## 2026-09-05 — Task 18: BE users admin API + notification mails
+
+**Status:** done
+
+**Shipped:**
+- `app/Http/Controllers/AdminUserController.php` — `getUsers` (all users, ordered by email,
+  eager-loading `admin`), `updateUser`, `deleteUser`, `sendUserEmail`.
+- `app/Http/Requests/UpdateUserRequest.php` — email uniqueness ignoring the edited user; a
+  `withValidator` `after()` hook rejects a submit that changes nothing at all with the legacy
+  message on the `email` field.
+- `app/Http/Requests/DeleteUserRequest.php`, `SendUserEmailRequest.php`.
+- `app/Http/Resources/AdminUserResource.php` — `id`, `email`, `confirmed`, `newsletter`,
+  `isAdmin`, `passwordSetAt`, `lastActive`.
+- `app/Mail/AdminUpdatedUser.php`, `AdminDeletedUser.php`, `AdminMessage.php` + their
+  `resources/views/mail/{admin_updated_user,admin_deleted_user,admin_message}/{html,text}.blade.php`
+  views, copying `UserDeleted`'s structure and the established `#d7e3ff` mail styling.
+- `routes/api.php` — `GET/PUT/DELETE /admin/users[/{user}]`, `POST /admin/users/{user}/email`.
+- `tests/Feature/AdminUserController/{GetAdminUsersTest,UpdateUserTest,DeleteUserTest,SendUserEmailTest}.php`.
+
+**Decisions made while implementing:**
+- `Mailable::$subject` is already a non-readonly property on the base class, so
+  `AdminDeletedUser`/`AdminMessage`'s admin-supplied subject is exposed as `mailSubject` instead —
+  a `public readonly string $subject` promoted property fatals with "Cannot redeclare non-readonly
+  property ... as readonly".
+- `confirmed` flipping `true → false` is now allowed and simply persists the flag (no mail
+  sentence, no `users_new` row touched) — the legacy PHP's `UPDATE` statement only ever included
+  the `megerositve` column when setting it to `1`, so it silently could not un-confirm a user. The
+  task doc already called this out as a deliberate change, not a bug to reproduce.
+- The self-delete/other-admin delete guard returns `403 GENERIC_FORBIDDEN` and is checked in the
+  controller (after `DeleteUserRequest` validation, before the delete), not in a policy — none of
+  the other admin controllers use policies, and this rule only applies to this one endpoint.
+
+**Surprises / gotchas:**
+- `Carbon::setTestNowAndTimezone(..., 'Europe/Budapest')` (used by `GetAdminTagsTest`) sets the
+  *application's* default timezone for the test, not just "now" — so a DB timestamp inserted as
+  literal Budapest local time serializes to a UTC ISO string one hour earlier. Existing tests
+  using that helper never asserted exact datetimes, so this had gone unnoticed; switched
+  `GetAdminUsersTest` to plain `Carbon::setTestNow()` since it asserts exact `passwordSetAt`/
+  `lastActive` values.
+- The admin guard N+1 test can't assert exactly one query against `user_admins`: the `admin`
+  middleware itself queries it once to authorize the request, then the eager-loaded resource
+  relation queries it again — two total, not one, regardless of user count. Asserted
+  `toBeLessThanOrEqual(2)` instead of an exact count.
+
+**Verification:**
+- `php artisan test --compact --filter=AdminUser` → 30 passed.
+- `php artisan test --compact --filter=UserController` → 113 passed (public user endpoints
+  untouched).
+- `php artisan test --compact` (full suite) → 347 passed.
+- `vendor/bin/pint --dirty --format agent` → clean.
+
+**Left uncommitted for review:** yes
+
+**Next session should know:**
+- Task 19 (FE users admin grid) can now build against this API. The admin UI warning about the
+  generated-password fallback (decision D15) belongs in Task 20's edit form, not here.

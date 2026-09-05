@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminLinkController;
 use App\Http\Controllers\AdminNewsController;
 use App\Http\Controllers\AdminOfferController;
 use App\Http\Controllers\AdminTagController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\KnowledgebaseController;
@@ -120,5 +121,12 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/', 'getTags');
         Route::put('/{tag}', 'updateTag');
         Route::delete('/{tag}', 'deleteTag');
+    });
+
+    Route::controller(AdminUserController::class)->prefix('users')->group(function () {
+        Route::get('/', 'getUsers');
+        Route::put('/{user}', 'updateUser');
+        Route::delete('/{user}', 'deleteUser');
+        Route::post('/{user}/email', 'sendUserEmail');
     });
 });

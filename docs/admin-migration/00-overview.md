@@ -223,7 +223,7 @@ These paths are exactly the ones the already-shipped `app-admin-nav` component l
 | 15 | FE | [Link categories admin page](15-fe-link-categories.md) | 14 | [x] |
 | 16 | BE | [Integra documents admin API](16-be-integra-documents.md) | 01 | [x] |
 | 17 | FE | [Integra documents admin grid + upload form](17-fe-integra.md) | 03, 16 | [x] |
-| 18 | BE | [Users admin API + mails](18-be-users-admin.md) | 01 | [ ] |
+| 18 | BE | [Users admin API + mails](18-be-users-admin.md) | 01 | [x] |
 | 19 | FE | [Users admin grid](19-fe-users-list.md) | 03, 18 | [ ] |
 | 20 | FE | [User edit form](20-fe-user-edit.md) | 19 | [ ] |
 | 21 | FE | [Write to user + delete user flows](21-fe-user-email-and-delete.md) | 19 | [ ] |
