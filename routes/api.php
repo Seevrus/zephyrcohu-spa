@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AdminKnowledgebaseController;
+use App\Http\Controllers\AdminLinkCategoryController;
+use App\Http\Controllers\AdminLinkController;
 use App\Http\Controllers\AdminNewsController;
 use App\Http\Controllers\AdminOfferController;
 use App\Http\Controllers\AdminTagController;
@@ -73,6 +75,20 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/{knowledgebase}', 'getKnowledgebaseItem');
         Route::put('/{knowledgebase}', 'updateKnowledgebaseItem');
         Route::delete('/{knowledgebase}', 'deleteKnowledgebaseItem');
+    });
+
+    Route::controller(AdminLinkController::class)->prefix('links')->group(function () {
+        Route::get('/', 'getLinks');
+        Route::post('/', 'storeLink');
+        Route::get('/{link}', 'getLink');
+        Route::put('/{link}', 'updateLink');
+        Route::delete('/{link}', 'deleteLink');
+    });
+
+    Route::controller(AdminLinkCategoryController::class)->prefix('link_categories')->group(function () {
+        Route::get('/', 'getLinkCategories');
+        Route::put('/{linkCategory}', 'updateLinkCategory');
+        Route::delete('/{linkCategory}', 'deleteLinkCategory');
     });
 
     Route::controller(AdminNewsController::class)->prefix('news')->group(function () {

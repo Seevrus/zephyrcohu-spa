@@ -44,7 +44,7 @@ Delete dialog: "Link törlése" / `Biztosan törölni szeretnéd a(z) „<title>
 | Hivatkozás szövege | `matInput` | required, max 500 |
 | Hivatkozás URI címe | `matInput`, hint "Kötelezően a protokollal együtt! (pl.: „https://”)" | required, max 500, must start with `http://` or `https://` |
 
-The category select is fed by `GET /admin/link-categories` (the same service). Whatever the admin
+The category select is fed by `GET /admin/link_categories` (the same service). Whatever the admin
 picks or types is sent as `categoryName` — the backend resolves or creates it (Task 13) — except
 the "Egyéb (nincs kategória)" option, which sends `categoryName: null` and leaves the link
 uncategorised; the public page then groups it under "Egyéb". The request type is therefore

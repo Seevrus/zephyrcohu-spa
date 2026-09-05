@@ -156,9 +156,9 @@ npx knip             # catches unused exports/files introduced by a task
 | PUT | `/api/admin/tags/{tag}` | rename | 11 |
 | DELETE | `/api/admin/tags/{tag}` | delete (detaches) | 11 |
 | GET/POST/PUT/DELETE | `/api/admin/links[/{link}]` | links CRUD | 13 |
-| GET | `/api/admin/link-categories` | categories with link counts | 13 |
-| PUT | `/api/admin/link-categories/{linkCategory}` | rename | 13 |
-| DELETE | `/api/admin/link-categories/{linkCategory}` | delete (its links fall back to "Egyéb") | 13 |
+| GET | `/api/admin/link_categories` | categories with link counts | 13 |
+| PUT | `/api/admin/link_categories/{linkCategory}` | rename | 13 |
+| DELETE | `/api/admin/link_categories/{linkCategory}` | delete (its links fall back to "Egyéb") | 13 |
 | GET | `/api/admin/documents` | all Integra documents | 16 |
 | POST | `/api/admin/documents` | upload (multipart) | 16 |
 | POST | `/api/admin/documents/{document}` | update, optional new file (multipart) | 16 |
@@ -217,7 +217,7 @@ These paths are exactly the ones the already-shipped `app-admin-nav` component l
 | 10 | FE | [Knowledgebase admin grid + form](10-fe-knowledgebase.md) | 03, 06, 09 | [x] |
 | 11 | BE | [Tags admin API](11-be-tags-crud.md) | 01 | [x] |
 | 12 | FE | [Tags admin page](12-fe-tags.md) | 03, 11 | [x] |
-| 13 | BE | [Links + link categories admin API](13-be-links-crud.md) | 01 | [ ] |
+| 13 | BE | [Links + link categories admin API](13-be-links-crud.md) | 01 | [x] |
 | 14 | FE | [Links admin grid + form](14-fe-links.md) | 03, 13 | [ ] |
 | 15 | FE | [Link categories admin page](15-fe-link-categories.md) | 14 | [ ] |
 | 16 | BE | [Integra documents admin API](16-be-integra-documents.md) | 01 | [ ] |

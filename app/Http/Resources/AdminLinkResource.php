@@ -2,17 +2,19 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Link;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class LinkResource extends JsonResource {
+class AdminLinkResource extends JsonResource {
     public function toArray(Request $request): array {
         return [
             'id' => $this->id,
             'title' => $this->title,
             'url' => $this->url,
-            'category' => $this->category?->category_name ?? Link::UNCATEGORISED_NAME,
+            'category' => $this->category ? [
+                'id' => $this->category->id,
+                'name' => $this->category->category_name,
+            ] : null,
         ];
     }
 }

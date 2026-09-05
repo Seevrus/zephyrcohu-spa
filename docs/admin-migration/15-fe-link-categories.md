@@ -56,7 +56,7 @@ Route: `{ path: "linkek/kategoriak", …, title: "Admin - Link kategóriák" }` 
 
 ## Steps
 
-- [ ] **Step 1:** Mocks for `PUT`/`DELETE /admin/link-categories/:id`.
+- [ ] **Step 1:** Mocks for `PUT`/`DELETE /admin/link_categories/:id`.
 - [ ] **Step 2:** Spec first (cases below), then the page.
 - [ ] **Step 3:** Route + an `app.component.spec.ts` case proving `/admin/linkek/kategoriak`
       renders the categories page and not the link form.
@@ -69,12 +69,12 @@ Route: `{ path: "linkek/kategoriak", …, title: "Admin - Link kategóriák" }` 
 - loading, then rows with names and link counts
 - empty state
 - error card on 500
-- rename dialog → `PUT /admin/link-categories/2` with `{ name }`
+- rename dialog → `PUT /admin/link_categories/2` with `{ name }`
 - rename 422 keeps the dialog open with the duplicate message
 - renaming to "Egyéb" surfaces the reserved-name message from the backend
 - delete dialog says the links move to "Egyéb", with the right count, when `linkCount > 0`
 - delete dialog shows no such line when `linkCount === 0`
-- confirming delete fires `DELETE /admin/link-categories/2`; cancelling fires nothing
+- confirming delete fires `DELETE /admin/link_categories/2`; cancelling fires nothing
 
 ## Verification
 

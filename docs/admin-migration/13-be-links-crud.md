@@ -151,7 +151,7 @@ Route::controller(AdminLinkController::class)->prefix('links')->group(function (
     Route::delete('/{link}', 'deleteLink');
 });
 
-Route::controller(AdminLinkCategoryController::class)->prefix('link-categories')->group(function () {
+Route::controller(AdminLinkCategoryController::class)->prefix('link_categories')->group(function () {
     Route::get('/', 'getLinkCategories');
     Route::put('/{linkCategory}', 'updateLinkCategory');
     Route::delete('/{linkCategory}', 'deleteLinkCategory');
@@ -191,7 +191,7 @@ együtt! (pl.: „https://”)" is enforced by the `url` rule.
 
 ### `DELETE /api/admin/links/{link}` → 204
 
-### `GET /api/admin/link-categories` → 200
+### `GET /api/admin/link_categories` → 200
 
 ```json
 { "data": [ { "id": 2, "name": "Hasznos oldalak", "linkCount": 5 } ] }
@@ -199,7 +199,7 @@ együtt! (pl.: „https://”)" is enforced by the `url` rule.
 
 Ordered by name, `withCount('links')`.
 
-### `PUT /api/admin/link-categories/{linkCategory}` → 200
+### `PUT /api/admin/link_categories/{linkCategory}` → 200
 
 ```php
 'name' => [
@@ -209,7 +209,7 @@ Ordered by name, `withCount('links')`.
 ],
 ```
 
-### `DELETE /api/admin/link-categories/{linkCategory}` → 204
+### `DELETE /api/admin/link_categories/{linkCategory}` → 204
 
 Deletes the category; its links **survive** with `link_category_id = null` and read back as
 "Egyéb" (Part A's `nullOnDelete`), which restores the legacy behaviour. The FE dialog says where
@@ -220,27 +220,27 @@ Guest / non-admin → 404 everywhere. Unknown id → 404.
 
 ## Steps
 
-- [ ] **Step 0:** Finish Part A (migration, read path, its tests) and confirm both the PHP and the
+- [x] **Step 0:** Finish Part A (migration, read path, its tests) and confirm both the PHP and the
       FE links specs are green before touching the admin API.
-- [ ] **Step 1:** `GetAdminLinksTest` — seed two categories, three categorised links and one
+- [x] **Step 1:** `GetAdminLinksTest` — seed two categories, three categorised links and one
       uncategorised one; assert ordering (the null one sorting as "Egyéb"), the embedded category
       object, `category: null` for the uncategorised link, guard cases. Red → implement → green.
-- [ ] **Step 2:** `StoreLinkTest` — creates with an existing category name (no new category row);
+- [x] **Step 2:** `StoreLinkTest` — creates with an existing category name (no new category row);
       creates with a brand-new category name (category row created); creates with
       `categoryName: null` (link stored with a null category); rejects `"Egyéb"` with 422;
       422 on a missing protocol (`example.com`); 422 on missing title; guard cases.
-- [ ] **Step 3:** `UpdateLinkTest` — moves a link to another existing category; creates a category
+- [x] **Step 3:** `UpdateLinkTest` — moves a link to another existing category; creates a category
       when a new name is given; clears the category with `categoryName: null`; 404 unknown id;
       422; guard cases.
-- [ ] **Step 4:** `DeleteLinkTest` — 204, row gone, category untouched; guard cases.
-- [ ] **Step 5:** `GetAdminLinkCategoriesTest` — ordering, `linkCount` (including a zero-link
+- [x] **Step 4:** `DeleteLinkTest` — 204, row gone, category untouched; guard cases.
+- [x] **Step 5:** `GetAdminLinkCategoriesTest` — ordering, `linkCount` (including a zero-link
       category); guard cases.
-- [ ] **Step 6:** `UpdateLinkCategoryTest` — rename; duplicate name 422; renaming to `"Egyéb"`
+- [x] **Step 6:** `UpdateLinkCategoryTest` — rename; duplicate name 422; renaming to `"Egyéb"`
       422; renaming to its own name succeeds; 404; guard cases.
-- [ ] **Step 7:** `DeleteLinkCategoryTest` — category gone, **its links still exist with a null
+- [x] **Step 7:** `DeleteLinkCategoryTest` — category gone, **its links still exist with a null
       category** and read back as "Egyéb" through the public endpoint; other categories' links
       untouched; 404; guard cases.
-- [ ] **Step 8:** Pint, self review, journal, tick Task 13.
+- [x] **Step 8:** Pint, self review, journal, tick Task 13.
 
 ## Verification
 
@@ -254,18 +254,18 @@ vendor/bin/pint --dirty --format agent
 
 ## Self review
 
-- [ ] Deleting a category never deletes a link — proven by a test that reads the links back
+- [x] Deleting a category never deletes a link — proven by a test that reads the links back
       afterwards, not by reading the migration.
-- [ ] The public endpoint returns uncategorised links (the left-join regression has a test).
-- [ ] `firstOrCreate` trims the category name, so `"Hasznos "` does not create a twin of
+- [x] The public endpoint returns uncategorised links (the left-join regression has a test).
+- [x] `firstOrCreate` trims the category name, so `"Hasznos "` does not create a twin of
       `"Hasznos"`.
-- [ ] Category ids are never accepted from the client for creation (only names) — one code path,
+- [x] Category ids are never accepted from the client for creation (only names) — one code path,
       no ambiguity.
-- [ ] `"Egyéb"` cannot be created or renamed to, in either endpoint.
-- [ ] The public `LinkResource` JSON shape is unchanged (`category` is still always a string), so
+- [x] `"Egyéb"` cannot be created or renamed to, in either endpoint.
+- [x] The public `LinkResource` JSON shape is unchanged (`category` is still always a string), so
       no FE type or page needed touching.
-- [ ] The migration's `down()` documents its lossiness.
-- [ ] `url` validation accepts `https://` and rejects a bare host.
+- [x] The migration's `down()` documents its lossiness.
+- [x] `url` validation accepts `https://` and rejects a bare host.
 
 ## Done when
 

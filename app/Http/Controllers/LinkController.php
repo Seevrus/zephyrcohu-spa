@@ -10,8 +10,8 @@ class LinkController extends Controller {
     public function getLinks() {
         try {
             $links = Link::query()
-                ->join('link_categories', 'link_categories.id', '=', 'links.link_category_id')
-                ->orderBy('link_categories.category_name')
+                ->leftJoin('link_categories', 'link_categories.id', '=', 'links.link_category_id')
+                ->orderByRaw('COALESCE(link_categories.category_name, ?)', [Link::UNCATEGORISED_NAME])
                 ->orderBy('links.title')
                 ->select('links.*')
                 ->with('category')

@@ -954,3 +954,72 @@ same) — not something this fix changed.
 tsconfig.app.json`, `npx prettier . --check`, `npx knip` → all clean.
 
 **Left uncommitted for review:** yes
+
+## 2026-09-05 — Task 13: link category fallback + links admin API
+
+**Status:** done
+
+**Shipped (Part A — the "Egyéb" fallback, decision D8):**
+- `database/migrations/2026_09_05_064538_update_links_table.php` — drops the NOT NULL +
+  `cascadeOnDelete` FK on `links.link_category_id`, replaces it with nullable +
+  `nullOnDelete`. `down()` deletes any link left with a null category before restoring the
+  original constraint, with a comment explaining the lossiness.
+- `app/Models/Link.php` — `UNCATEGORISED_NAME = 'Egyéb'` constant.
+- `app/Http/Controllers/LinkController.php` — inner join → left join, sort by
+  `COALESCE(link_categories.category_name, 'Egyéb')` then title.
+- `app/Http/Resources/LinkResource.php` — `$this->category?->category_name ?? Link::UNCATEGORISED_NAME`
+  instead of `whenLoaded` (which would fatal dereferencing a null category).
+- `tests/Feature/LinkController/GetLinksTest.php` — added a null-category case (returned, not
+  dropped, sorts alphabetically among real categories) and a `nullOnDelete` regression test
+  (deleting a `link_categories` row via `DB::table(...)->delete()` leaves its links in place
+  with a null `link_category_id`).
+
+**Shipped (Part B — admin API):**
+- `app/Http/Controllers/AdminLinkController.php` — full CRUD (`getLinks`, `getLink`,
+  `storeLink`, `updateLink`, `deleteLink`). Create/update take `categoryName` (never a category
+  id) and resolve it through a private `resolveCategoryId()` helper: `null`/empty → `null`
+  (uncategorised), otherwise `trim()` then `LinkCategory::firstOrCreate(['category_name' => ...])`.
+- `app/Http/Controllers/AdminLinkCategoryController.php` — `getLinkCategories` (`withCount('links')`,
+  ordered by name), `updateLinkCategory` (rename), `deleteLinkCategory` (204; the FK's
+  `nullOnDelete` from Part A does the rest).
+- `app/Http/Requests/StoreLinkRequest.php`, `UpdateLinkRequest.php` — `title`, `url` (with the
+  `url` validation rule, so a bare host like `example.com` 422s), `categoryName` nullable with
+  `Rule::notIn([Link::UNCATEGORISED_NAME])` and a custom "Ez a kategórianév foglalt." message.
+- `app/Http/Requests/UpdateLinkCategoryRequest.php` — `name` required, same `notIn` guard, plus
+  `Rule::unique(...)->ignore($this->route('linkCategory'))` (mirrors `UpdateTagRequest`).
+- `app/Http/Resources/AdminLinkResource.php` — embeds `category` as `{id, name}` or `null`
+  (never the "Egyéb" fallback string — the admin UI needs to tell "genuinely uncategorised"
+  apart from "a category literally named Egyéb", which can't exist per the guard above).
+- `app/Http/Resources/AdminLinkCategoryResource.php` — `{id, name, linkCount}` via `whenCounted('links')`.
+- `routes/api.php` — `links` and `link_categories` sub-groups added to the existing
+  `admin` middleware group, after `tags`.
+- Seven new Pest files: `tests/Feature/AdminLinkController/{GetAdminLinksTest,StoreLinkTest,
+  UpdateLinkTest,DeleteLinkTest}.php`, `tests/Feature/AdminLinkCategoryController/
+  {GetAdminLinkCategoriesTest,UpdateLinkCategoryTest,DeleteLinkCategoryTest}.php`. All three
+  guard cases (guest/non-admin/admin) per endpoint, plus the tag-idempotency-style cases the
+  task called for (existing category reused, new category created, name trimmed, null clears
+  the category, "Egyéb" rejected on both create/rename, category delete leaves links behind and
+  readable as "Egyéb" through the *public* endpoint).
+
+**Decisions made while implementing:**
+- The task's illustrative sort example ("Community → Egyéb → Documentation") doesn't match this
+  install's actual collation, which sorts `COALESCE(...)` output plain-alphabetically
+  (Community → Documentation → Egyéb, since 'D' < 'E'). Went with the real, verified DB
+  behaviour rather than the example — the contract is "alphabetical via COALESCE", not a
+  specific fixed order, and the code matches that literally.
+- `resolveCategoryId()` factored as one private helper shared by store/update, so there is
+  exactly one code path from `categoryName` to `link_category_id` — matches the self-review
+  requirement that category ids are never accepted from the client.
+
+**Surprises / gotchas:**
+- None beyond the sort-order example above; Part A's left-join + `AdminLinkResource`'s
+  `{id, name}|null` shape were the two places most likely to fatal on a null category, and both
+  were covered by tests before being trusted.
+
+**Verification:** `php artisan test --compact` → 279/279 passed (full suite, not just the new
+files); `php artisan test --compact --filter=GetLinksTest` → 3/3 (public endpoint, run standalone
+too); `vendor/bin/pint --dirty --format agent` → clean; `cd resources/frontend && npx ng test` →
+436/436 passed (public links page and its FE types/grouping logic untouched, confirmed by
+running the suite, not assumed).
+
+**Left uncommitted for review:** yes
