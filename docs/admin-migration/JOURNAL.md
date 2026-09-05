@@ -1022,4 +1022,37 @@ too); `vendor/bin/pint --dirty --format agent` → clean; `cd resources/frontend
 436/436 passed (public links page and its FE types/grouping logic untouched, confirmed by
 running the suite, not assumed).
 
+**Left uncommitted for review:** yes (**since committed as `04e4ea9`**)
+
+## 2026-09-05 — Follow-up: DB-level unique constraints on `link_categories.category_name` and `tags.tag_name`
+
+**Status:** done
+
+**Why:** raised during review of Task 13. Both `link_categories` and `tags` only had their
+uniqueness enforced in PHP — `Rule::unique(...)->ignore(...)` on rename, and `firstOrCreate` on
+create. Neither is race-safe: two concurrent "create with a brand-new category/tag name" requests
+can both pass `firstOrCreate`'s `SELECT` before either commits its `INSERT`, producing two rows
+with the same name. Only a DB-level constraint closes that gap.
+
+**Shipped:**
+- `database/migrations/2026_09_05_073319_add_unique_constraint_to_link_categories_and_tags.php` —
+  adds a unique index on `link_categories.category_name` and `tags.tag_name`. `down()` drops both.
+- `tests/Feature/AdminLinkCategoryController/LinkCategoryUniqueConstraintTest.php`,
+  `tests/Feature/AdminTagController/TagUniqueConstraintTest.php` — each proves the constraint is
+  live with a direct `DB::table(...)->insert()` duplicate, expecting `QueryException`, bypassing
+  the application layer entirely (so the test can't be satisfied by the existing `Rule::unique`
+  checks alone).
+
+**Decisions made while implementing:**
+- No new exception handling added around `firstOrCreate`/`update` in `AdminLinkController` or
+  `AdminTagController` — a losing race still 500s via the existing blanket `try/catch (Throwable)`,
+  same as every other unexpected failure in these controllers. This is an internal admin panel
+  with no concurrent public traffic, so the DB constraint is here as a correctness backstop, not
+  because a race was observed or is expected to be user-visible.
+- Both tables fixed in one migration/journal entry rather than two, since they're the same gap
+  in the same shape (Task 11's tags, Task 13's link categories).
+
+**Verification:** `php artisan test --compact` → 281/281 passed (no existing seed data collided
+with the new constraints); `vendor/bin/pint --dirty --format agent` → clean.
+
 **Left uncommitted for review:** yes
