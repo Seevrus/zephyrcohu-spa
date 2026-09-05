@@ -434,7 +434,7 @@ async function renderAdminLinkForm(id?: string) {
       provideHttpClient(),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
-      provideRouter([]),
+      provideRouter([{ path: "admin/linkek", children: [] }]),
       provideZonelessChangeDetection(),
     ],
   });

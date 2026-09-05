@@ -312,7 +312,7 @@ async function renderAdminNewsForm(id?: string) {
       provideHttpClient(),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
-      provideRouter([]),
+      provideRouter([{ path: "admin/hirek", children: [] }]),
       provideZonelessChangeDetection(),
     ],
   });

@@ -337,7 +337,7 @@ async function renderAdminKnowledgebase() {
       provideHttpClient(),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
-      provideRouter([]),
+      provideRouter([{ path: "admin/tudasbazis/:id", children: [] }]),
       provideZonelessChangeDetection(),
     ],
   });

@@ -308,7 +308,7 @@ async function renderAdminOfferForm(id?: string) {
       provideHttpClient(),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
-      provideRouter([]),
+      provideRouter([{ path: "admin/ajanlatok", children: [] }]),
       provideZonelessChangeDetection(),
     ],
   });

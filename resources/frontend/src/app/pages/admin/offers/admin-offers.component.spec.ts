@@ -269,7 +269,7 @@ async function renderAdminOffers() {
       provideHttpClient(),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
-      provideRouter([]),
+      provideRouter([{ path: "admin/ajanlatok/:id", children: [] }]),
       provideZonelessChangeDetection(),
     ],
   });

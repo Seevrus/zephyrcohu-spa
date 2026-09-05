@@ -293,7 +293,7 @@ async function renderAdminNews() {
       provideHttpClient(),
       provideHttpClientTesting(),
       provideTanStackQuery(testQueryClient),
-      provideRouter([]),
+      provideRouter([{ path: "admin/hirek/:id", children: [] }]),
       provideZonelessChangeDetection(),
     ],
   });
