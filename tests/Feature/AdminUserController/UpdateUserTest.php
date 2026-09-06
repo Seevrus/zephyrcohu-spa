@@ -150,6 +150,44 @@ describe('Update User', function () {
         ));
     });
 
+    test('ignores an attempt to revoke a confirmed registration', function () {
+        Mail::fake();
+        Sanctum::actingAs(User::find(2));
+
+        $response = $this->putJson('/api/admin/users/1', [
+            'email' => 'user001@example.com',
+            'confirmed' => false,
+            'newsletter' => true,
+            'generatePassword' => false,
+        ]);
+
+        $response->assertStatus(200)->assertJson(['data' => [
+            'id' => 1,
+            'confirmed' => true,
+        ]]);
+
+        $this->assertDatabaseHas('users', ['id' => 1, 'confirmed' => 1, 'newsletter' => 1]);
+    });
+
+    test('treats a lone revoke attempt as a submit that changes nothing', function () {
+        Mail::fake();
+        Sanctum::actingAs(User::find(2));
+
+        $response = $this->putJson('/api/admin/users/1', [
+            'email' => 'user001@example.com',
+            'confirmed' => false,
+            'newsletter' => false,
+            'generatePassword' => false,
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors([
+            'email' => 'Az űrlapon nem került semmi módosításra.',
+        ]);
+
+        $this->assertDatabaseHas('users', ['id' => 1, 'confirmed' => 1]);
+        Mail::assertNothingSent();
+    });
+
     test('rejects a submit that changes nothing at all', function () {
         Mail::fake();
         Sanctum::actingAs(User::find(2));

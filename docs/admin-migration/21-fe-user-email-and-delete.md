@@ -13,6 +13,19 @@ The two remaining user actions from the legacy admin:
 1. `/admin/felhasznalok/:id/email` — write a rich-text email to a single user.
 2. delete a user with a mandatory reason, from the users grid.
 
+## Deferred from Task 20
+
+- The shared success-message mechanism is **`FlashMessageService`**
+  (`resources/frontend/src/app/services/flash-message.service.ts`): call
+  `flashMessageService.set("…")` before navigating back to `/admin/felhasznalok`. The grid already
+  consumes it into an `<app-success-card>` — do **not** build a second mechanism.
+- Task 19's stub `onDeleteUser` in `admin-users.component.ts` (it opens the shared
+  `ConfirmDialogComponent` and does nothing on confirm) and its spec case, "the delete action opens
+  the confirm dialog naming the user and fires no request yet", are replaced here.
+- `DeleteAdminUserRequest` and `SendAdminUserEmailRequest` are still absent from
+  `types/admin-users.ts`, and their mutations from `AdminUsersQueryService` — `knip` fails on
+  unused exports, so they are added here, together with their `mutationKeys` entries.
+
 ## Files
 
 - Create: `resources/frontend/src/app/pages/admin/user-email/admin-user-email.component.*` (+ spec)

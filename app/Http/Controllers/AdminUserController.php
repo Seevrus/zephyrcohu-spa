@@ -59,7 +59,8 @@ class AdminUserController extends Controller {
                     $modifiedItems[] = 'Kérjük, jelentkezzen be, és a profil oldalon módosítsa a jelszavát.';
                 }
 
-                $user->confirmed = $request->boolean('confirmed');
+                // Confirmation is one-way
+                $user->confirmed = $user->confirmed || $request->boolean('confirmed');
 
                 if ($confirming) {
                     $user->newUser()->delete();

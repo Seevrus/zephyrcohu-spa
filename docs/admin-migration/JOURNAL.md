@@ -1561,3 +1561,84 @@ unaffected since it prefills from the fetched item as before.
   the generated-password fallback.
 - Task 21 must remove the stub `onDeleteUser` in `admin-users.component.ts` along with its spec
   case ("the delete action opens the confirm dialog naming the user and fires no request yet").
+
+---
+
+## 2026-09-06 — Task 20: FE user edit form
+
+**Status:** done
+
+**Shipped:**
+- `resources/frontend/src/app/services/flash-message.service.ts` (+ spec) — `FlashMessageService`,
+  a one-shot message carried across a navigation (`set` before navigating, `consume` on arrival).
+- `resources/frontend/src/app/pages/admin/user-form/admin-user-form.component.{ts,html,scss,spec.ts}`
+  — the `/admin/felhasznalok/:id` edit form (email, password regeneration, confirmation,
+  newsletter).
+- `resources/frontend/src/app/services/admin-users.query.service.ts` — `updateAdminUser()`,
+  invalidating `queryKeys.adminUsers` **and** `queryKeys.session`.
+- `resources/frontend/src/types/admin-users.ts` — `UpdateAdminUserRequest`, `AdminUserItemResponse`.
+- `resources/frontend/src/app/services/queryKeys.ts` — `mutationKeys.updateAdminUser`.
+- `resources/frontend/src/mocks/admin/users/` — `matchUpdateAdminUserRequest`,
+  `createAdminUserItemOkResponse`, and `defaultAdminUser` re-exported.
+- `resources/frontend/src/app/pages/admin/users/admin-users.component.{ts,html,spec.ts}` — renders
+  the pending flash message in a `<app-success-card>`.
+- `resources/frontend/src/app/admin.routes.ts` + `app.component.spec.ts` — the `felhasznalok/:id`
+  route and its admin/non-admin routing cases.
+
+**Decisions made while implementing:**
+- The "back with a success message" mechanism (task doc Step 3) is **`FlashMessageService`**, a
+  signal holding one message, chosen over router navigation state: `getCurrentNavigation()` is
+  only readable during construction and is awkward to drive in specs. It is deliberately **not**
+  admin-scoped and lives with the generic services. **Task 21 reuses it** by calling
+  `flashMessageService.set(...)` before navigating back — no further change to the grid is needed.
+- `updateAdminUser` uses `throwValidationHttpError` (the Task 17 pattern), and the component
+  renders the backend's own `errors.email` message **verbatim** rather than matching on its text.
+  Both 422s this screen can produce — the backend's "nothing changed" guard
+  (`UpdateUserRequest::withValidator`) and a duplicate email — land under `errors.email`, and
+  `app.locale` is `hu` with a full `lang/hu/validation.php`, so both are already Hungarian.
+  "A megadott adatok nem megfelelőek." remains the fallback. `throwHttpError` is untouched.
+- Decision D15's warning is a bordered callout with a `warning` icon and explicit text, rendered
+  with an `@if` **only while the checkbox is checked** — the task doc had asked for it to be
+  always visible, but at review that read as noise on a form where password generation is the
+  exception, so the doc was corrected. Never relies on colour alone, and the generated password is
+  never rendered in the UI.
+- The form's legacy hint paragraph is a plain `<p>`, matching the public profile form
+  (`pages/profile`), rather than the centred small text it started as.
+
+**Surprises / gotchas:**
+- This is the first `mat-checkbox` and the first `mat-radio-group` bound to Signal Forms in the
+  repo (`mat-radio-group` had no occurrence at all). `[formField]` binds to both — `FormField`
+  takes the `cvaControlCreate` path for any `ControlValueAccessor` host — and specs cover both.
+- **No `required()` on the boolean fields.** A `false` checkbox/radio value would fail it, and a
+  checkbox always holds a value, so only `email` carries validators.
+- A successful `PUT` invalidates `adminUsers`, and the form itself is still an active observer of
+  that key, so every submit spec must consume the refetched `GET /admin/users` before
+  `httpTesting.verify()` — same trap as the news form spec.
+
+- **Confirmation is one-way.** Reviewer question mid-task: can `confirmed` be revoked? It could —
+  the controller assigned `$request->boolean('confirmed')` unconditionally, and this task's
+  checkbox made that reachable (the legacy form disabled the box; the task doc had said to keep it
+  enabled). Revoking locks the user out of login while their `users_new` row — deleted on
+  confirmation, never recreated — is already gone. Blocked on both sides at the reviewer's
+  direction: the checkbox is `disabled()` in the schema once the user is confirmed, and
+  `AdminUserController::updateUser` ignores a `false` rather than 422-ing it
+  (`$user->confirmed = $user->confirmed || $request->boolean('confirmed')`), with
+  `UpdateUserRequest`'s "nothing changed" guard updated to treat the ignored `false` as no change.
+  Two Pest cases cover it. The underlying `users_new` gap (a revoked account would let
+  `confirmEmail` accept any code, and 500 `resendConfirmEmail`) is now unreachable and was left
+  alone.
+
+**Verification:**
+- `npx ng test` → 536 passed / 84 files.
+- `php artisan test` → 349 passed.
+- `npx ng lint`, `npx tsc -p tsconfig.app.json`, `npx prettier . --check`, `npx knip` → all clean.
+- `vendor/bin/pint --dirty` → passed.
+
+**Left uncommitted for review:** no — committed at the reviewer's request.
+
+**Next session should know:**
+- Task 21 (write to a user / delete a user) is next. It must (a) remove the stub `onDeleteUser` in
+  `admin-users.component.ts` and its spec case, (b) reuse `FlashMessageService` for its own
+  "deleted, back to the list" message rather than inventing a second mechanism, and (c) add
+  `DeleteAdminUserRequest` / `SendAdminUserEmailRequest` plus their mutations — still absent
+  because `knip` fails on unused exports.

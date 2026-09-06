@@ -14,6 +14,7 @@ import { userEvent } from "@testing-library/user-event";
 import { matchAdminUsersRequest } from "../../../../mocks/admin/users/adminUsersRequest";
 import { createGetAdminUsersOkResponse } from "../../../../mocks/admin/users/createGetAdminUsersOkResponse";
 import { testQueryClient } from "../../../../mocks/testQueryClient";
+import { FlashMessageService } from "../../../services/flash-message.service";
 import { AdminUsersComponent } from "./admin-users.component";
 
 describe("AdminUsersComponent", () => {
@@ -233,11 +234,54 @@ describe("AdminUsersComponent", () => {
 
     httpTesting.verify();
   });
+
+  describe("User update message", () => {
+    test("renders the flash message left by the user form", async () => {
+      const { httpTesting } = await renderAdminUsers(
+        "A felhasználó adatai módosultak.",
+      );
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(matchAdminUsersRequest()),
+      );
+      request.flush(createGetAdminUsersOkResponse());
+
+      await expect(
+        screen.findByText("A felhasználó adatai módosultak."),
+      ).resolves.toBeInTheDocument();
+
+      httpTesting.verify();
+    });
+
+    test("renders no success card when no flash message is pending", async () => {
+      const { httpTesting } = await renderAdminUsers();
+
+      const request = await waitFor(() =>
+        httpTesting.expectOne(matchAdminUsersRequest()),
+      );
+      request.flush(createGetAdminUsersOkResponse());
+
+      await waitFor(() => {
+        expect(screen.getByTestId("admin-users-component")).toBeInTheDocument();
+      });
+
+      expect(
+        screen.queryByTestId("zephyr-success-card"),
+      ).not.toBeInTheDocument();
+
+      httpTesting.verify();
+    });
+  });
 });
 
-async function renderAdminUsers() {
+async function renderAdminUsers(flashMessage?: string) {
   const renderResult = await render(AdminUsersComponent, {
     imports: [MatDialogModule],
+    configureTestBed(testBed) {
+      if (flashMessage) {
+        testBed.inject(FlashMessageService).set(flashMessage);
+      }
+    },
     providers: [
       provideHttpClient(),
       provideHttpClientTesting(),

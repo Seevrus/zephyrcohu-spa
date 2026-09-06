@@ -17,3 +17,12 @@ export type AdminUser = Omit<
 };
 
 export type AdminUserCollectionResponse = { data: AdminUserResponse[] };
+
+export type AdminUserItemResponse = { data: AdminUserResponse };
+
+export type UpdateAdminUserRequest = {
+  email: string;
+  confirmed: boolean;
+  newsletter: boolean;
+  generatePassword: boolean;
+};

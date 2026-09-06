@@ -3,6 +3,12 @@
     <h1>Felhasználók</h1>
   </div>
 
+  @if (userUpdateMessage()) {
+    <app-success-card title="Sikeres módosítás">
+      <p>{{ userUpdateMessage() }}</p>
+    </app-success-card>
+  }
+
   @if (errorMessage()) {
     <app-form-unexpected-error />
   } @else if (isLoading()) {

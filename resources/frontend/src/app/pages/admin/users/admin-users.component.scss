@@ -23,6 +23,11 @@
     }
   }
 
+  app-success-card {
+    align-self: flex-start;
+    margin-inline: 0;
+  }
+
   .admin-users-grid {
     @include mixins.zephyr-grid;
   }

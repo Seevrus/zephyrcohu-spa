@@ -1,4 +1,4 @@
-import { Component, computed, inject } from "@angular/core";
+import { Component, computed, inject, signal } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { MatProgressBar } from "@angular/material/progress-bar";
 import { Router } from "@angular/router";
@@ -25,21 +25,33 @@ import {
   type ConfirmDialogData,
 } from "../../../components/confirm-dialog/confirm-dialog.component";
 import { FormUnexpectedErrorComponent } from "../../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
+import { SuccessCardComponent } from "../../../components/success-card/success-card.component";
 import { AdminUsersQueryService } from "../../../services/admin-users.query.service";
+import { FlashMessageService } from "../../../services/flash-message.service";
 
 @Component({
   selector: "app-admin-users",
   host: {
     class: "app-admin-users",
   },
-  imports: [AgGridAngular, FormUnexpectedErrorComponent, MatProgressBar],
+  imports: [
+    AgGridAngular,
+    FormUnexpectedErrorComponent,
+    MatProgressBar,
+    SuccessCardComponent,
+  ],
   templateUrl: "./admin-users.component.html",
   styleUrl: "./admin-users.component.scss",
 })
 export class AdminUsersComponent {
   private readonly adminUsersQueryService = inject(AdminUsersQueryService);
   private readonly dialog = inject(MatDialog);
+  private readonly flashMessageService = inject(FlashMessageService);
   private readonly router = inject(Router);
+
+  protected readonly userUpdateMessage = signal(
+    this.flashMessageService.consume(),
+  );
 
   private readonly adminUsersQuery = injectQuery(() =>
     this.adminUsersQueryService.getAdminUsers(),

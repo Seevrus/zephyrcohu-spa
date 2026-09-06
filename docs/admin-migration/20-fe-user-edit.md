@@ -60,11 +60,27 @@ found once the query has settled, render the not-found message
 |---|---|---|
 | Címzett email címe | `matInput` | required, email format |
 | Új jelszó generálása az ügyfél számára | `mat-checkbox` | unchecked by default; see the warning block below |
-| Ügyfélregisztráció visszaigazolása | `mat-checkbox` | disabled when the user is already confirmed *and* the legacy form disabled it — here: keep it enabled, but pre-checked and explained ("A regisztráció már visszaigazolt.") |
+| Ügyfélregisztráció visszaigazolása | `mat-checkbox` | pre-checked and **disabled** once the user is confirmed, explained by "A regisztráció már visszaigazolásra került." — confirmation is one-way (see below) |
 | Kér hírlevelet | `mat-radio-group` Igen/Nem | required |
 
 Legacy hint above the form (keep it): "Ha valamit módosítani szeretnénk, írjuk át. Ha nem
 szeretnénk, hagyjuk úgy. Email cím nem törölhető."
+
+### Confirmation is one-way
+
+Revoking a confirmation would lock the user out — `UserPolicy::login` denies an unconfirmed
+account — while the `users_new` row that carries their confirmation code was deleted when they
+were confirmed and is never recreated. That leaves `resendConfirmEmail` reading a null relation
+(a 500) and `confirmEmail` accepting *any* code, because its guard skips a null `email_code`.
+
+So the transition is blocked on both sides:
+
+- the checkbox is `disabled()` in the form schema once `user()?.confirmed` is true;
+- `AdminUserController::updateUser` **ignores** a `confirmed: false` on an already confirmed
+  account (`$user->confirmed = $user->confirmed || $request->boolean('confirmed')`), and
+  `UpdateUserRequest`'s "nothing changed" guard treats that ignored `false` as no change.
+
+Un-confirming is not a supported operation; the underlying `users_new` gap is left as-is.
 
 ### Password generation is a last resort (decision D15)
 
@@ -76,8 +92,9 @@ colour alone, AA contrast):
 > funkcióval maga állítsa vissza a jelszavát. Ha ez nem járható út, a rendszer új jelszót generál,
 > és azt **emailben, olvasható formában** küldi el neki.
 
-Show the block always (so the consequence is visible before the admin ticks the box), and make it
-visually stronger — e.g. a bordered callout — while the checkbox is checked. The generated
+Render the block **only while the checkbox is checked** (`@if`, not a style change), as a bordered
+callout. An always-visible warning read as noise on a form where password generation is the
+exception; the admin sees it at the moment the choice is made, before submitting. The generated
 password is never displayed in the admin UI; only the user receives it.
 
 Buttons: "Módosítás" (`app-button-loadable`) + "Mégsem" back to the list.
@@ -108,12 +125,12 @@ through normal registration).
 
 ## Steps
 
-- [ ] **Step 1:** Spec first (cases below).
-- [ ] **Step 2:** Implement the component.
-- [ ] **Step 3:** Implement the "back with a success message" mechanism and cover it in the users
+- [x] **Step 1:** Spec first (cases below).
+- [x] **Step 2:** Implement the component.
+- [x] **Step 3:** Implement the "back with a success message" mechanism and cover it in the users
       grid spec too.
-- [ ] **Step 4:** Route + `app.component.spec.ts` case for `/admin/felhasznalok/1`.
-- [ ] **Step 5:** Verify, self review, journal, tick Task 20.
+- [x] **Step 4:** Route + `app.component.spec.ts` case for `/admin/felhasznalok/1`.
+- [x] **Step 5:** Verify, self review, journal, tick Task 20.
 
 ## Tests to write
 
@@ -121,7 +138,7 @@ through normal registration).
 
 - loads the user list and prefills email, confirmed, newsletter
 - an unknown id renders the not-found message
-- the last-resort warning about password generation is visible before the checkbox is ticked
+- the last-resort warning about password generation appears only once the checkbox is ticked
 - toggling the password checkbox sends `generatePassword: true`
 - submitting sends the exact `PUT /admin/users/1` body and navigates back to the list
 - the "nothing changed" 422 renders the legacy sentence and stays on the page
@@ -138,13 +155,13 @@ npx ng test && npx ng lint && npx tsc -p tsconfig.app.json && npx prettier . --c
 
 ## Self review
 
-- [ ] Checkbox and radio controls have visible labels and are reachable by keyboard.
-- [ ] The password-generation warning names self-service reset as the preferred route and says
+- [x] Checkbox and radio controls have visible labels and are reachable by keyboard.
+- [x] The password-generation warning names self-service reset as the preferred route and says
       the password is mailed in readable form; it does not rely on colour alone.
-- [ ] The generated password is never rendered in the admin UI.
-- [ ] The form never sends a partial body — the backend requires all four keys.
-- [ ] The success-message mechanism is shared with Task 21, not duplicated.
-- [ ] **Deferred from Task 19:** `updateAdminUser` invalidates `queryKeys.session` as well as
+- [x] The generated password is never rendered in the admin UI.
+- [x] The form never sends a partial body — the backend requires all four keys.
+- [x] The success-message mechanism is shared with Task 21, not duplicated.
+- [x] **Deferred from Task 19:** `updateAdminUser` invalidates `queryKeys.session` as well as
       `queryKeys.adminUsers`, and a spec covers it.
 
 ## Done when

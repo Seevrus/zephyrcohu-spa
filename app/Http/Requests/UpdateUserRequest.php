@@ -39,8 +39,12 @@ class UpdateUserRequest extends FormRequest {
 
             $user = $this->route('user');
 
+            // Confirmation is one-way, so a `false` on a confirmed account is
+            // ignored by the controller and does not count as a change either.
+            $confirmedUnchanged = $user->confirmed || ! $this->boolean('confirmed');
+
             $nothingChanged = $user->email === $this->input('email')
-                && $user->confirmed === $this->boolean('confirmed')
+                && $confirmedUnchanged
                 && $user->newsletter === $this->boolean('newsletter')
                 && ! $this->boolean('generatePassword');
 

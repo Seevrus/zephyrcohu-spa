@@ -8,3 +8,10 @@ export function matchAdminUsersRequest(): RequestMatch {
     url: `${environment.apiUrl}/admin/users`,
   };
 }
+
+export function matchUpdateAdminUserRequest(id: number): RequestMatch {
+  return {
+    method: "PUT",
+    url: `${environment.apiUrl}/admin/users/${id}`,
+  };
+}

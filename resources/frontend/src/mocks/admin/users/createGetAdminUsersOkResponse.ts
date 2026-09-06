@@ -11,7 +11,7 @@ export function createGetAdminUsersOkResponse(
   };
 }
 
-const defaultAdminUser: AdminUserResponse = {
+export const defaultAdminUser: AdminUserResponse = {
   id: 1,
   email: "user001@example.com",
   confirmed: true,

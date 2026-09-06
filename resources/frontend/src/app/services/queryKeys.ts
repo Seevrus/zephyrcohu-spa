@@ -33,6 +33,7 @@ export const mutationKeys = {
   updateAdminNews: ["update_admin_news"],
   updateAdminOffer: ["update_admin_offer"],
   updateAdminTag: ["update_admin_tag"],
+  updateAdminUser: ["update_admin_user"],
   updateProfile: ["update_profile"],
   updateProfileConfirmEmail: ["update_profile_confirm_email"],
 };

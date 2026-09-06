@@ -1,0 +1,106 @@
+<div data-testid="admin-user-form-component" class="admin-user-form-component">
+  <h1>Felhasználó szerkesztése</h1>
+
+  @if (loadErrorMessage()) {
+    <app-form-unexpected-error />
+  } @else if (isNotFound()) {
+    <p data-testid="user-not-found">A felhasználó nem található.</p>
+    <p><a routerLink="/admin/felhasznalok">Vissza a felhasználókhoz</a></p>
+  } @else {
+    @if (errorMessage() === "INVALID_REQUEST_DATA") {
+      <app-error-card
+        data-testid="invalid-data-message"
+        title="Érvénytelen adatok"
+      >
+        <p>{{ validationMessage() || "A megadott adatok nem megfelelőek." }}</p>
+      </app-error-card>
+    } @else if (errorMessage()) {
+      <app-form-unexpected-error />
+    }
+
+    <p>
+      Ha valamit módosítani szeretnénk, írjuk át. Ha nem szeretnénk, hagyjuk
+      úgy. Email cím nem törölhető.
+    </p>
+
+    <form (submit)="onSubmit($event)">
+      <div class="form-elements-container">
+        <mat-form-field data-testid="email">
+          <mat-label>Címzett email címe</mat-label>
+          <input matInput [formField]="userForm.email" />
+          @if (
+            userForm.email().touched() && userForm.email().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          } @else if (
+            userForm.email().touched() && userForm.email().getError("email")
+          ) {
+            <mat-error>Érvénytelen email cím</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="admin-user-form-group">
+          <mat-checkbox [formField]="userForm.generatePassword">
+            Új jelszó generálása az ügyfél számára
+          </mat-checkbox>
+
+          @if (userForm.generatePassword().value()) {
+            <div class="password-warning" data-testid="password-warning">
+              <mat-icon aria-hidden="true">warning</mat-icon>
+              <p>
+                <strong>Végső megoldás.</strong> Elsődlegesen kérjük meg a
+                felhasználót, hogy az „Elfelejtett jelszó” funkcióval maga
+                állítsa vissza a jelszavát. Ha ez nem járható út, a rendszer új
+                jelszót generál, és azt
+                <strong>emailben, olvasható formában</strong> küldi el neki.
+              </p>
+            </div>
+          }
+        </div>
+
+        <div class="admin-user-form-group">
+          <mat-checkbox [formField]="userForm.confirmed">
+            Ügyfélregisztráció visszaigazolása
+          </mat-checkbox>
+
+          @if (user()?.confirmed) {
+            <p class="admin-user-form-hint">
+              A regisztráció már visszaigazolásra került.
+            </p>
+          }
+        </div>
+
+        <div
+          class="admin-user-form-group"
+          role="group"
+          aria-labelledby="newsletter-label"
+        >
+          <p class="admin-user-form-group-label" id="newsletter-label">
+            Kér hírlevelet
+          </p>
+          <mat-radio-group
+            class="admin-user-form-radio-group"
+            aria-labelledby="newsletter-label"
+            [formField]="userForm.newsletter"
+          >
+            <mat-radio-button [value]="true">Igen</mat-radio-button>
+            <mat-radio-button [value]="false">Nem</mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        <div class="admin-form-actions">
+          <app-button-loadable
+            data-testid="submit-button"
+            class="submit-button"
+            type="submit"
+            [loading]="isSubmitting()"
+            [disabled]="isSubmitting() || userForm().invalid()"
+          >
+            Módosítás
+          </app-button-loadable>
+          <a mat-button routerLink="/admin/felhasznalok">Mégsem</a>
+        </div>
+      </div>
+    </form>
+  }
+</div>
