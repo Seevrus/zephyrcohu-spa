@@ -30,6 +30,15 @@ export const adminRoutes: Routes = [
     title: "Admin - Ajánlat szerkesztése",
   },
   {
+    path: "felhasznalok",
+    async loadComponent() {
+      const { AdminUsersComponent } =
+        await import("./pages/admin/users/admin-users.component");
+      return AdminUsersComponent;
+    },
+    title: "Admin - Felhasználók",
+  },
+  {
     path: "hirek",
     async loadComponent() {
       const { AdminNewsComponent } =

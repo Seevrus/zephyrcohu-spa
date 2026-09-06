@@ -11,11 +11,29 @@
 confirmation, newsletter subscription. Every change triggers a notification mail from the backend
 (Task 18), so the screen must make that consequence obvious.
 
+## Deferred from Task 19
+
+Task 19 shipped the grid only, so three of its items land here — do not treat them as new scope:
+
+- **Its last self-review item, "the session query is invalidated after a user update", is
+  explicitly deferred to this task.** `updateAdminUser` must invalidate both
+  `queryKeys.adminUsers` and `queryKeys.session` — an admin may have edited their own account,
+  and the header/guard read the session.
+- `AdminUsersQueryService` currently exposes **only** `getAdminUsers()`, and
+  `types/admin-users.ts` only the response shapes it uses. `UpdateAdminUserRequest` and the
+  `updateAdminUser` mutation (plus a `updateAdminUser` entry in `mutationKeys`) are added here —
+  they were left out of Task 19 because `knip` fails on unused type exports.
+- `defaultAdminUser` in `mocks/admin/users/createGetAdminUsersOkResponse.ts` is deliberately not
+  exported for the same reason. Export it when this task's mocks need it.
+
 ## Files
 
 - Create: `resources/frontend/src/app/pages/admin/user-form/admin-user-form.component.*` (+ spec)
 - Modify: `resources/frontend/src/app/services/admin-users.query.service.ts` — add
-  `getAdminUser(id)` if the list cache is not enough (see below)
+  `updateAdminUser()` (and `getAdminUser(id)` if the list cache is not enough, see below)
+- Modify: `resources/frontend/src/types/admin-users.ts`,
+  `resources/frontend/src/app/services/queryKeys.ts`,
+  `resources/frontend/src/mocks/admin/users/…`
 - Modify: `resources/frontend/src/app/admin.routes.ts`, `app.component.spec.ts`
 
 ## Design
@@ -126,6 +144,8 @@ npx ng test && npx ng lint && npx tsc -p tsconfig.app.json && npx prettier . --c
 - [ ] The generated password is never rendered in the admin UI.
 - [ ] The form never sends a partial body — the backend requires all four keys.
 - [ ] The success-message mechanism is shared with Task 21, not duplicated.
+- [ ] **Deferred from Task 19:** `updateAdminUser` invalidates `queryKeys.session` as well as
+      `queryKeys.adminUsers`, and a spec covers it.
 
 ## Done when
 

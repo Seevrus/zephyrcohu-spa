@@ -60,6 +60,7 @@ export const queryKeys = {
     return id ? ["admin_offer_item", id] : ["admin_offer_item"];
   },
   adminTags: ["admin_tags"],
+  adminUsers: ["admin_users"],
   integra(category?: IntegraCategory) {
     return category ? ["documents", category] : ["documents"];
   },

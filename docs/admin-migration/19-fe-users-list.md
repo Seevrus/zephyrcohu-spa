@@ -92,9 +92,9 @@ Route: `{ path: "felhasznalok", …, title: "Admin - Felhasználók" }`.
 
 ## Steps
 
-- [ ] **Step 1:** Types, mocks, spec, then service + grid.
-- [ ] **Step 2:** Route + `app.component.spec.ts` case for `/admin/felhasznalok`.
-- [ ] **Step 3:** Verify, self review, journal, tick Task 19.
+- [x] **Step 1:** Types, mocks, spec, then service + grid.
+- [x] **Step 2:** Route + `app.component.spec.ts` case for `/admin/felhasznalok`.
+- [x] **Step 3:** Verify, self review, journal, tick Task 19.
 
 ## Tests to write
 
@@ -118,10 +118,11 @@ npx ng test && npx ng lint && npx tsc -p tsconfig.app.json && npx prettier . --c
 
 ## Self review
 
-- [ ] The delete action is genuinely absent for admin rows, not just visually hidden.
-- [ ] Each action's aria-label includes the user's email.
-- [ ] `lastActive: null` renders as an empty cell, not "Invalid Date".
-- [ ] The session query is invalidated after a user update.
+- [x] The delete action is genuinely absent for admin rows, not just visually hidden.
+- [x] Each action's aria-label includes the user's email.
+- [x] `lastActive: null` renders as an empty cell, not "Invalid Date".
+- [ ] The session query is invalidated after a user update. — deferred to Task 20, which ships
+      `updateAdminUser`; no mutation exists in this task.
 
 ## Done when
 

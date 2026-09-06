@@ -1500,8 +1500,64 @@ unaffected since it prefills from the fetched item as before.
 - `php artisan test --compact` (full suite) → 347 passed.
 - `vendor/bin/pint --dirty --format agent` → clean.
 
-**Left uncommitted for review:** yes
+**Left uncommitted for review:** no — committed at the reviewer's request as `91ff2f7`.
 
 **Next session should know:**
 - Task 19 (FE users admin grid) can now build against this API. The admin UI warning about the
   generated-password fallback (decision D15) belongs in Task 20's edit form, not here.
+
+---
+
+## 2026-09-06 — Task 19: FE users admin grid
+
+**Status:** done
+
+**Shipped:**
+- `resources/frontend/src/types/admin-users.ts` — `AdminUserResponse`, `AdminUser` (dates mapped
+  to `Date`), `AdminUserCollectionResponse`.
+- `resources/frontend/src/app/services/admin-users.query.service.ts` — `AdminUsersQueryService`
+  with `getAdminUsers()`.
+- `resources/frontend/src/mocks/admin/users/{adminUsersRequest,createGetAdminUsersOkResponse}.ts`.
+- `resources/frontend/src/app/pages/admin/users/admin-users.component.{ts,html,scss,spec.ts}` —
+  the `/admin/felhasznalok` grid with `edit` / `email` / `delete` row actions.
+- `resources/frontend/src/app/services/queryKeys.ts` — `adminUsers`.
+- `resources/frontend/src/app/admin.routes.ts` + `app.component.spec.ts` — the `felhasznalok`
+  route and its admin/non-admin routing cases.
+
+**Decisions made while implementing:**
+- The `delete` action is the stub `19-fe-users-list.md` sanctions: it opens the shared
+  `ConfirmDialogComponent` naming the user, and confirming does nothing yet. **Delete is
+  completed in Task 21**, which replaces the dialog with `DeleteUserDialogComponent` (subject +
+  reason) and fires the request.
+- Consequently the service ships only `getAdminUsers()`, and the types only the response shapes
+  it uses. `UpdateAdminUserRequest` / `DeleteAdminUserRequest` / `SendAdminUserEmailRequest` and
+  their mutations arrive with the Tasks 20/21 that consume them — adding them now would be dead
+  code, and `knip` flags unused type exports.
+- Hiding `delete` on admin rows uses **`cellRendererSelector`**, not `cellRendererParams`: the
+  latter is one static object for the whole column, so the action list cannot vary per row. The
+  selector returns per-row `params`, which means the button is genuinely never rendered for an
+  admin rather than hidden with CSS.
+
+**Surprises / gotchas:**
+- ag-grid infers `cellDataType: "boolean"` for the `confirmed`/`newsletter` columns and then
+  renders a checkbox, **ignoring `valueFormatter` entirely** — the cells came back empty. Fixed
+  by declaring `cellDataType: "text"` and projecting the flag with a `valueGetter` returning
+  "Igen"/"Nem". Worth remembering for any future boolean grid column.
+- `defaultAdminUser` is deliberately **not** exported (unlike `defaultAdminDocument`, which the
+  item-response mock consumes) — nothing else uses it yet and `knip` fails on the unused export.
+  Task 20's `createGetAdminUserItemOkResponse` will want it exported.
+
+**Verification:**
+- `npx ng test` → 515 passed / 82 files.
+- `npx ng lint`, `npx tsc -p tsconfig.app.json`, `npx prettier . --check`, `npx knip` → all clean.
+
+**Left uncommitted for review:** no — committed at the reviewer's request.
+
+**Next session should know:**
+- Task 20 (user edit form at `/admin/felhasznalok/:id`) is next; the grid's `edit` action already
+  navigates there and renders the 404 page until it lands. It adds `getAdminUser`/
+  `updateAdminUser` to `AdminUsersQueryService` (the update must also invalidate
+  `queryKeys.session` — an admin may edit themselves) and carries decision D15's warning about
+  the generated-password fallback.
+- Task 21 must remove the stub `onDeleteUser` in `admin-users.component.ts` along with its spec
+  case ("the delete action opens the confirm dialog naming the user and fires no request yet").
