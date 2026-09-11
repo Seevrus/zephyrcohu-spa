@@ -15,8 +15,7 @@
   <a
     mat-button
     routerLink="/admin/felhasznalok"
-    routerLinkActive="active-link"
-    [routerLinkActiveOptions]="{ exact: true }"
+    [class.active-link]="isUsersActive()"
     >Felhasználók</a
   >
 

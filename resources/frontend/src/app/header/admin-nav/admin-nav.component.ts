@@ -2,19 +2,11 @@ import { Component, computed, input, output } from "@angular/core";
 import { MatButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
-import { RouterLink, RouterLinkActive } from "@angular/router";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "app-admin-nav",
-  imports: [
-    MatButton,
-    MatIcon,
-    MatMenu,
-    MatMenuItem,
-    MatMenuTrigger,
-    RouterLink,
-    RouterLinkActive,
-  ],
+  imports: [MatButton, MatIcon, MatMenu, MatMenuItem, MatMenuTrigger, RouterLink],
   templateUrl: "./admin-nav.component.html",
   styleUrl: "./admin-nav.component.scss",
 })
@@ -48,6 +40,10 @@ export class AdminNavComponent {
 
   protected readonly isOffersActive = computed(() =>
     this.currentUrl().startsWith("/admin/ajanlatok"),
+  );
+
+  protected readonly isUsersActive = computed(() =>
+    this.currentUrl().startsWith("/admin/felhasznalok"),
   );
 
   protected onDeactivateAdminNavigation() {

@@ -1,4 +1,4 @@
-import { Component, provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from "@angular/core";
 import { provideRouter } from "@angular/router";
 import {
   type OutputRefKeysWithCallback,
@@ -8,9 +8,6 @@ import {
 import userEvent from "@testing-library/user-event";
 
 import { AdminNavComponent } from "./admin-nav.component";
-
-@Component({ selector: "app-dummy", template: "" })
-class DummyComponent {}
 
 describe("Admin Nav", () => {
   const user = userEvent.setup();
@@ -38,37 +35,25 @@ describe("Admin Nav", () => {
   });
 
   test.each([
-    ["/admin/ajanlatok", "Ajánlatok"],
-    ["/admin/linkek", "Hasznos linkek"],
-    ["/admin/hirek", "Hírek"],
-    ["/admin/hirlevel", "Hírlevél"],
-    ["/admin/integra", "INTEGRA"],
-    ["/admin/tudasbazis", "Tudásbázis"],
-  ])(
+    ["/admin/ajanlatok", "Ajánlatok", "button"],
+    ["/admin/felhasznalok", "Felhasználók", "link"],
+    ["/admin/felhasznalok/1", "Felhasználók", "link"],
+    ["/admin/felhasznalok/1/email", "Felhasználók", "link"],
+    ["/admin/hirek", "Hírek", "button"],
+    ["/admin/hirlevel", "Hírlevél", "button"],
+    ["/admin/integra", "INTEGRA", "button"],
+    ["/admin/linkek", "Hasznos linkek", "button"],
+    ["/admin/tudasbazis", "Tudásbázis", "button"],
+  ] as const)(
     "marks the %s menu trigger active when the current url is %s",
-    async (currentUrl, name) => {
+    async (currentUrl, name, role) => {
       await renderAdminNav({ currentUrl });
 
-      expect(
-        screen.getByRole("button", { name: new RegExp(name) }),
-      ).toHaveClass("active-link");
+      expect(screen.getByRole(role, { name: new RegExp(name) })).toHaveClass(
+        "active-link",
+      );
     },
   );
-
-  test("marks the users link active only when the current url is exactly the users page", async () => {
-    // The users link relies on the router's own state (via routerLinkActive)
-    // rather than the currentUrl input, so it needs an actual navigation.
-    await render(AdminNavComponent, {
-      inputs: { currentUrl: "/admin/felhasznalok" },
-      initialRoute: "/admin/felhasznalok",
-      routes: [{ path: "admin/felhasznalok", component: DummyComponent }],
-      providers: [provideZonelessChangeDetection()],
-    });
-
-    expect(screen.getByRole("link", { name: "Felhasználók" })).toHaveClass(
-      "active-link",
-    );
-  });
 
   test("marks 'Felhasználói funkciók' active when not on an admin page", async () => {
     await renderAdminNav({ currentUrl: "/" });
