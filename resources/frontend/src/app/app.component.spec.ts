@@ -329,6 +329,10 @@ describe("App Component", () => {
       { path: "/admin/ajanlatok/1", testId: "admin-offer-form-component" },
       { path: "/admin/felhasznalok", testId: "admin-users-component" },
       { path: "/admin/felhasznalok/1", testId: "admin-user-form-component" },
+      {
+        path: "/admin/felhasznalok/1/email",
+        testId: "admin-user-email-component",
+      },
       { path: "/admin/hirek", testId: "admin-news-component" },
       { path: "/admin/hirek/uj", testId: "admin-news-form-component" },
       { path: "/admin/hirek/1", testId: "admin-news-form-component" },
@@ -372,6 +376,7 @@ describe("App Component", () => {
       { path: "/admin/ajanlatok/uj" },
       { path: "/admin/felhasznalok" },
       { path: "/admin/felhasznalok/1" },
+      { path: "/admin/felhasznalok/1/email" },
       { path: "/admin/hirek" },
       { path: "/admin/hirek/uj" },
       { path: "/admin/integra" },

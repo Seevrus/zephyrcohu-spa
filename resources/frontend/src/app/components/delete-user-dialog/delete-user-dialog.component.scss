@@ -1,0 +1,43 @@
+@use "@angular/material" as mat;
+
+.delete-user-dialog-confirm {
+  @include mat.button-overrides(
+    (
+      filled-container-color: var(--mat-sys-error),
+      filled-label-text-color: var(--mat-sys-on-error),
+      filled-state-layer-color: var(--mat-sys-on-error),
+      filled-ripple-color: color-mix(
+          in srgb,
+          var(--mat-sys-on-error) 20%,
+          transparent
+        ),
+    )
+  );
+}
+
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.delete-user-dialog-warning {
+  color: var(--mat-sys-error);
+  margin: 0;
+}
+
+.delete-user-dialog-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .delete-user-dialog-group-label {
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .delete-user-dialog-radio-group {
+    display: flex;
+    gap: 1rem;
+  }
+}

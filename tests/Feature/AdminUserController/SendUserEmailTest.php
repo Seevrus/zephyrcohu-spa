@@ -3,6 +3,7 @@
 use App\Mail\AdminMessage;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
 
@@ -50,10 +51,17 @@ describe('Send User Email', function () {
         $response->assertStatus(422)->assertJsonValidationErrors(['body']);
     });
 
-    test('returns 500 when the mailer throws', function () {
+    test('returns 500 when the mailer throws, and logs why', function () {
         Sanctum::actingAs(User::find(2));
 
         Mail::shouldReceive('to->send')->andThrow(new RuntimeException('smtp down'));
+
+        Log::shouldReceive('error')
+            ->once()
+            ->with('Admin message: mail failed to send.', [
+                'user_id' => 1,
+                'message' => 'smtp down',
+            ]);
 
         $response = $this->postJson('/api/admin/users/1/email', [
             'subject' => 'Kapcsolatfelvétel',

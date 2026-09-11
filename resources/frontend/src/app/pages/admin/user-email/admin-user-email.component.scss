@@ -1,0 +1,12 @@
+@use "../../../../shared/mixins";
+
+:host(.app-admin-user-email) {
+  @include mixins.zephyr-admin-main;
+  @include mixins.zephyr-admin-rich-text-form;
+
+  background-color: unset;
+
+  .admin-user-email-component {
+    width: 100%;
+  }
+}

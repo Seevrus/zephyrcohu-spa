@@ -14,6 +14,8 @@ import {
   type AdminUserCollectionResponse,
   type AdminUserItemResponse,
   type AdminUserResponse,
+  type DeleteAdminUserRequest,
+  type SendAdminUserEmailRequest,
   type UpdateAdminUserRequest,
 } from "../../types/admin-users";
 import { throwHttpError } from "../../utils/throwHttpError";
@@ -73,6 +75,54 @@ export class AdminUsersQueryService {
         this.queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers });
         this.queryClient.invalidateQueries({ queryKey: queryKeys.session });
       },
+    });
+  }
+
+  deleteAdminUser() {
+    return mutationOptions<
+      void,
+      ZephyrHttpError,
+      { id: number; request: DeleteAdminUserRequest }
+    >({
+      mutationKey: mutationKeys.deleteAdminUser,
+      mutationFn: ({ id, request }) =>
+        lastValueFrom(
+          this.http
+            .delete<void>(`${environment.apiUrl}/admin/users/${id}`, {
+              body: request,
+            })
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
+      onSuccess: () => {
+        this.queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers });
+      },
+    });
+  }
+
+  sendAdminUserEmail() {
+    return mutationOptions<
+      void,
+      ZephyrHttpError,
+      { id: number; request: SendAdminUserEmailRequest }
+    >({
+      mutationKey: mutationKeys.sendAdminUserEmail,
+      mutationFn: ({ id, request }) =>
+        lastValueFrom(
+          this.http
+            .post<void>(
+              `${environment.apiUrl}/admin/users/${id}/email`,
+              request,
+            )
+            .pipe(
+              catchError((error: HttpErrorResponse) =>
+                throwError(() => throwHttpError(error)),
+              ),
+            ),
+        ),
     });
   }
 

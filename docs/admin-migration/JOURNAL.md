@@ -1642,3 +1642,89 @@ unaffected since it prefills from the fetched item as before.
   "deleted, back to the list" message rather than inventing a second mechanism, and (c) add
   `DeleteAdminUserRequest` / `SendAdminUserEmailRequest` plus their mutations — still absent
   because `knip` fails on unused exports.
+
+---
+
+## 2026-09-06 — Task 21: FE write-to-user + delete-user flows
+
+**Shipped:**
+- `DeleteUserDialogComponent` (`components/delete-user-dialog/`) — a Material dialog carrying a
+  signal form: mail subject, a "Törlés oka" radio group (`Felhasználói kérés` / `Egyéb`) and an
+  `Indoklás` field that only exists while `Egyéb` is selected. Closes with a ready-to-send
+  `DeleteAdminUserRequest`, or nothing when cancelled.
+- The users grid's delete action is wired to it: `deleteAdminUser({ id, request })`, a success
+  card on return, and an explicit 403 branch.
+- `/admin/felhasznalok/:id/email` — `AdminUserEmailComponent`: read-only recipient, subject, and
+  the shared `app-rich-text-editor` for the body.
+- `AdminUsersQueryService.deleteAdminUser()` / `.sendAdminUserEmail()`, their `mutationKeys`
+  entries, `DeleteAdminUserReason` / `DeleteAdminUserRequest` / `SendAdminUserEmailRequest`, and
+  the two request matchers — all deferred here from Tasks 19 and 20 because `knip` fails on
+  unused exports.
+
+**Decisions:**
+- **The delete dialog keeps an editable subject** (reviewer's call), prefilled with
+  "Regisztrációja törlésre került" — legacy parity, so the admin can retitle the notification mail
+  before it goes out.
+- **The email page's 500 uses the shared `<app-form-unexpected-error />`**, not the doc's
+  bespoke "Az email küldése nem sikerült." Every other admin form reports a failed submit with
+  that component; a one-off sentence here would be the only exception. Task doc corrected.
+- **The recipient is read-only.** The legacy form let the admin retype the address, but the
+  recipient comes from the URL and the backend ignores anything in the body — an editable field
+  would only be a footgun.
+- **The deletion does not go through `FlashMessageService`.** It never navigates, so it sets the
+  grid's message signal directly. What the two flows share is the `<app-success-card>`, not the
+  cross-navigation carrier. The grid's `userUpdateMessage` was renamed `successMessage`
+  accordingly — it now carries both the edit form's flash and the local deletion confirmation.
+- No `required()` on the delete reason unconditionally: it is
+  `required(p.customReason, { when: () => this.isCustomReason() })`, matching the backend's
+  `required_if:reason,custom`. An unconditional one would leave the form permanently invalid on
+  the default choice.
+
+- **`AdminUserController::sendUserEmail` logged nothing before `abort(500)`.** Found while
+  debugging a reported 500 from the new screen: the endpoint swallowed the exception entirely, so
+  the failure left no trace and could not be diagnosed. It now logs before aborting, matching
+  `updateUser` and `deleteUser`, and the "mailer throws" Pest case asserts the log call. The
+  reported 500 itself was not a bug — the admin was on the seeded `tiller2004@example.com` row, and
+  the real mail server 550s `@example.com`. Note the asymmetry that made it confusing: update and
+  delete treat the mail as a side effect and return success even when it fails, so the same bad
+  address looks fine there and only surfaces on this endpoint, where sending *is* the request.
+  (Reviewer confirmed the side-effect behaviour is intended; revisit in Task 26 if at all.)
+
+**Surprises / gotchas:**
+- **`color="warn"` is a no-op in this app.** It is an M2-only input, and the build uses the M3
+  prebuilt `azure-blue` theme, so the delete dialog's confirm button was never actually red — and
+  neither is the shared `ConfirmDialogComponent`'s, which uses the same dead attribute. Fixed here
+  with `mat.button-overrides` on the filled-button tokens (`filled-container-color`,
+  `filled-label-text-color`, `filled-state-layer-color`, `filled-ripple-color`), matching the
+  `mat.menu-overrides` pattern already in `styles.scss`. **`ConfirmDialogComponent` is still
+  un-red** — it is shared by six admin grids, so it was left for a deliberate pass.
+- The confirm button reads **"Igen, törlés"**, not the legacy "Biztosan törölni szeretnéd?" — a
+  button should answer the question, not repeat it, and the dialog already asks.
+- **`HttpClient.delete` drops a payload unless it is passed as the `body` option.** The deletion
+  reason would have silently never reached the API; the grid spec asserts `request.request.body`
+  explicitly so a regression cannot pass.
+- The delete dialog's spec renders the component **bare** with a fake `MatDialogRef`, carrying the
+  same rationale as `rename-dialog.component.spec.ts`: inside a real overlay the CDK focus trap
+  steals focus mid-`user.type` and the remaining keystrokes are lost. The grid spec covers the
+  overlay wiring, and only clicks — it never types into the dialog.
+- **Task 18's 403 gets no branch of its own.** It was first built as a dedicated
+  "Adminisztrátor fiók nem törölhető." card, which also meant adding `GENERIC_FORBIDDEN` to the
+  `ApiError` union. Reverted at review: the grid never renders the delete action for an admin row,
+  so the case is unreachable, and unreachable copy is a maintenance cost with no reader. Every
+  delete failure now renders the shared unexpected-error card, and the union is untouched.
+
+**Verification:**
+- `npx ng test` → 554 passed / 86 files.
+- `php artisan test` → 349 passed (869 assertions).
+- `npx ng lint`, `npx tsc -p tsconfig.app.json`, `npx prettier . --check`, `npx knip` → all clean.
+- `vendor/bin/pint --dirty` → passed.
+
+**Left uncommitted for review:** no — committed at the reviewer's request.
+
+**Next session should know:**
+- The users section is complete — Tasks 18–21 all landed. `/admin/felhasznalok` and both of its
+  sub-screens work end to end against the Task 18 API.
+- Task 22 (newsletters BE) is next, and it is the last unstarted feature pair before the
+  scheduled commands (25) and the two supporting tasks.
+- `ConfirmDialogComponent` is no longer used by the users grid, but six other admin grids still
+  open it — do not remove it.

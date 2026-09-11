@@ -48,6 +48,15 @@ export const adminRoutes: Routes = [
     title: "Admin - Felhasználó szerkesztése",
   },
   {
+    path: "felhasznalok/:id/email",
+    async loadComponent() {
+      const { AdminUserEmailComponent } =
+        await import("./pages/admin/user-email/admin-user-email.component");
+      return AdminUserEmailComponent;
+    },
+    title: "Admin - Email írása",
+  },
+  {
     path: "hirek",
     async loadComponent() {
       const { AdminNewsComponent } =

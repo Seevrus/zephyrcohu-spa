@@ -15,3 +15,17 @@ export function matchUpdateAdminUserRequest(id: number): RequestMatch {
     url: `${environment.apiUrl}/admin/users/${id}`,
   };
 }
+
+export function matchDeleteAdminUserRequest(id: number): RequestMatch {
+  return {
+    method: "DELETE",
+    url: `${environment.apiUrl}/admin/users/${id}`,
+  };
+}
+
+export function matchSendAdminUserEmailRequest(id: number): RequestMatch {
+  return {
+    method: "POST",
+    url: `${environment.apiUrl}/admin/users/${id}/email`,
+  };
+}

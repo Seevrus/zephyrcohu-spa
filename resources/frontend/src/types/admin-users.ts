@@ -26,3 +26,16 @@ export type UpdateAdminUserRequest = {
   newsletter: boolean;
   generatePassword: boolean;
 };
+
+export type DeleteAdminUserReason = "asked" | "custom";
+
+export type DeleteAdminUserRequest = {
+  subject: string;
+  reason: DeleteAdminUserReason;
+  customReason: string | null;
+};
+
+export type SendAdminUserEmailRequest = {
+  subject: string;
+  body: string;
+};

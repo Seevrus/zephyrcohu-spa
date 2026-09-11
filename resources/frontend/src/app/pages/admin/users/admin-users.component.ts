@@ -2,7 +2,10 @@ import { Component, computed, inject, signal } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { MatProgressBar } from "@angular/material/progress-bar";
 import { Router } from "@angular/router";
-import { injectQuery } from "@tanstack/angular-query-experimental";
+import {
+  injectMutation,
+  injectQuery,
+} from "@tanstack/angular-query-experimental";
 import { AgGridAngular } from "ag-grid-angular";
 import { type ColDef, type ICellRendererParams } from "ag-grid-community";
 
@@ -14,16 +17,19 @@ import {
   adminPaginationPanels,
 } from "../../../../shared/admin-grid";
 import { zephyrGridTheme } from "../../../../shared/ag-grid-theme";
-import { type AdminUser } from "../../../../types/admin-users";
+import {
+  type AdminUser,
+  type DeleteAdminUserRequest,
+} from "../../../../types/admin-users";
 import {
   type AdminActionParameters,
   AdminActionsCellRendererComponent,
   type AdminRowAction,
 } from "../../../components/ag-grid/admin-actions-cell-renderer/admin-actions-cell-renderer.component";
 import {
-  ConfirmDialogComponent,
-  type ConfirmDialogData,
-} from "../../../components/confirm-dialog/confirm-dialog.component";
+  DeleteUserDialogComponent,
+  type DeleteUserDialogData,
+} from "../../../components/delete-user-dialog/delete-user-dialog.component";
 import { FormUnexpectedErrorComponent } from "../../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { SuccessCardComponent } from "../../../components/success-card/success-card.component";
 import { AdminUsersQueryService } from "../../../services/admin-users.query.service";
@@ -49,12 +55,19 @@ export class AdminUsersComponent {
   private readonly flashMessageService = inject(FlashMessageService);
   private readonly router = inject(Router);
 
-  protected readonly userUpdateMessage = signal(
+  /**
+   * Consume from user update or set here from user delete
+   */
+  protected readonly successMessage = signal(
     this.flashMessageService.consume(),
   );
 
   private readonly adminUsersQuery = injectQuery(() =>
     this.adminUsersQueryService.getAdminUsers(),
+  );
+
+  private readonly deleteUserMutation = injectMutation(() =>
+    this.adminUsersQueryService.deleteAdminUser(),
   );
 
   protected readonly users = computed(() => this.adminUsersQuery.data() ?? []);
@@ -72,6 +85,10 @@ export class AdminUsersComponent {
    */
   protected readonly errorMessage = computed(
     () => this.adminUsersQuery.error()?.code,
+  );
+
+  protected readonly hasDeleteError = computed(() =>
+    this.deleteUserMutation.isError(),
   );
 
   protected readonly theme = zephyrGridTheme;
@@ -150,19 +167,30 @@ export class AdminUsersComponent {
     }
   }
 
-  /**
-   * The delete request itself is wired in Task 21, together with the dialog
-   * that collects the mandatory reason.
-   */
   private onDeleteUser(row: AdminUser) {
-    this.dialog.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(
-      ConfirmDialogComponent,
+    const dialogRef = this.dialog.open<
+      DeleteUserDialogComponent,
+      DeleteUserDialogData,
+      DeleteAdminUserRequest
+    >(DeleteUserDialogComponent, {
+      data: { email: row.email },
+    });
+
+    dialogRef.afterClosed().subscribe((request) => {
+      if (request !== undefined) {
+        this.deleteUser(row, request);
+      }
+    });
+  }
+
+  private deleteUser(row: AdminUser, request: DeleteAdminUserRequest) {
+    this.successMessage.set(undefined);
+
+    this.deleteUserMutation.mutate(
+      { id: row.id, request },
       {
-        data: {
-          title: "Felhasználó törlése",
-          message: `Biztosan törölni szeretnéd a(z) „${row.email}” felhasználót?`,
-          warning:
-            "A felhasználó és minden hozzá tartozó adat véglegesen törlődik.",
+        onSuccess: () => {
+          this.successMessage.set("Felhasználó törlése sikeres.");
         },
       },
     );

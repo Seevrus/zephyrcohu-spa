@@ -1,0 +1,70 @@
+<div
+  data-testid="admin-user-email-component"
+  class="admin-user-email-component"
+>
+  <h1>Email írása</h1>
+
+  @if (loadErrorMessage()) {
+    <app-form-unexpected-error />
+  } @else if (isNotFound()) {
+    <p data-testid="user-not-found">A felhasználó nem található.</p>
+    <p><a routerLink="/admin/felhasznalok">Vissza a felhasználókhoz</a></p>
+  } @else {
+    @if (errorMessage()) {
+      <app-form-unexpected-error />
+    }
+
+    <form (submit)="onSubmit($event)">
+      <div class="form-elements-container">
+        <mat-form-field data-testid="recipient">
+          <mat-label>Címzett email címe</mat-label>
+          <!--
+            The recipient comes from the URL and the backend ignores any address
+            in the body, so — unlike the legacy form — it is shown rather than
+            retyped.
+          -->
+          <input matInput readonly [value]="user()?.email ?? ''" />
+        </mat-form-field>
+
+        <mat-form-field data-testid="subject">
+          <mat-label>Tárgy</mat-label>
+          <input matInput [formField]="emailForm.subject" />
+          @if (
+            emailForm.subject().touched() &&
+            emailForm.subject().getError("required")
+          ) {
+            <mat-error>Kötelező mező</mat-error>
+          } @else if (
+            emailForm.subject().touched() &&
+            emailForm.subject().getError("maxLength")
+          ) {
+            <mat-error>Legfeljebb 255 karakter</mat-error>
+          }
+        </mat-form-field>
+
+        <fieldset data-testid="body">
+          <legend>Levél szövege</legend>
+          <app-rich-text-editor [field]="emailForm.body" />
+          @if (
+            emailForm.body().touched() && emailForm.body().getError("required")
+          ) {
+            <p class="admin-form-field-error" role="alert">Kötelező mező</p>
+          }
+        </fieldset>
+
+        <div class="admin-form-actions">
+          <app-button-loadable
+            data-testid="submit-button"
+            class="submit-button"
+            type="submit"
+            [loading]="isSubmitting()"
+            [disabled]="isSubmitting() || emailForm().invalid()"
+          >
+            Elküldés
+          </app-button-loadable>
+          <a mat-button routerLink="/admin/felhasznalok">Mégsem</a>
+        </div>
+      </div>
+    </form>
+  }
+</div>

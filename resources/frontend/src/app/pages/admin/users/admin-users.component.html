@@ -3,10 +3,14 @@
     <h1>Felhasználók</h1>
   </div>
 
-  @if (userUpdateMessage()) {
+  @if (successMessage()) {
     <app-success-card title="Sikeres módosítás">
-      <p>{{ userUpdateMessage() }}</p>
+      <p>{{ successMessage() }}</p>
     </app-success-card>
+  }
+
+  @if (hasDeleteError()) {
+    <app-form-unexpected-error />
   }
 
   @if (errorMessage()) {

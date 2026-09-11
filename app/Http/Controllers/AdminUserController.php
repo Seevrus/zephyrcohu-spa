@@ -136,6 +136,11 @@ class AdminUserController extends Controller {
 
             return response(null, 204);
         } catch (Throwable $e) {
+            Log::error('Admin message: mail failed to send.', [
+                'user_id' => $user->id,
+                'message' => $e->getMessage(),
+            ]);
+
             abort(500);
         }
     }

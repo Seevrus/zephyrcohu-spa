@@ -226,7 +226,7 @@ These paths are exactly the ones the already-shipped `app-admin-nav` component l
 | 18 | BE | [Users admin API + mails](18-be-users-admin.md) | 01 | [x] |
 | 19 | FE | [Users admin grid](19-fe-users-list.md) | 03, 18 | [x] |
 | 20 | FE | [User edit form](20-fe-user-edit.md) | 19 | [x] |
-| 21 | FE | [Write to user + delete user flows](21-fe-user-email-and-delete.md) | 19 | [ ] |
+| 21 | FE | [Write to user + delete user flows](21-fe-user-email-and-delete.md) | 19 | [x] |
 | 22 | BE | [Newsletters API + mail](22-be-newsletters.md) | 01 | [ ] |
 | 23 | FE | [Newsletter list + view](23-fe-newsletters-list.md) | 03, 22 | [ ] |
 | 24 | FE | [Newsletter compose + FE-governed sending](24-fe-newsletter-compose-send.md) | 23 | [ ] |

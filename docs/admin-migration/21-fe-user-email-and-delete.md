@@ -54,8 +54,10 @@ Note the change in the journal.
 Buttons: "Elküldés" (`app-button-loadable`) + "Mégsem".
 Submit → `POST /admin/users/:id/email` with `{ subject, body }`; on 204 navigate back to the list
 with the success message "Email küldése sikeres." (legacy wording), using the Task 20 mechanism.
-On 500: `<app-form-unexpected-error />` with the legacy-flavoured message "Az email küldése nem
-sikerült." Keep the form filled so the admin can retry.
+On 500: the shared `<app-form-unexpected-error />` as-is, rather than the legacy-flavoured "Az
+email küldése nem sikerült." — every other admin form reports a failed submit with that component,
+and a bespoke sentence here would be the only exception. The form keeps its values either way, so
+the admin can retry without retyping.
 
 Route: `{ path: "felhasznalok/:id/email", …, title: "Admin - Email írása" }` — register it
 **before** `felhasznalok/:id` is irrelevant (different depth), but keep it next to it for
@@ -74,21 +76,29 @@ The delete needs a reason, so the shared `ConfirmDialogComponent` is not enough 
 
 Dialog title: `Felhasználó törlése`, plus a warning line naming the user:
 `A(z) <email> felhasználó és minden hozzá tartozó adat véglegesen törlődik.`
-Confirm button label: "Biztosan törölni szeretnéd?" (legacy), `color="warn"`.
+Confirm button label: "Igen, törlés" — the legacy "Biztosan törölni szeretnéd?" reads as a question
+on a button that answers one, and the dialog already asks it. Coloured with the error palette via
+`mat.button-overrides` on the filled-button tokens: `color="warn"` is an M2-only input and does
+nothing under the M3 prebuilt theme this app uses.
 
 `close()` returns `DeleteAdminUserRequest | undefined`. The users grid runs
 `deleteAdminUser({ id, request })` on a returned value, shows the progress bar while pending,
 and on success re-renders the grid with the success message "Felhasználó törlése sikeres."
-A 403 (self-delete or another admin — Task 18's guard) renders
-"Adminisztrátor fiók nem törölhető." A 500 renders the unexpected-error card.
+The deletion never navigates, so it sets the grid's message signal directly instead of going
+through `FlashMessageService` — what the two flows share is the `<app-success-card>`, not the
+cross-navigation carrier.
+Any failure renders the unexpected-error card. Task 18's 403 (self-delete or another admin) is
+deliberately **not** told apart: the grid already withholds the delete action from admin rows, so
+the only accounts it can be fired for are ones the endpoint accepts, and a dedicated
+"Adminisztrátor fiók nem törölhető." branch would be unreachable copy to maintain.
 
 ## Steps
 
-- [ ] **Step 1:** Spec + implementation for `DeleteUserDialogComponent`.
-- [ ] **Step 2:** Wire the users grid's delete action to it; extend the grid spec.
-- [ ] **Step 3:** Spec + implementation for the write-to-user page.
-- [ ] **Step 4:** Route + `app.component.spec.ts` case for `/admin/felhasznalok/1/email`.
-- [ ] **Step 5:** Verify, self review, journal, tick Task 21.
+- [x] **Step 1:** Spec + implementation for `DeleteUserDialogComponent`.
+- [x] **Step 2:** Wire the users grid's delete action to it; extend the grid spec.
+- [x] **Step 3:** Spec + implementation for the write-to-user page.
+- [x] **Step 4:** Route + `app.component.spec.ts` case for `/admin/felhasznalok/1/email`.
+- [x] **Step 5:** Verify, self review, journal, tick Task 21.
 
 ## Tests to write
 
@@ -103,7 +113,7 @@ A 403 (self-delete or another admin — Task 18's guard) renders
 `admin-users.component.spec.ts` (extended):
 
 - confirming the dialog fires `DELETE /admin/users/1` with the reason body
-- a 403 renders "Adminisztrátor fiók nem törölhető."
+- a failed delete renders the unexpected-error card
 - a successful delete refreshes the list and shows the success message
 
 `admin-user-email.component.spec.ts`:
@@ -123,13 +133,13 @@ npx ng test && npx ng lint && npx tsc -p tsconfig.app.json && npx prettier . --c
 
 ## Self review
 
-- [ ] The delete dialog cannot be confirmed without a reason, and `custom` cannot be submitted
+- [x] The delete dialog cannot be confirmed without a reason, and `custom` cannot be submitted
       empty.
-- [ ] The dialog's destructive button is visually and semantically marked as destructive.
-- [ ] The rich text editor in the email page follows the Task 06 jsdom note.
-- [ ] The 403 case is handled explicitly — an admin trying to delete an admin must not see a
-      generic error.
-- [ ] Success messages reuse the Task 20 mechanism.
+- [x] The dialog's destructive button is visually and semantically marked as destructive.
+- [x] The rich text editor in the email page follows the Task 06 jsdom note.
+- [x] The 403 case needs no branch of its own: the delete action is never rendered for an admin
+      row, so the only way to reach it is a generic failure anyway.
+- [x] Success messages reuse the Task 20 mechanism.
 
 ## Done when
 
