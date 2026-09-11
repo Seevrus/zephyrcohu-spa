@@ -46,6 +46,12 @@ class User extends Authenticatable {
         return $this->hasOne(UserNewPassword::class);
     }
 
+    public function newsletters(): BelongsToMany {
+        return $this
+            ->belongsToMany(Newsletter::class, 'users_newsletters', 'user_id', 'newsletter_id')
+            ->using(UserNewsletter::class);
+    }
+
     public function newUser(): HasOne {
         return $this->hasOne(UserNew::class);
     }

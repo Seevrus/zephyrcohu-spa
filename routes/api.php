@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminKnowledgebaseController;
 use App\Http\Controllers\AdminLinkCategoryController;
 use App\Http\Controllers\AdminLinkController;
 use App\Http\Controllers\AdminNewsController;
+use App\Http\Controllers\AdminNewsletterController;
 use App\Http\Controllers\AdminOfferController;
 use App\Http\Controllers\AdminTagController;
 use App\Http\Controllers\AdminUserController;
@@ -107,6 +108,16 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/{news}', 'getNewsItem');
         Route::put('/{news}', 'updateNews');
         Route::delete('/{news}', 'deleteNews');
+    });
+
+    Route::controller(AdminNewsletterController::class)->prefix('newsletters')->group(function () {
+        Route::get('/', 'getNewsletters');
+        Route::post('/', 'storeNewsletter');
+        Route::get('/{newsletter}', 'getNewsletter');
+        Route::get('/{newsletter}/recipients', 'getRecipients');
+        Route::post('/{newsletter}/recipients/{user}', 'sendToRecipient')
+            ->withoutMiddleware('throttle:api')
+            ->middleware('throttle:newsletter');
     });
 
     Route::controller(AdminOfferController::class)->prefix('offers')->group(function () {

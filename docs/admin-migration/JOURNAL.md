@@ -1728,3 +1728,82 @@ unaffected since it prefills from the fetched item as before.
   scheduled commands (25) and the two supporting tasks.
 - `ConfirmDialogComponent` is no longer used by the users grid, but six other admin grids still
   open it — do not remove it.
+
+## 2026-09-11 — Task 22: BE newsletters API + mail
+
+**Status:** done
+
+**Shipped:**
+- `app/Models/Newsletter.php`, `app/Models/UserNewsletter.php` (pivot, mirroring `UserNews`),
+  `User::newsletters(): BelongsToMany`.
+- `app/Http/Controllers/AdminNewsletterController.php` — `getNewsletters`, `storeNewsletter`,
+  `getNewsletter`, `getRecipients`, `sendToRecipient`.
+- `app/Http/Requests/StoreNewsletterRequest.php`; `app/Http/Resources/AdminNewsletterResource.php`
+  (one resource covers both the list shape and the single-item shape — `content` is included only
+  when `isset($this->content)`, which is `false` on the list query because it never selects that
+  column), `AdminNewsletterRecipientResource.php`.
+- `app/Mail/NewsletterSent.php` + `resources/views/mail/newsletter_sent/{html,text}.blade.php`.
+- Five new routes under `/api/admin/newsletters` in `routes/api.php`; the `newsletter` rate
+  limiter in `AppServiceProvider::boot()`; `.ai/rules/routes.md` updated with the limiter and the
+  `withoutMiddleware` gotcha below.
+- `tests/Feature/AdminNewsletterController/` — `GetAdminNewslettersTest.php` (list + single-item
+  `getNewsletter`), `StoreNewsletterTest.php`, `GetNewsletterRecipientsTest.php`,
+  `SendNewsletterTest.php`.
+- **Beyond the doc's original scope, decided with the user:** `resources/views/components/mail/
+  layout.blade.php` — a shared `<x-mail.layout>` anonymous Blade component holding the header/body
+  wrapper every mail view repeated inline, and all 8 pre-existing `html.blade.php` mail views
+  rewritten onto it (content unchanged, full Pest suite green before/after).
+
+**Decisions made while implementing:**
+- **Eligibility gained a `confirmed` check.** The doc explicitly said to keep legacy parity
+  (`newsletter = 1` only). The user chose to deviate: an unconfirmed registration should not
+  receive a newsletter. Every eligibility query (`recipientCount`, `getRecipients`,
+  `sendToRecipient`'s guard) now filters on `newsletter = 1 AND confirmed = 1`.
+- **Rate limiter kept as specced (D13)**, despite the current seeded user count being nowhere near
+  60 — a two-line change that closes a real, if currently unlikely, failure mode.
+- **Unsubscribe link is hardcoded** (`https://zephyr.co.hu/profil`), not `config('app.url')` as
+  the doc originally said — matches every other mail view's convention; introducing
+  `config('app.url')` was judged out of scope. Doc corrected.
+- **No resend/retry UI is being built here, on purpose.** Checked the legacy admin
+  (`hirlevel.GET.php`/`hirlevelek.html`): every stored newsletter only ever got a read-only "view"
+  link, never a resend button. The resume *capability* came solely from `hirlevel_uj.POST.php`
+  accepting an existing id and re-querying pending recipients, driven by the compose page's own JS
+  loop — if that tab closed mid-run, nothing in the legacy UI could restart it. This task's design
+  (idempotent send + `getRecipients` always returning the true pending set) hands Task 23/24 the
+  same resume capability for free, whether or not the FE ever exposes a "resend" affordance — a
+  Task 23/24 decision, not something built here.
+- `recipientCount` is computed once per request (a single `count()` call) and assigned as a plain
+  dynamic attribute on each `Newsletter` row rather than requeried per row — satisfies "one query,
+  not one per newsletter." `sentCount` comes from a single `withCount` correlated subquery.
+- The eligibility/idempotency checks in `sendToRecipient` sit **above** the try/catch, not inside
+  it — `abort(404)` throws an `HttpException`, and `catch (Throwable $e)` catches that too, so a
+  check placed inside the try would turn a deliberate 404 into a logged 500.
+
+**Surprises / gotchas:**
+- **`->withoutMiddleware([ThrottleRequests::class])` does not exclude a parameterised middleware**
+  — first caught by the "70 consecutive sends" test failing with a real 429. This is a general
+  routing trap, not specific to newsletters, so it's written up as its own rule rather than
+  repeated here: see `.ai/rules/routes.md` ("Opting a route out of the group-applied `api`
+  limiter") for the mechanism and the fix (`->withoutMiddleware('throttle:api')`, the exact
+  string, plus why `route:list -v` can't verify it but `-vv` can).
+- All 8 existing mail views turned out to share byte-identical wrapper markup, confirmed by
+  reading every one before touching any — the refactor was a pure mechanical extraction with
+  nothing bespoke to preserve per-view beyond the body content.
+
+**Verification:**
+- `php artisan test --compact --filter=AdminNewsletter` → 27 passed.
+- `php artisan test --compact` (full suite) → 376 passed (1007 assertions), up from the 349 that
+  passed both before this task and again right after the mail-layout refactor alone.
+- `vendor/bin/pint --dirty --format agent` → passed.
+- `php artisan route:list --path=api/admin/newsletters -vv` → confirms `throttle:newsletter` alone
+  on the send route, `throttle:api` on the other four.
+- No FE change this task, so no `ng test` run.
+
+**Left uncommitted for review:** yes.
+
+**Next session should know:**
+- Task 22 (BE) is done; Task 23 (FE: newsletter list + view) is next and depends on it.
+- The `<x-mail.layout>` component now backs every mail view in the app — any new mail going
+  forward should be written against it from the start rather than duplicating the wrapper again.
+- Eligibility for a newsletter is `newsletter = 1 AND confirmed = 1` — Task 23/24's FE should not
+  assume the legacy `newsletter = 1`-only rule when displaying recipient counts.
