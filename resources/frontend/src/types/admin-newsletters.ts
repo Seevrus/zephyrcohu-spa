@@ -26,8 +26,22 @@ export type AdminNewsletterItem = Omit<
   createdAt: Date;
 };
 
+export type AdminNewsletterRecipient = {
+  id: number;
+  email: string;
+};
+
+export type SaveAdminNewsletterRequest = {
+  subject: string;
+  content: string;
+};
+
 export type AdminNewsletterCollectionResponse = {
   data: AdminNewsletterCollectionResponseItem[];
+};
+
+export type AdminNewsletterRecipientCollectionResponse = {
+  data: AdminNewsletterRecipient[];
 };
 
 export type AdminNewsletterItemResponse = {

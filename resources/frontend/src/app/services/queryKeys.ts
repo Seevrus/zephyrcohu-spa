@@ -6,6 +6,7 @@ export const mutationKeys = {
   createAdminKnowledgebase: ["create_admin_knowledgebase"],
   createAdminLink: ["create_admin_link"],
   createAdminNews: ["create_admin_news"],
+  createAdminNewsletter: ["create_admin_newsletter"],
   createAdminOffer: ["create_admin_offer"],
   deleteAdminDocument: ["delete_admin_document"],
   deleteAdminKnowledgebase: ["delete_admin_knowledgebase"],
@@ -28,6 +29,7 @@ export const mutationKeys = {
   requestNewPassword: ["request_new_password"],
   requestOffer: ["request_offer"],
   sendAdminUserEmail: ["send_admin_user_email"],
+  sendNewsletterToRecipient: ["send_newsletter_to_recipient"],
   updateAdminDocument: ["update_admin_document"],
   updateAdminKnowledgebase: ["update_admin_knowledgebase"],
   updateAdminLink: ["update_admin_link"],
@@ -61,6 +63,11 @@ export const queryKeys = {
   adminNewsletters: ["admin_newsletters"],
   adminNewsletterItem(id?: number) {
     return id ? ["admin_newsletter_item", id] : ["admin_newsletter_item"];
+  },
+  adminNewsletterRecipients(id?: number) {
+    return id
+      ? ["admin_newsletter_recipients", id]
+      : ["admin_newsletter_recipients"];
   },
   adminOffers: ["admin_offers"],
   adminOfferItem(id?: number) {

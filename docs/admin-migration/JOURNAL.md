@@ -1891,3 +1891,85 @@ unaffected since it prefills from the fetched item as before.
   `staleTime: 0` / `retry: false` constraints.
 - Recipient counts on both screens come straight from the API, which counts
   `newsletter = 1 AND confirmed = 1` (Task 22's deviation) — the FE does no filtering of its own.
+
+## 2026-09-13 — Task 24: FE newsletter compose + FE-governed sending
+
+**Status:** done — the newsletter feature is complete end to end.
+
+**Shipped:**
+- `src/types/admin-newsletters.ts` — `AdminNewsletterRecipient`, `SaveAdminNewsletterRequest`, the
+  recipient collection envelope; `src/types/errors.ts` — `GENERIC_TOO_MANY_REQUESTS` added to
+  `ApiError`; `src/mocks/admin/newsletters/` — three new request matchers and
+  `createGetAdminNewsletterRecipientsOkResponse.ts`.
+- `src/app/services/admin-newsletters.query.service.ts` — the three methods Task 23 deferred:
+  `getAdminNewsletterRecipients(id)` (`staleTime: 0`), `createAdminNewsletter()` (invalidates the
+  list) and `sendNewsletterToRecipient()` (`retry: false`), plus their `mutationKeys` /
+  `queryKeys.adminNewsletterRecipients(id)` entries.
+- `src/app/services/delay.service.ts` (+ spec) — `wait(ms, abort?)`, the injectable pacing seam.
+- `src/app/pages/admin/newsletter-form/admin-newsletter-form.component.*` (+ spec) —
+  `/admin/hirlevel/uj`: subject + rich text, `POST /admin/newsletters`, then straight on to the
+  sending screen.
+- `src/app/pages/admin/newsletter-send/admin-newsletter-send.component.*` (+ spec) —
+  `/admin/hirlevel/:id/kuldes`: the sequential paced run with progress, an announced per-recipient
+  results log, abort, and retry.
+- `src/app/admin.routes.ts` (two routes, `uj` above `:id`) and three new `app.component.spec.ts`
+  routing cases. The details page needed **no** change — its resume link already pointed here.
+
+**Decisions made while implementing:**
+- **Two screens, not the doc's two phases on one** (chosen by the user). Compose POSTs and navigates
+  to `/admin/hirlevel/:id/kuldes`, which is the only place sending happens — the same screen the
+  details page's resume link reaches. This leaves one sending code path instead of two entry paths
+  into it, keeps the URL correct while a run is in progress (so a reload lands back on the sending
+  screen and resumes against the server's pending list), and still shows the newsletter read-only.
+- **Sending never auto-starts** (chosen by the user): the screen fetches the pending recipients and
+  waits for "Kiküldés indítása". Sending is irreversible, so a reload, a stray deep link or a tab the
+  browser restored must not be able to mail anyone.
+- **The 429 wait is a fixed 60s, not `Retry-After`** (chosen by the user). See the dead end below.
+- The item query is invalidated with **`refetchType: "none"`** at the end of a run: the sending
+  screen is that query's own observer and does not display its counters, so a refetch there would be
+  a request nobody reads. Nothing is invalidated *per send* either — a run is one request per
+  recipient, and refetching after each would be hundreds of pointless requests.
+
+**Surprises / gotchas:**
+- **`Retry-After` is unreachable from the SPA, on both sides.** The backend's
+  `ErrorHandling::too_many_requests()` builds a fresh response and never copies the
+  `ThrottleRequestsException`'s headers (`bootstrap/app.php`), and `throwHttpError` keeps only
+  `{status, code}` from the JSON body — headers are dropped. So the task doc's
+  `retryAfterMs(error) ?? 60_000` could not be written; the fallback became the only path. Honouring
+  the header would take `->withHeaders($e->getHeaders())` plus a `ZephyrThrottledHttpError` subclass
+  carrying `retryAfter` (the `ZephyrValidationHttpError` precedent). Left undone deliberately: 1s
+  pacing is 60 sends/min against a 120/min limiter, so a 429 needs a second concurrent sender.
+  *Detecting* 429 does work — the Laravel body carries `status: 429`, so `ZephyrHttpError.status`
+  is reliable. `GENERIC_TOO_MANY_REQUESTS` was missing from the FE `ApiError` union even though the
+  backend has sent it since Task 22; added.
+- **After `await query.refetch()` the query's `data()` signal can still hold the previous value** —
+  TanStack batches observer notifications, so the signal updates a tick later. The retry path read
+  the stale 2-recipient list and re-ran against it; the fix is to use the value the refetch promise
+  resolves with. Any "refetch, then act on the result" flow needs the same care.
+- Fake timers were kept **out** of the page spec: `waitFor`/`findBy*` are timer-driven and the repo
+  has only one fake-timer spec. Hence `DelayService` — the page spec stubs it (instantly, or, for the
+  abort test, with a stub that only ever resolves through the abort promise, which is what proves the
+  pacing wait really gates the next send), and the timing itself is covered in `delay.service.spec.ts`.
+- **The summary renders on the run's final tick**, so the first spec draft failed by waiting on a
+  per-recipient row and then reading the summary synchronously. Assertions have to await the *last*
+  thing to appear and check the earlier ones after. Same family as Task 23's ag-grid ordering trap.
+- Two deliberate mutations confirmed the loop tests bite: forcing `isThrottled` to `false` failed
+  exactly the two throttle tests, and dropping the abort promise from the pacing wait failed exactly
+  the abort test.
+
+**Verification:**
+- `npx ng test` (full suite) → 92 files / 600 tests passed, up from 89 / 574.
+- `npx ng lint`, `npx tsc -p tsconfig.app.json`, `npx prettier . --check`, `npx knip` → all clean.
+- One full-suite run failed `admin-users.component.spec.ts` ("marks an admin row…") on a
+  `findByTestId` timeout and passed on a clean rerun and in isolation — the same load sensitivity
+  noted in Task 23, not a regression.
+
+**Left uncommitted for review:** yes.
+
+**Next session should know:**
+- Remaining tasks are 25 (BE scheduled commands), 26 (final integration sweep) and 27 (legacy data
+  import). Nothing in the newsletter feature is outstanding.
+- A permanently unsendable address keeps a newsletter from ever reaching `isSentToEveryone`, so its
+  details page offers "Kiküldés folytatása" forever and every run re-attempts it. That is the
+  accepted consequence of keeping the send stateless (see the Task 24 doc and commit `05d10df`); the
+  results log is the only place an admin can see which address is at fault.

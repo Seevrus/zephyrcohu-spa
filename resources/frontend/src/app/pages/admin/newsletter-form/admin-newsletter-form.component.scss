@@ -1,0 +1,12 @@
+@use "../../../../shared/mixins";
+
+:host(.app-admin-newsletter-form) {
+  @include mixins.zephyr-admin-main;
+  @include mixins.zephyr-admin-rich-text-form;
+
+  background-color: unset;
+
+  .admin-newsletter-form-component {
+    width: 100%;
+  }
+}

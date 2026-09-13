@@ -1,0 +1,102 @@
+<div
+  data-testid="admin-newsletter-send-component"
+  class="admin-newsletter-send-component"
+>
+  @if (errorMessage()) {
+    <app-form-unexpected-error />
+  } @else if (isNotFound()) {
+    <p data-testid="newsletter-not-found">A hírlevél nem található.</p>
+    <p><a routerLink="/admin/hirlevel">Vissza a hírlevelekhez</a></p>
+  } @else if (isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  } @else {
+    <h1>{{ subject() }}</h1>
+
+    @if (isSending()) {
+      <p data-testid="sending-heading">
+        Hírlevelek küldése folyamatban... {{ roundedProgressPercent() }}%
+      </p>
+    }
+
+    @if (isSending() || hasRun()) {
+      <p data-testid="send-progress">
+        {{ numberOfProcessedRecipients() }} / {{ totalNumberOfRecipients() }}
+      </p>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressPercent()"
+        [attr.aria-label]="progressLabel()"
+      />
+    }
+
+    @if (isSending()) {
+      <p data-testid="do-not-leave-warning">
+        A küldés folyamatban van, kérjük ne zárja be az oldalt.
+      </p>
+
+      <div class="admin-form-actions">
+        <button mat-flat-button type="button" (click)="abortSending()">
+          Megszakítás
+        </button>
+      </div>
+    } @else if (hasRun()) {
+      <p data-testid="send-summary">
+        Kiküldve: {{ sentCount() }} / {{ totalNumberOfRecipients() }}
+      </p>
+
+      @if (failureCount()) {
+        <p data-testid="send-failures">
+          Néhány címzett esetén nem sikerült a küldés. A hírlevél újra
+          megnyitható és a küldés folytatható.
+        </p>
+      }
+
+      <div class="admin-form-actions">
+        @if (failureCount()) {
+          <button mat-flat-button type="button" (click)="retrySending()">
+            Újrapróbálás
+          </button>
+        }
+
+        <a mat-button routerLink="/admin/hirlevel">Vissza a hírlevelekhez</a>
+      </div>
+    } @else if (pendingCount() === 0) {
+      <p>A hírlevél minden címzettnek kiküldésre került.</p>
+
+      <div class="admin-form-actions">
+        <a mat-button routerLink="/admin/hirlevel">Vissza a hírlevelekhez</a>
+      </div>
+    } @else {
+      <p data-testid="pending-count">
+        {{ pendingCount() }} címzett vár kiküldésre.
+      </p>
+
+      <div class="admin-form-actions">
+        <button mat-flat-button type="button" (click)="startSending()">
+          Kiküldés indítása
+        </button>
+        <a mat-button routerLink="/admin/hirlevel">Vissza a hírlevelekhez</a>
+      </div>
+    }
+
+    @if (results().length) {
+      <div data-testid="send-results" role="log" aria-live="polite">
+        <ul class="send-results">
+          @for (result of results(); track $index) {
+            <li>
+              <mat-icon aria-hidden="true">
+                {{ result.status === "ok" ? "check" : "error" }}
+              </mat-icon>
+              <span
+                >{{ result.email }} —
+                {{ result.status === "ok" ? "Elküldve" : "Nem sikerült" }}</span
+              >
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    <div data-testid="newsletter-content" [innerHTML]="contentHtml()"></div>
+  }
+</div>

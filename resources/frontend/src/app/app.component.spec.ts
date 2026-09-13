@@ -338,8 +338,16 @@ describe("App Component", () => {
       { path: "/admin/hirek/1", testId: "admin-news-form-component" },
       { path: "/admin/hirlevel", testId: "admin-newsletters-component" },
       {
+        path: "/admin/hirlevel/uj",
+        testId: "admin-newsletter-form-component",
+      },
+      {
         path: "/admin/hirlevel/1",
         testId: "admin-newsletter-details-component",
+      },
+      {
+        path: "/admin/hirlevel/1/kuldes",
+        testId: "admin-newsletter-send-component",
       },
       { path: "/admin/integra", testId: "admin-documents-component" },
       { path: "/admin/integra/uj", testId: "admin-document-form-component" },
@@ -385,6 +393,9 @@ describe("App Component", () => {
       { path: "/admin/hirek" },
       { path: "/admin/hirek/uj" },
       { path: "/admin/hirlevel" },
+      { path: "/admin/hirlevel/uj" },
+      { path: "/admin/hirlevel/1" },
+      { path: "/admin/hirlevel/1/kuldes" },
       { path: "/admin/integra" },
       { path: "/admin/integra/uj" },
       { path: "/admin/linkek" },

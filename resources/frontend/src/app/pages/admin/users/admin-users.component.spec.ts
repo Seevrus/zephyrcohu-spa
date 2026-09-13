@@ -102,8 +102,19 @@ describe("AdminUsersComponent", () => {
       ]),
     );
 
+    /**
+     * ag-grid instantiates Angular cell renderers a tick after it paints the
+     * plain value cells, and one row at a time. Every row has to be waited for
+     * rather than taking one row's renderer as proof
+     */
     await expect(
       screen.findByRole("button", { name: "Törlés: user001@example.com" }),
+    ).resolves.toBeInTheDocument();
+
+    await expect(
+      screen.findByRole("button", {
+        name: "Szerkesztés: admin001@example.com",
+      }),
     ).resolves.toBeInTheDocument();
 
     expect(screen.getByTestId("admin-users-component").textContent).toContain(
@@ -113,10 +124,6 @@ describe("AdminUsersComponent", () => {
     expect(
       screen.queryByRole("button", { name: "Törlés: admin001@example.com" }),
     ).not.toBeInTheDocument();
-
-    expect(
-      screen.getByRole("button", { name: "Szerkesztés: admin001@example.com" }),
-    ).toBeInTheDocument();
 
     httpTesting.verify();
   });

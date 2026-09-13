@@ -1,0 +1,23 @@
+@use "../../../../shared/mixins";
+
+:host(.app-admin-newsletter-send) {
+  @include mixins.zephyr-admin-main;
+
+  background-color: unset;
+
+  .admin-newsletter-send-component {
+    width: 100%;
+  }
+
+  .send-results {
+    list-style: none;
+    margin: 1rem 0;
+    padding: 0;
+
+    li {
+      align-items: center;
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+}
