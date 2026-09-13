@@ -53,6 +53,26 @@ id is present, skip phase 1, load the newsletter with `getAdminNewsletter(id)`, 
 and go straight to phase 2. Until this task lands, that button routes to the 404 page — expected,
 like every other not-yet-migrated admin link.
 
+### Backend contract for a failed recipient (verified before this task)
+
+`sendToRecipient` mails exactly one recipient per request inside a `try`/`catch (Throwable)`. Any
+mailer failure — SMTP down, or an address so malformed that Symfony refuses it
+(`RfcComplianceException`) — is logged, returns **500**, and **leaves the pivot row uninserted**. So:
+
+- a failure is confined to its own request; the next recipient sends normally
+- the failed recipient stays in `GET /admin/newsletters/{id}/recipients`, so a resumed or retried
+  run picks it up again — the retry path needs no FE bookkeeping
+- covered by `SendNewsletterTest`: "an unsendable address fails only its own request and leaves the
+  next recipient sendable" and "a failed recipient stays in the pending list, so a resumed run
+  retries it"
+
+**Deliberately not stateful (decided with the user):** a permanently unsendable address is *not*
+recorded as bad anywhere. Consequence to accept, not to work around: such a newsletter never
+reaches `sentCount >= recipientCount`, so `isSentToEveryone` stays false and the details page keeps
+offering "Kiküldés folytatása" forever, re-attempting that recipient on every run. This is why the
+FE loop must report per-recipient failures clearly in its results log — that list is the only place
+an admin can see *which* address is the problem.
+
 **Phase 2 — sending loop.**
 
 ```

@@ -112,6 +112,38 @@ describe('Send Newsletter', function () {
         $this->assertDatabaseMissing('users_newsletters', ['user_id' => 3, 'newsletter_id' => 1]);
     });
 
+    test('an unsendable address fails only its own request and leaves the next recipient sendable', function () {
+        Sanctum::actingAs(User::find(2));
+
+        Log::shouldReceive('error')->once();
+
+        $this->postJson('/api/admin/newsletters/1/recipients/7')
+            ->assertStatus(500)
+            ->assertJson([
+                'status' => 500,
+                'code' => 'INTERNAL_SERVER_ERROR',
+            ]);
+
+        $this->assertDatabaseMissing('users_newsletters', ['user_id' => 7, 'newsletter_id' => 1]);
+
+        $this->postJson('/api/admin/newsletters/1/recipients/3')->assertStatus(204);
+
+        $this->assertDatabaseHas('users_newsletters', ['user_id' => 3, 'newsletter_id' => 1]);
+    });
+
+    test('a failed recipient stays in the pending list, so a resumed run retries it', function () {
+        Sanctum::actingAs(User::find(2));
+
+        Log::shouldReceive('error')->once();
+
+        $this->postJson('/api/admin/newsletters/1/recipients/7')->assertStatus(500);
+
+        $response = $this->getJson('/api/admin/newsletters/1/recipients');
+
+        $response->assertStatus(200);
+        expect(array_column($response->json('data'), 'id'))->toContain(7);
+    });
+
     test('70 consecutive sends in one minute all succeed', function () {
         Mail::fake();
         Sanctum::actingAs(User::find(2));
@@ -187,6 +219,17 @@ function resetSendNewsletterTestData(): void {
             'email' => 'user005@example.com',
             'password' => Hash::make('abc123456'),
             'confirmed' => 0,
+            'newsletter' => 1,
+            'ip_address' => '127.0.0.1',
+            'last_active' => '2026-02-08 21:39:00',
+        ],
+        // An eligible subscriber whose stored address cannot be mailed at all —
+        // legacy imported data is not guaranteed to be RFC-compliant.
+        [
+            'id' => 7,
+            'email' => 'nem egy email',
+            'password' => Hash::make('abc123456'),
+            'confirmed' => 1,
             'newsletter' => 1,
             'ip_address' => '127.0.0.1',
             'last_active' => '2026-02-08 21:39:00',
