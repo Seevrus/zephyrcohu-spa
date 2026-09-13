@@ -92,21 +92,24 @@ Schedule::command('zephyr:prune-expired-records')->dailyAt('03:00');
 
 ## Steps
 
-- [ ] **Step 1:** `php artisan make:command SendPendingRegistrationsReminder --no-interaction`
+- [x] **Step 1:** `php artisan make:command SendPendingRegistrationsReminder --no-interaction`
       and `php artisan make:command PruneExpiredRecords --no-interaction`; set their
-      `$signature` to the names above and write real `$description`s.
-- [ ] **Step 2:** Write `SendPendingRegistrationsReminderTest` first (cases below), then the
+      `$signature` to the names above and write real `$description`s. (Shipped using the
+      current `#[Signature(...)]`/`#[Description(...)]` attribute style, which is what
+      `make:command` now scaffolds — no `$signature` property precedent existed either way.)
+- [x] **Step 2:** Write `SendPendingRegistrationsReminderTest` first (cases below), then the
       command and its mailable/views.
-- [ ] **Step 3:** Write `PruneExpiredRecordsTest`, then the command.
-- [ ] **Step 4:** Add both `Schedule::command(...)` lines and assert they are registered:
+- [x] **Step 3:** Write `PruneExpiredRecordsTest`, then the command.
+- [x] **Step 4:** Add both `Schedule::command(...)` lines and assert they are registered:
       `$this->artisan('schedule:list')` output contains both signatures — or inspect
       `app(Schedule::class)->events()`. Pick one and keep it in a test so a lost schedule entry
-      fails the suite.
-- [ ] **Step 5:** Document the host cron entry in the journal — the server still needs
+      fails the suite. (Used `app(Schedule::class)->events()` in
+      `tests/Feature/Console/ScheduleRegistrationTest.php`.)
+- [x] **Step 5:** Document the host cron entry in the journal — the server still needs
       `* * * * * cd /path && php artisan schedule:run >> /dev/null 2>&1` for any of this to fire.
       If the production host cannot run a per-minute cron, note that both commands can also be
       invoked directly by the existing cron mechanism (`php artisan zephyr:...` once a day).
-- [ ] **Step 6:** Pint, self review, journal, tick Task 25.
+- [x] **Step 6:** Pint, self review, journal, tick Task 25.
 
 ## Tests to write
 
@@ -139,11 +142,13 @@ vendor/bin/pint --dirty --format agent
 
 ## Self review
 
-- [ ] Neither command touches `users_new`.
-- [ ] Both commands are idempotent and safe to run twice in a row.
-- [ ] The reminder recipient comes from config, not a hard-coded address.
-- [ ] Times are chosen so the two commands do not overlap.
-- [ ] The schedule registration is covered by a test, not just by reading the file.
+- [x] Neither command touches `users_new`.
+- [x] Both commands are idempotent and safe to run twice in a row. (`PruneExpiredRecords` deletes
+      nothing more the second time; `SendPendingRegistrationsReminder` mutates no state, so a
+      repeat run just mails again — matching legacy behaviour, which has no dedupe either.)
+- [x] The reminder recipient comes from config, not a hard-coded address.
+- [x] Times are chosen so the two commands do not overlap. (03:00 / 06:00.)
+- [x] The schedule registration is covered by a test, not just by reading the file.
 
 ## Done when
 

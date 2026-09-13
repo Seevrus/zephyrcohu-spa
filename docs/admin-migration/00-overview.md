@@ -232,7 +232,7 @@ These paths are exactly the ones the already-shipped `app-admin-nav` component l
 | 22 | BE | [Newsletters API + mail](22-be-newsletters.md) | 01 | [x] |
 | 23 | FE | [Newsletter list + view](23-fe-newsletters-list.md) | 03, 22 | [x] |
 | 24 | FE | [Newsletter compose + FE-governed sending](24-fe-newsletter-compose-send.md) | 23 | [x] |
-| 25 | BE | [Scheduled commands](25-be-schedules.md) | — | [ ] |
+| 25 | BE | [Scheduled commands](25-be-schedules.md) | — | [x] |
 | 26 | Supporting | [Final integration sweep](26-final-integration-sweep.md) | all | [ ] |
 | 27 | Supporting | [Legacy data import](27-supporting-legacy-data-import.md) | 13, 16, 22, 26 | [ ] |
 

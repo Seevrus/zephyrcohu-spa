@@ -1973,3 +1973,67 @@ unaffected since it prefills from the fetched item as before.
   details page offers "Kiküldés folytatása" forever and every run re-attempts it. That is the
   accepted consequence of keeping the send stateless (see the Task 24 doc and commit `05d10df`); the
   results log is the only place an admin can see which address is at fault.
+
+## 2026-09-13 — Task 25: BE scheduled commands (registration reminders + cleanup)
+
+**Status:** done
+
+**Shipped:**
+- `app/Console/Commands/SendPendingRegistrationsReminder.php` —
+  `zephyr:send-pending-registrations-reminder`. Mails `config('mail.admin_address')` the sorted
+  list of `User::where('confirmed', false)` addresses via `PendingRegistrationsReminder`; exits
+  successfully with no mail when the list is empty.
+- `app/Console/Commands/PruneExpiredRecords.php` — `zephyr:prune-expired-records`. Deletes
+  `users_new_passwords` / `users_new_emails` rows with `issued_at` older than a day and
+  `personal_access_tokens` rows with `created_at` older than a day; reports the three counts.
+  `users_new` is deliberately never touched — it has no timestamp column, and deleting a row would
+  silently break a registration still in progress (documented in a comment on `handle()`).
+- `app/Mail/PendingRegistrationsReminder.php` + views
+  `resources/views/mail/pending_registrations_reminder/{html,text}.blade.php` — subject
+  "Megerősítésre váró felhasználók", body is a `<ul>` of the pending addresses inside the shared
+  `<x-mail.layout>` component (mirrors `AdminMessage`/`admin_message`).
+- `config/mail.php` — `'admin_address' => env('ZEPHYR_ADMIN_EMAIL', env('MAIL_FROM_ADDRESS'))`.
+- `.env.example` — added `ZEPHYR_ADMIN_EMAIL=zephyr.bt@gmail.com` next to the `MAIL_REPLY_TO_*`
+  lines. **Action for a human:** add the real `ZEPHYR_ADMIN_EMAIL` to the production `.env`; until
+  then the reminder falls back to `MAIL_FROM_ADDRESS`.
+- `routes/console.php` — `Schedule::command(SendPendingRegistrationsReminder::class)->dailyAt('06:00')`
+  and `Schedule::command(PruneExpiredRecords::class)->dailyAt('03:00')`, alongside the existing
+  `inspire` entry.
+- `tests/Feature/Console/SendPendingRegistrationsReminderTest.php` (3 tests),
+  `tests/Feature/Console/PruneExpiredRecordsTest.php` (5 tests),
+  `tests/Feature/Console/ScheduleRegistrationTest.php` (1 test, inspects
+  `app(Schedule::class)->events()` for both command strings) — this is the first
+  `tests/Feature/Console` directory in the repo.
+
+**Decisions made while implementing:**
+- Used the framework's current `#[Signature(...)]`/`#[Description(...)]` attribute style (what
+  `make:command` scaffolds now) rather than the older `protected $signature` property — no
+  precedent either way existed yet in this repo.
+- The reminder mail is sent unconditionally on every run when there are pending users (matching
+  legacy `send_reminders.php`, which has no dedupe either) — running the command twice in the same
+  day just mails twice. Accepted as idempotent-enough: it mutates no state, so nothing breaks.
+
+**Surprises / gotchas:**
+- None. The doc's design and code snippets matched the codebase's existing conventions
+  (`AdminMessage` mailable shape, `UserNewPassword`/`UserNewEmail` models, `<x-mail.layout>`)
+  almost exactly, so implementation was close to copy-and-adapt once each test was red.
+
+**Verification:**
+- `php artisan test --compact --filter=Console` → 9 passed
+- `php artisan test --compact` (full suite) → 388 passed, no regressions
+- `php artisan schedule:list` → shows `inspire` (hourly), `zephyr:send-pending-registrations-reminder`
+  (06:00), `zephyr:prune-expired-records` (03:00)
+- `vendor/bin/pint --dirty --format agent` → fixed brace-position/phpdoc-align style on the three
+  new PHP files, clean afterward
+
+**Left uncommitted for review:** yes.
+
+**Next session should know:**
+- The host still needs a per-minute cron entry for Laravel's scheduler to ever fire either command:
+  `* * * * * cd /path-to-app && php artisan schedule:run >> /dev/null 2>&1`. If the production host
+  cannot run a per-minute cron, both commands can instead be invoked directly, once a day each, by
+  whatever cron mechanism already runs the legacy scripts today (`php artisan
+  zephyr:send-pending-registrations-reminder`, `php artisan zephyr:prune-expired-records`) — no code
+  change needed either way, just the crontab.
+- Remaining tasks are 26 (final integration sweep, depends on all) and 27 (legacy data import,
+  depends on 13, 16, 22, 26). Task 25 had no dependents blocking on it, so either could go next.

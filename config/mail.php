@@ -118,4 +118,16 @@ return [
         'address' => env('MAIL_REPLY_TO_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_REPLY_TO_NAME', 'Example'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Notification Address
+    |--------------------------------------------------------------------------
+    |
+    | Scheduled commands (e.g. the pending registrations reminder) mail this
+    | address instead of an end user.
+    |
+    */
+
+    'admin_address' => env('ZEPHYR_ADMIN_EMAIL', env('MAIL_FROM_ADDRESS')),
 ];
