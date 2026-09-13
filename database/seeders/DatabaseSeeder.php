@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder {
         'user_admins',
         'users_knowledgebase',
         'users_news',
+        'users_newsletters',
+        'newsletters',
         'knowledgebase_tags',
         'knowledgebase',
         'tags',
@@ -54,6 +56,7 @@ class DatabaseSeeder extends Seeder {
             DocumentSeeder::class,
             LinkCategorySeeder::class,
             LinkSeeder::class,
+            NewsletterSeeder::class,
         ]);
     }
 }
