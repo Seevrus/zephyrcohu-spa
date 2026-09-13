@@ -16,8 +16,19 @@ without re-sending anything (decision D6). This replaces the legacy PHP self-ref
 - Create: `resources/frontend/src/app/pages/admin/newsletter-compose/admin-newsletter-compose.component.*`
   (+ spec)
 - Modify: `resources/frontend/src/app/admin.routes.ts`, `app.component.spec.ts`
+- Modify: `resources/frontend/src/app/services/admin-newsletters.query.service.ts` — Task 23 shipped
+  only `getAdminNewsletters()` and `getAdminNewsletter(id)`; the three methods this task drives are
+  yours to add, together with their coverage:
+  - `getAdminNewsletterRecipients(id)` → `GET /admin/newsletters/{id}/recipients`, **`staleTime: 0`**
+    (the pending list shrinks as the run progresses)
+  - `createAdminNewsletter()` → `POST /admin/newsletters`
+  - `sendNewsletterToRecipient()` → `POST /admin/newsletters/{id}/recipients/{userId}`, **`retry: false`**
+    so this task's loop stays in sole control of 429 handling. (The `app.config.ts` retry policy
+    applies to `queries` only — TanStack mutations do not inherit it — so this is a guard against a
+    future default, not a fix for current behaviour.)
+  Also add the matching `mutationKeys` / `queryKeys` entries.
 - Modify (only if Task 23's resume affordance needs it):
-  `resources/frontend/src/app/pages/admin/newsletter-view/…`
+  `resources/frontend/src/app/pages/admin/newsletter-details/…`
 
 ## Design
 
@@ -34,9 +45,13 @@ Button "Elküldés". On submit: `POST /admin/newsletters` → the response's `id
 newsletter and the screen switches to phase 2. The compose form becomes read-only (do not unmount
 it — the admin should still see what is going out).
 
-**Resuming.** If the screen is entered with an existing newsletter id (router state from the view
-page — keep it consistent with what Task 23 built), skip phase 1: load the newsletter with
-`getAdminNewsletter(id)`, show it read-only, and go straight to phase 2.
+**Resuming.** Decided with the user during Task 23 and already built into the details page: resuming
+goes through a **dedicated route, `/admin/hirlevel/:id/kuldes`**, not through router state. The
+details page's "Kiküldés folytatása" button is a plain `routerLink` to it, so the URL is deep-linkable and
+survives a reload. Register that route against this same component and bind its `id` input: when an
+id is present, skip phase 1, load the newsletter with `getAdminNewsletter(id)`, show it read-only,
+and go straight to phase 2. Until this task lands, that button routes to the 404 page — expected,
+like every other not-yet-migrated admin link.
 
 **Phase 2 — sending loop.**
 
@@ -98,7 +113,9 @@ UI:
 State lives in component signals: `newsletterId`, `recipients`, `results`, `sentCount`,
 `aborted`, `isSending`. Derive `progressPercent` with `computed()`.
 
-Route: `{ path: "hirlevel/uj", …, title: "Admin - Új hírlevél" }` — before `hirlevel/:id`.
+Routes: `{ path: "hirlevel/uj", …, title: "Admin - Új hírlevél" }` — **before** `hirlevel/:id`,
+which Task 23 already registered — and `{ path: "hirlevel/:id/kuldes", …, title: "Admin - Hírlevél kiküldése" }`
+for the resume entry point.
 
 After a completed run, invalidate `queryKeys.adminNewsletters` so the list page shows the new
 counters.
@@ -111,8 +128,10 @@ counters.
       flushed (that is what "sequential" means in a spec).
 - [ ] **Step 2:** Implement phase 1 (create) until its cases pass.
 - [ ] **Step 3:** Implement phase 2 (loop, progress, results, abort, retry).
-- [ ] **Step 4:** Implement the resume entry point and make sure it matches Task 23's affordance.
-- [ ] **Step 5:** Route + `app.component.spec.ts` case for `/admin/hirlevel/uj`.
+- [ ] **Step 4:** Implement the resume entry point on `/admin/hirlevel/:id/kuldes` and confirm the
+      details page's button still points at it.
+- [ ] **Step 5:** Routes + `app.component.spec.ts` cases for `/admin/hirlevel/uj` and
+      `/admin/hirlevel/1/kuldes`.
 - [ ] **Step 6:** Verify, self review, journal, tick Task 24.
 
 ## Tests to write
@@ -132,7 +151,7 @@ counters.
 - when every send finished, the summary shows the sent/total counts
 - with at least one failure, the retry button re-fetches the recipients and runs again
 - the abort button stops the loop: no further POST is issued after the in-flight one resolves
-- resuming with an existing newsletter id skips the create request and fetches recipients
+- resuming through `/admin/hirlevel/:id/kuldes` skips the create request and fetches recipients
   immediately
 - an empty recipients list finishes immediately with "A hírlevél minden címzettnek kiküldésre
   került."
@@ -156,6 +175,9 @@ npx ng test && npx ng lint && npx tsc -p tsconfig.app.json && npx prettier . --c
 - [ ] Leaving the page mid-run is discouraged in the UI and does not corrupt server state
       (it cannot — the server records each send as it happens).
 - [ ] `queryKeys.adminNewsletters` is invalidated when the run ends.
+- [ ] The send mutation carries `retry: false` and the recipients query `staleTime: 0` (inherited
+      from Task 23's self review — the methods themselves land in this task).
+- [ ] The details page's "Kiküldés folytatása" link resolves to a real screen now, not the 404 page.
 
 ## Done when
 

@@ -193,9 +193,11 @@ npx knip             # catches unused exports/files introduced by a task
 | `/admin/hirlevel` | sent newsletters | 23 |
 | `/admin/hirlevel/:id` | newsletter view | 23 |
 | `/admin/hirlevel/uj` | compose + send | 24 |
+| `/admin/hirlevel/:id/kuldes` | resume an unfinished send (same screen as `uj`, entered with an existing newsletter) | 24 |
 
-> `/admin/tudasbazis/cimkek` must be registered **before** `/admin/tudasbazis/:id`, and
-> `/admin/linkek/kategoriak` before `/admin/linkek/:id`, otherwise the `:id` route wins.
+> `/admin/tudasbazis/cimkek` must be registered **before** `/admin/tudasbazis/:id`,
+> `/admin/linkek/kategoriak` before `/admin/linkek/:id`, and `/admin/hirlevel/uj` before
+> `/admin/hirlevel/:id`, otherwise the `:id` route wins.
 
 These paths are exactly the ones the already-shipped `app-admin-nav` component links to
 (`resources/frontend/src/app/header/admin-nav/admin-nav.component.html`) — do not rename them.
@@ -228,7 +230,7 @@ These paths are exactly the ones the already-shipped `app-admin-nav` component l
 | 20 | FE | [User edit form](20-fe-user-edit.md) | 19 | [x] |
 | 21 | FE | [Write to user + delete user flows](21-fe-user-email-and-delete.md) | 19 | [x] |
 | 22 | BE | [Newsletters API + mail](22-be-newsletters.md) | 01 | [x] |
-| 23 | FE | [Newsletter list + view](23-fe-newsletters-list.md) | 03, 22 | [ ] |
+| 23 | FE | [Newsletter list + view](23-fe-newsletters-list.md) | 03, 22 | [x] |
 | 24 | FE | [Newsletter compose + FE-governed sending](24-fe-newsletter-compose-send.md) | 23 | [ ] |
 | 25 | BE | [Scheduled commands](25-be-schedules.md) | — | [ ] |
 | 26 | Supporting | [Final integration sweep](26-final-integration-sweep.md) | all | [ ] |

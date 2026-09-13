@@ -1,0 +1,15 @@
+<div class="newsletter-progress-cell">
+  @if (isSentToEveryone()) {
+    <span class="newsletter-progress-status">Kiküldve</span>
+  } @else {
+    <span class="newsletter-progress-status"
+      >{{ sentCount() }} / {{ recipientCount() }}</span
+    >
+  }
+
+  <mat-progress-bar
+    mode="determinate"
+    [value]="percentage()"
+    [attr.aria-label]="progressLabel()"
+  />
+</div>

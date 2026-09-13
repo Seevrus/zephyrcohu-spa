@@ -17,25 +17,36 @@ a read-only view of one newsletter, from which an unfinished send can be resumed
 - Modify: `resources/frontend/src/app/services/queryKeys.ts`
 - Create: `resources/frontend/src/mocks/admin/newsletters/…`
 - Create: `resources/frontend/src/app/pages/admin/newsletters/admin-newsletters.component.*` (+ spec)
-- Create: `resources/frontend/src/app/pages/admin/newsletter-view/admin-newsletter-view.component.*` (+ spec)
+- Create: `resources/frontend/src/app/pages/admin/newsletter-details/admin-newsletter-details.component.*` (+ spec)
+- Create: `resources/frontend/src/app/components/ag-grid/newsletter-progress-cell-renderer/…` (+ spec)
+  — the "Kiküldés" cell needs a component to hold the text plus the progress bar
 - Modify: `resources/frontend/src/app/admin.routes.ts`, `app.component.spec.ts`
 
 ## Design
 
 ### Types
 
+The two endpoints return two different shapes, so they get two types rather than one type with an
+optional `content` — the list item genuinely has no body, and the detail item always does:
+
 ```ts
-export type AdminNewsletterResponse = {
+export type AdminNewsletterCollectionResponseItem = {
   id: number;
   subject: string;
-  content?: string;          // only on the single-newsletter endpoint
   createdAt: string;
   recipientCount: number;
   sentCount: number;
   isSentToEveryone: boolean;
 };
 
-export type AdminNewsletterRecipient = { id: number; email: string };
+export type AdminNewsletterResponseItem = AdminNewsletterCollectionResponseItem & {
+  content: string;
+};
+
+// …plus the mapped `createdAt: Date` variants (`AdminNewsletterCollectionItem`,
+// `AdminNewsletterItem`) and the `{ data: … }` envelopes.
+
+export type AdminNewsletterRecipient = { id: number; email: string }; // Task 24
 ```
 
 ### Service
@@ -44,14 +55,18 @@ export type AdminNewsletterRecipient = { id: number; email: string };
 
 - `getAdminNewsletters()` → `GET /admin/newsletters`
 - `getAdminNewsletter(id)` → `GET /admin/newsletters/{id}`
-- `getAdminNewsletterRecipients(id)` → `GET /admin/newsletters/{id}/recipients`
-  (`staleTime: 0` — the list shrinks as the run progresses)
-- `createAdminNewsletter()` → `POST /admin/newsletters` (used by Task 24)
+
+**Decided with the user:** the three Task 24 methods below were *not* built here. Nothing on these
+two screens calls them, so they would have landed untested, against the project's own "test
+everything" rule. They moved to Task 24 (whose doc now carries them, including the two constraints
+that were this task's self-review items):
+
+- `getAdminNewsletterRecipients(id)` → `GET /admin/newsletters/{id}/recipients` (`staleTime: 0`)
+- `createAdminNewsletter()` → `POST /admin/newsletters`
 - `sendNewsletterToRecipient()` → `POST /admin/newsletters/{id}/recipients/{userId}`
-  (used by Task 24; **no automatic retry** — override `retry: false` on this mutation so the
-  FE loop stays in control. Note that the app-level `QueryClient` in `app.config.ts` *does* retry
-  429s three times with a growing delay; that default must not apply here, because Task 24 handles
-  429 itself.)
+  (**`retry: false`** so Task 24's loop keeps sole control of 429 handling. Note the `app.config.ts`
+  retry policy applies to `queries` only — TanStack mutations do not inherit it — so that override
+  guards against a future default rather than fixing current behaviour.)
 
 ### List page
 
@@ -69,23 +84,23 @@ There is no delete action — the legacy admin had none either.
 The progress cell must also be readable without colour: render the numbers as text and give the
 progress bar an `aria-label` such as `Kiküldés: 118 / 120`.
 
-### View page (`/admin/hirlevel/:id`)
+### Details page (`/admin/hirlevel/:id`)
 
 Read-only rendering of the newsletter: subject as a heading, `content` rendered as HTML, the
 counters, and:
 
-- when `isSentToEveryone` is false → a "Kiküldés folytatása" button that navigates to the send
-  flow with this newsletter's id. Task 24 owns that flow; the button routes to
-  `/admin/hirlevel/uj` with `state: { newsletterId: id }`, or — decide in Task 24 and keep both
-  ends consistent — to a dedicated `/admin/hirlevel/:id/kuldes` route. **Recommendation:** let
-  the compose screen (Task 24) accept an existing newsletter through router state; note the final
-  choice in the journal so Task 24 matches it.
+- when `isSentToEveryone` is false → a "Kiküldés folytatása" link. **Decided with the user:** a
+  dedicated **`/admin/hirlevel/:id/kuldes`** route, not the router-state-into-`/admin/hirlevel/uj`
+  variant this doc originally recommended — a plain `routerLink`, so the resume URL is
+  deep-linkable and survives a reload. Task 24 owns that screen and registers the route; until it
+  lands the link resolves to the 404 page, like every other not-yet-migrated admin link.
 - when it is true → the text "A hírlevél minden címzettnek kiküldésre került."
 
-`content` is admin-authored HTML from TinyMCE. Render it with `[innerHTML]` and add a comment
-explaining that Angular's sanitizer strips scripts; do not use `bypassSecurityTrustHtml`.
-(The public news/knowledgebase pages already render admin HTML the same way — follow whatever
-they do, and if they use a different mechanism, copy it instead.)
+`content` is admin-authored HTML from TinyMCE, rendered with `[innerHTML]`. Per the escape clause
+above ("follow whatever they do") and **D14**, the sanitising is
+`sanitizer.bypassSecurityTrustHtml(DOMPurify.sanitize(content))`, exactly like the six public
+renderers of admin HTML — Angular's own sanitizer strips the `style` attributes TinyMCE uses for
+colour, size and alignment, so the admin's formatting would silently vanish.
 
 Routes (`uj` before `:id` — Task 24 adds `uj`):
 
@@ -93,22 +108,23 @@ Routes (`uj` before `:id` — Task 24 adds `uj`):
 { path: "hirlevel", …, title: "Admin - Hírlevelek" },
 { path: "hirlevel/uj", …, title: "Admin - Új hírlevél" },     // Task 24
 { path: "hirlevel/:id", …, title: "Admin - Hírlevél megtekintése" },
+{ path: "hirlevel/:id/kuldes", …, title: "Admin - Hírlevél kiküldése" },  // Task 24
 ```
 
 ## Steps
 
-- [ ] **Step 1:** Types, mocks, list spec, service + list page.
-- [ ] **Step 2:** View spec, then the view page.
-- [ ] **Step 3:** Routes + `app.component.spec.ts` cases for `/admin/hirlevel` and
+- [x] **Step 1:** Types, mocks, list spec, service + list page.
+- [x] **Step 2:** View spec, then the view page.
+- [x] **Step 3:** Routes + `app.component.spec.ts` cases for `/admin/hirlevel` and
       `/admin/hirlevel/1`.
-- [ ] **Step 4:** Verify, self review, journal, tick Task 23.
+- [x] **Step 4:** Verify, self review, journal, tick Task 23.
 
 ## Tests to write
 
 `admin-newsletters.component.spec.ts` — loading; rows with subject, date and `118 / 120`; a fully
 sent newsletter shows "Kiküldve"; empty state; error card; the info action navigates to the view.
 
-`admin-newsletter-view.component.spec.ts` — fetches the newsletter, renders subject and content
+`admin-newsletter-details.component.spec.ts` — fetches the newsletter, renders subject and content
 HTML, shows the counters, shows the resume button only when unfinished, and shows the completed
 sentence otherwise; unknown id → not-found message.
 
@@ -121,12 +137,14 @@ npx ng test && npx ng lint && npx tsc -p tsconfig.app.json && npx prettier . --c
 
 ## Self review
 
-- [ ] Progress is legible as text, not only as a bar.
-- [ ] The send mutation is configured with `retry: false` (Task 24 depends on it).
-- [ ] The recipients query is not cached stale (`staleTime: 0`).
-- [ ] Rendered newsletter HTML goes through Angular's sanitizer.
-- [ ] The resume affordance matches whatever Task 24 implements — verify at the end of Task 24
-      and fix here if they drifted.
+- [x] Progress is legible as text, not only as a bar (`n / m` or "Kiküldve" in the cell, plus the
+      bar's `aria-label`).
+- [x] The send mutation is configured with `retry: false` (Task 24 depends on it) — **deferred to
+      Task 24 together with the method itself**, and recorded in its doc and self review.
+- [x] The recipients query is not cached stale (`staleTime: 0`) — **deferred to Task 24** likewise.
+- [x] Rendered newsletter HTML is sanitised — with DOMPurify per D14, see above.
+- [x] The resume affordance matches whatever Task 24 implements — `/admin/hirlevel/:id/kuldes` is
+      written into the Task 24 doc; verify at the end of Task 24 and fix here if they drifted.
 
 ## Done when
 

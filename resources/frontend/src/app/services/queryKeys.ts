@@ -58,6 +58,10 @@ export const queryKeys = {
   adminNewsItem(id?: number) {
     return id ? ["admin_news_item", id] : ["admin_news_item"];
   },
+  adminNewsletters: ["admin_newsletters"],
+  adminNewsletterItem(id?: number) {
+    return id ? ["admin_newsletter_item", id] : ["admin_newsletter_item"];
+  },
   adminOffers: ["admin_offers"],
   adminOfferItem(id?: number) {
     return id ? ["admin_offer_item", id] : ["admin_offer_item"];

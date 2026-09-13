@@ -1,0 +1,11 @@
+.newsletter-progress-cell {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.newsletter-progress-status {
+  line-height: 1.2;
+}

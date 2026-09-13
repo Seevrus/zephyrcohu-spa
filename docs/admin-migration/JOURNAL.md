@@ -1807,3 +1807,87 @@ unaffected since it prefills from the fetched item as before.
   forward should be written against it from the start rather than duplicating the wrapper again.
 - Eligibility for a newsletter is `newsletter = 1 AND confirmed = 1` — Task 23/24's FE should not
   assume the legacy `newsletter = 1`-only rule when displaying recipient counts.
+
+## 2026-09-13 — Task 23: FE newsletter list + view
+
+**Status:** done
+
+**Shipped:**
+- `resources/frontend/src/types/admin-newsletters.ts`;
+  `src/mocks/admin/newsletters/{adminNewslettersRequest,createGetAdminNewslettersOkResponse,createGetAdminNewsletterItemOkResponse}.ts`.
+- `src/app/services/admin-newsletters.query.service.ts` — `getAdminNewsletters()` and
+  `getAdminNewsletter(id)`; `queryKeys.adminNewsletters` / `queryKeys.adminNewsletterItem(id)`.
+- `src/app/pages/admin/newsletters/admin-newsletters.component.*` (+ spec) — the `/admin/hirlevel`
+  grid (Dátum / Tárgy / Kiküldés / Kezelés), with the `info` row action routing to the details page
+  and a header link to the Task 24 compose page.
+- `src/app/components/ag-grid/newsletter-progress-cell-renderer/…` (+ spec) — the "Kiküldés" cell:
+  `n / m` (or "Kiküldve") as text plus a determinate `mat-progress-bar` labelled
+  `Kiküldés: n / m`.
+- `src/app/pages/admin/newsletter-details/admin-newsletter-details.component.*` (+ spec) —
+  `/admin/hirlevel/:id`, read-only. (Named *details*, not *view*, matching the `info` action's
+  "Részletek" label — renamed from `newsletter-view` during review.)
+- `src/app/admin.routes.ts` (two routes) and the three new `app.component.spec.ts` routing cases.
+
+**Decisions made while implementing:**
+- **Resume goes through a dedicated `/admin/hirlevel/:id/kuldes` route** (chosen by the user), not
+  the doc's recommended `router.navigate(["/admin/hirlevel/uj"], { state: { newsletterId } })`. The
+  details page's "Kiküldés folytatása" is a plain `routerLink`, so the resume URL is deep-linkable and
+  survives a reload — router state does not. **Task 24 must register that route** (its doc and the
+  `00-overview.md` route map now say so); until it lands the button resolves to the 404 page, which
+  is the same deal every other not-yet-migrated admin link has.
+- **Only the two service methods these screens use were built.** `getAdminNewsletterRecipients`,
+  `createAdminNewsletter` and `sendNewsletterToRecipient` moved to Task 24 (user's call): nothing
+  here calls them, so they would have landed untested. Their two constraints — `staleTime: 0` on the
+  recipients query, `retry: false` on the send mutation — were copied into Task 24's doc, Files
+  section and self review so they cannot get lost. While transcribing them: `app.config.ts`'s retry
+  policy lives under `defaultOptions.queries`, so **mutations never inherited it** — TanStack
+  mutations default to no retry anyway, making `retry: false` a guard against a future default
+  rather than a fix, contrary to what Task 23's doc implied.
+- **Newsletter HTML is sanitised with DOMPurify (D14), not Angular's sanitizer**, against the
+  literal wording of the task doc ("do not use `bypassSecurityTrustHtml`") but in line with its own
+  escape clause and with all six public renderers of admin HTML. Angular's allow-list strips the
+  `style` attributes TinyMCE writes, which would silently drop the admin's formatting. Doc corrected.
+- The service deliberately does **not** copy `admin-news.query.service.ts`'s trick of seeding the
+  single-item cache from the list response: the newsletters list never selects `content` (Task 22's
+  `isset($this->content)` resource), so priming the item cache from it would make the details page
+  render an empty body.
+- **The two endpoints get two types, not one with an optional `content`** (tightened during review):
+  `AdminNewsletterCollectionResponseItem` for the list and `AdminNewsletterResponseItem =
+  … & { content: string }` for the detail, each with its mapped `createdAt: Date` variant. The list
+  item genuinely has no body and the detail item always has one, so `content?: string` would have
+  forced every consumer to handle an absence that cannot occur on the screen that reads it.
+
+**Surprises / gotchas:**
+- **ag-grid instantiates Angular cell renderers a tick after it paints plain value cells.** The list
+  spec first asserted the whole row's text right after the value cells appeared, and the progress
+  cell was still an empty `<span class="ag-cell-value">`. Dumping `.ag-cell` HTML showed both custom
+  renderers (progress and actions) empty at that moment. Fix: key the wait on the renderer's own
+  output (`await screen.findByText("118 / 120")`), then assert the rest. Any future spec asserting a
+  custom cell renderer's content needs the same ordering — waiting on a plain cell's text is not
+  enough.
+- A `0 / 0` newsletter (stored while nobody was subscribed) divides by zero in the percentage, so
+  the renderer guards it. Note that Task 22's `isSentToEveryone` is `sent_count >= recipient_count`,
+  so such a newsletter reports itself as fully sent — the spec covers that combination, not the
+  impossible `0 / 0` + unfinished one.
+- `npx ng test --include=<glob>` is the only way to run a subset; bare `npx vitest run <file>` fails
+  with a JIT-compiler error because the project's libraries are partially AOT-compiled and need the
+  Angular CLI builder. (`--test-path-pattern` is not an `ng test` option.)
+- One `npx ng test --include='**/app.component.spec.ts'` run failed three lazy-route cases on
+  `findByTestId` timeouts under load and passed 77/77 on a clean rerun and in the full suite — the
+  routing spec is load-sensitive, not broken.
+
+**Verification:**
+- `npx ng test` (full suite) → 89 files / 574 tests passed, up from 86 / 556.
+- `npx ng lint`, `npx tsc -p tsconfig.app.json`, `npx prettier . --check`, `npx knip` → all clean.
+- `npx prettier . --write` also reformatted `src/app/header/admin-nav/admin-nav.component.ts`, whose
+  `imports:` line was left over-long by the already-committed nav-highlight fix (`ca7dc90`).
+
+**Left uncommitted for review:** yes.
+
+**Next session should know:**
+- Task 24 (FE compose + FE-governed sending) is next and owns three things Task 23 handed it: the
+  `/admin/hirlevel/uj` route (**register it above `hirlevel/:id`**), the `/admin/hirlevel/:id/kuldes`
+  resume route the details page already links to, and the three service methods with their
+  `staleTime: 0` / `retry: false` constraints.
+- Recipient counts on both screens come straight from the API, which counts
+  `newsletter = 1 AND confirmed = 1` (Task 22's deviation) — the FE does no filtering of its own.

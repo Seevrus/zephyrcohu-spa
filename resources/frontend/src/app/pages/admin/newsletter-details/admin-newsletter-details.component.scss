@@ -1,0 +1,23 @@
+@use "../../../../shared/mixins";
+
+:host(.app-admin-newsletter-details) {
+  @include mixins.zephyr-admin-main;
+  @include mixins.zephyr-admin-rich-text-form;
+
+  background-color: unset;
+
+  .admin-newsletter-details-component {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .admin-newsletter-details-date {
+    font-weight: 600;
+  }
+
+  a[mat-flat-button] {
+    align-self: flex-start;
+  }
+}

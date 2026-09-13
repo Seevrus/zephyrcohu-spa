@@ -84,6 +84,27 @@ export const adminRoutes: Routes = [
     title: "Admin - Hír szerkesztése",
   },
   {
+    path: "hirlevel",
+    async loadComponent() {
+      const { AdminNewslettersComponent } =
+        await import("./pages/admin/newsletters/admin-newsletters.component");
+      return AdminNewslettersComponent;
+    },
+    title: "Admin - Hírlevelek",
+  },
+  /**
+   * Task 24 adds "hirlevel/uj", which has to stay above "hirlevel/:id".
+   */
+  {
+    path: "hirlevel/:id",
+    async loadComponent() {
+      const { AdminNewsletterDetailsComponent } =
+        await import("./pages/admin/newsletter-details/admin-newsletter-details.component");
+      return AdminNewsletterDetailsComponent;
+    },
+    title: "Admin - Hírlevél megtekintése",
+  },
+  {
     path: "integra",
     async loadComponent() {
       const { AdminDocumentsComponent } =

@@ -6,7 +6,14 @@ import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "app-admin-nav",
-  imports: [MatButton, MatIcon, MatMenu, MatMenuItem, MatMenuTrigger, RouterLink],
+  imports: [
+    MatButton,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
+    RouterLink,
+  ],
   templateUrl: "./admin-nav.component.html",
   styleUrl: "./admin-nav.component.scss",
 })

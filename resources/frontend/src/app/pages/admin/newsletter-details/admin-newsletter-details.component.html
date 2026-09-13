@@ -1,0 +1,40 @@
+<div
+  data-testid="admin-newsletter-details-component"
+  class="admin-newsletter-details-component"
+>
+  @if (errorMessage()) {
+    <app-form-unexpected-error />
+  } @else if (isNotFound()) {
+    <p data-testid="newsletter-not-found">A hírlevél nem található.</p>
+    <p><a routerLink="/admin/hirlevel">Vissza a hírlevelekhez</a></p>
+  } @else if (isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  } @else {
+    <h1>{{ subject() }}</h1>
+
+    <p class="admin-newsletter-details-date">{{ displayCreatedAt() }}</p>
+
+    <p data-testid="newsletter-progress">
+      Kiküldés: {{ sentCount() }} / {{ recipientCount() }}
+    </p>
+
+    <div data-testid="newsletter-content" [innerHTML]="contentHtml()"></div>
+    <mat-divider></mat-divider>
+
+    @if (isSentToEveryone()) {
+      <p>A hírlevél minden címzettnek kiküldésre került.</p>
+    }
+
+    <div class="admin-form-actions">
+      @if (!isSentToEveryone()) {
+        <a
+          mat-flat-button
+          [routerLink]="['/admin/hirlevel', numericId(), 'kuldes']"
+          >Kiküldés folytatása</a
+        >
+      }
+
+      <a mat-button routerLink="/admin/hirlevel">Vissza a hírlevelekhez</a>
+    </div>
+  }
+</div>
