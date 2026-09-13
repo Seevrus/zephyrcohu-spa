@@ -5,9 +5,6 @@
       @case ("BAD_CREDENTIALS") {
         <app-bad-credentials />
       }
-      @case ("CAPTCHA_FAILED") {
-        <app-captcha-failed />
-      }
       @case ("TOO_MANY_LOGIN_ATTEMPTS") {
         <app-too-many-login-attempts />
       }
@@ -34,7 +31,7 @@
     A bejelentkezéshez kérem adja meg regisztrált email címét és a hozzá tartozó
     jelszavát:
   </p>
-  <form [formGroup]="loginForm" (ngSubmit)="captchaRef.execute()">
+  <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
     <div class="form-elements-container">
       <mat-form-field data-testid="email">
         <mat-label>Email cím</mat-label>
@@ -71,7 +68,6 @@
           }}
         </button>
       </div>
-      <re-captcha #captchaRef="reCaptcha" (resolved)="onLoginSubmit($event)" />
       <app-button-loadable
         data-testid="submit-button"
         type="submit"

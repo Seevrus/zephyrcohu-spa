@@ -5,17 +5,12 @@ import {
 } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
-import { By } from "@angular/platform-browser";
 import { provideRouter, withComponentInputBinding } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import { within } from "@testing-library/dom";
 import { type UserEvent, userEvent } from "@testing-library/user-event";
-import { RecaptchaComponent } from "ng-recaptcha-2";
 
-import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaTokenErrorResponse.json";
-import checkCaptchaTokenOkResponse from "../../../mocks/captcha/checkCaptchaTokenOkResponse.json";
-import { checkCaptchaTokenRequest } from "../../../mocks/captcha/checkCaptchaTokenRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createGetSessionOkResponse } from "../../../mocks/users/createGetSessionOkResponse";
 import { createUpdateProfileConfirmEmailErrorResponse } from "../../../mocks/users/createUpdateProfileConfirmEmailErrorResponse";
@@ -142,28 +137,8 @@ describe("ProfileUpdateEmailComponent", () => {
   });
 
   describe("API error messages", () => {
-    test("in the case of a captcha error", async () => {
-      const { httpTesting } = await submitWithPassword();
-
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        httpTesting.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenErrorResponse);
-
-      await assertFormMessagePresent("captcha-failed-error");
-
-      httpTesting.verify();
-    });
-
     test("BAD_CREDENTIALS - new email or code is not found by the server", async () => {
       const { httpTesting } = await submitWithPassword();
-
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        httpTesting.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
 
       const updateProfileConfirmEmailTestRequest = await waitFor(() =>
         httpTesting.expectOne(updateProfileConfirmEmailRequest),
@@ -185,12 +160,6 @@ describe("ProfileUpdateEmailComponent", () => {
     test("handles BAD_EMAIL_CODE error", async () => {
       const { httpTesting } = await submitWithPassword();
 
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        httpTesting.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const updateProfileConfirmEmailTestRequest = await waitFor(() =>
         httpTesting.expectOne(updateProfileConfirmEmailRequest),
       );
@@ -210,12 +179,6 @@ describe("ProfileUpdateEmailComponent", () => {
 
     test("handles CODE_EXPIRED error", async () => {
       const { httpTesting } = await submitWithPassword();
-
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        httpTesting.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
 
       const updateProfileConfirmEmailTestRequest = await waitFor(() =>
         httpTesting.expectOne(updateProfileConfirmEmailRequest),
@@ -237,12 +200,6 @@ describe("ProfileUpdateEmailComponent", () => {
     test("handles unexpected submission errors", async () => {
       const { httpTesting } = await submitWithPassword();
 
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        httpTesting.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const updateProfileConfirmEmailTestRequest = await waitFor(() =>
         httpTesting.expectOne(updateProfileConfirmEmailRequest),
       );
@@ -263,12 +220,6 @@ describe("ProfileUpdateEmailComponent", () => {
 
   test("successful submission shows success message and resets form", async () => {
     const { httpTesting } = await submitWithPassword();
-
-    const checkCaptchaTokenTestRequest = await waitFor(() =>
-      httpTesting.expectOne(checkCaptchaTokenRequest),
-    );
-
-    checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
 
     const updateProfileConfirmEmailTestRequest = await waitFor(() =>
       httpTesting.expectOne(updateProfileConfirmEmailRequest),
@@ -305,7 +256,6 @@ describe("ProfileUpdateEmailComponent", () => {
 async function assertFormMessagePresent(testId: string) {
   const formMessages = [
     "bad-credentials-error",
-    "captcha-failed-error",
     "email-code-expired-error",
     "email-link-error",
     "form-unexpected-error",
@@ -354,17 +304,6 @@ async function renderComponent(email?: string, code?: string) {
   });
 
   const httpTesting = TestBed.inject(HttpTestingController);
-
-  const captchaDebugElement = renderResult.fixture.debugElement.query(
-    By.directive(RecaptchaComponent),
-  );
-
-  const captchaComponent: RecaptchaComponent =
-    captchaDebugElement.componentInstance;
-
-  vi.spyOn(captchaComponent, "execute").mockImplementation(() =>
-    captchaComponent.resolved.emit("test-captcha-token"),
-  );
 
   return {
     ...renderResult,

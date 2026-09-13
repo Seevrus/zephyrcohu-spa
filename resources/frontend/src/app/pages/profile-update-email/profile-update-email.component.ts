@@ -1,11 +1,4 @@
-import {
-  Component,
-  effect,
-  inject,
-  input,
-  signal,
-  ViewChild,
-} from "@angular/core";
+import { Component, effect, inject, input, signal } from "@angular/core";
 import {
   disabled,
   email as emailValidator,
@@ -23,17 +16,14 @@ import {
   MatLabel,
 } from "@angular/material/input";
 import { injectMutation } from "@tanstack/angular-query-experimental";
-import { type RecaptchaComponent, RecaptchaModule } from "ng-recaptcha-2";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
 import { BadCredentialsComponent } from "../../components/form-alerts/bad-credentials/bad-credentials.component";
-import { CaptchaFailedComponent } from "../../components/form-alerts/captcha-failed/captcha-failed.component";
 import { EmailCodeExpiredComponent } from "../../components/form-alerts/email-code-expired/email-code-expired.component";
 import { EmailLinkErrorComponent } from "../../components/form-alerts/email-link-error/email-link-error.component";
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { ProfileEmailUpdatedComponent } from "../../components/form-alerts/profile-email-updated/profile-email-updated.component";
-import { CaptchaService } from "../../services/captcha.service";
 import { UsersQueryService } from "../../services/users.query.service";
 import { passwordPattern } from "../../validators/password.validator";
 
@@ -47,7 +37,6 @@ import { passwordPattern } from "../../validators/password.validator";
   imports: [
     BadCredentialsComponent,
     ButtonLoadableComponent,
-    CaptchaFailedComponent,
     EmailCodeExpiredComponent,
     EmailLinkErrorComponent,
     FormField,
@@ -58,13 +47,9 @@ import { passwordPattern } from "../../validators/password.validator";
     MatInput,
     MatLabel,
     ProfileEmailUpdatedComponent,
-    RecaptchaModule,
   ],
 })
 export class ProfileUpdateEmailComponent {
-  @ViewChild("captchaRef") protected captchaRef!: RecaptchaComponent;
-
-  private readonly captchaService = inject(CaptchaService);
   private readonly usersQueryService = inject(UsersQueryService);
 
   readonly code = input<string>();
@@ -80,7 +65,6 @@ export class ProfileUpdateEmailComponent {
    * BAD_CREDENTIALS
    * || BAD_EMAIL_CODE
    * || BAD_QUERY_PARAMS
-   * || CAPTCHA_FAILED
    * || CODE_EXPIRED
    * || INTERNAL_SERVER_ERROR
    */
@@ -126,57 +110,41 @@ export class ProfileUpdateEmailComponent {
     }
   });
 
-  protected onConfirmNewEmailSubmit(event: Event) {
-    event.preventDefault();
-    this.captchaRef.execute();
-  }
-
-  protected async onConfirmNewEmailCaptchaResolved(token: string | null) {
+  protected async onConfirmNewEmail() {
     this.isConfirmNewEmailInProgress.set(true);
 
     try {
-      const { score, success } = await this.captchaService.verifyCaptcha(token);
+      await submit(this.updateEmailForm, async () => {
+        try {
+          this.confirmedNewEmail.set("");
+          this.confirmError.set("");
 
-      if (!success || score < 0.5) {
-        this.confirmError.set("CAPTCHA_FAILED");
-        this.captchaRef.reset();
-      } else {
-        await this.onConfirmNewEmail();
-      }
+          const newEmail = this.updateEmailForm.newEmail().value();
+
+          await this.confirmNewEmailMutation.mutateAsync({
+            code: this.updateEmailForm.emailCode().value(),
+            email: newEmail,
+            password: this.updateEmailForm.password().value(),
+          });
+
+          this.confirmedNewEmail.set(newEmail);
+          this.updateEmailForm().reset();
+          this.updateEmailModel.update((emailModel) => ({
+            ...emailModel,
+            emailCode: "",
+            password: "",
+          }));
+        } catch (error) {
+          if (error instanceof ZephyrHttpError) {
+            this.confirmError.set(error.code);
+          } else {
+            this.confirmError.set("INTERNAL_SERVER_ERROR");
+          }
+        }
+      });
     } finally {
       this.isConfirmNewEmailInProgress.set(false);
     }
-  }
-
-  private async onConfirmNewEmail() {
-    await submit(this.updateEmailForm, async () => {
-      try {
-        this.confirmedNewEmail.set("");
-        this.confirmError.set("");
-
-        const newEmail = this.updateEmailForm.newEmail().value();
-
-        await this.confirmNewEmailMutation.mutateAsync({
-          code: this.updateEmailForm.emailCode().value(),
-          email: newEmail,
-          password: this.updateEmailForm.password().value(),
-        });
-
-        this.confirmedNewEmail.set(newEmail);
-        this.updateEmailForm().reset();
-        this.updateEmailModel.update((emailModel) => ({
-          ...emailModel,
-          emailCode: "",
-          password: "",
-        }));
-      } catch (error) {
-        if (error instanceof ZephyrHttpError) {
-          this.confirmError.set(error.code);
-        } else {
-          this.confirmError.set("INTERNAL_SERVER_ERROR");
-        }
-      }
-    });
   }
 
   protected togglePassword() {

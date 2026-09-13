@@ -1,7 +1,6 @@
 import { type IntegraCategory } from "../../types/integra";
 
 export const mutationKeys = {
-  checkRecaptchaToken: ["check_recaptcha_token"],
   createAdminDocument: ["create_admin_document"],
   createAdminKnowledgebase: ["create_admin_knowledgebase"],
   createAdminLink: ["create_admin_link"],

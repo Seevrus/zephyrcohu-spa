@@ -5,7 +5,6 @@ import {
 } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
-import { By } from "@angular/platform-browser";
 import {
   provideRouter,
   Router,
@@ -14,11 +13,7 @@ import {
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import { type UserEvent, userEvent } from "@testing-library/user-event";
-import { RecaptchaComponent } from "ng-recaptcha-2";
 
-import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaTokenErrorResponse.json";
-import checkCaptchaTokenOkResponse from "../../../mocks/captcha/checkCaptchaTokenOkResponse.json";
-import { checkCaptchaTokenRequest } from "../../../mocks/captcha/checkCaptchaTokenRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createGetSessionOkResponse } from "../../../mocks/users/createGetSessionOkResponse";
 import { createResetPasswordErrorResponse } from "../../../mocks/users/createResetPasswordErrorResponse";
@@ -128,30 +123,6 @@ describe("Reset Password Component", () => {
   });
 
   describe("should show the correct API error messages", () => {
-    test("in the case of a captcha error", async () => {
-      const { fixture, httpTesting } = await renderResetPasswordComponent(
-        "test@test.com",
-        "some-test-code",
-      );
-      await fillForm(fixture);
-
-      const submitButton = screen
-        .getByTestId("submit-button")
-        .querySelector("button")!;
-
-      await user.click(submitButton);
-
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        httpTesting.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenErrorResponse);
-
-      await assertFormMessagePresent("captcha-failed-error");
-
-      httpTesting.verify();
-    });
-
     test("if the email code is not correct", async () => {
       const { fixture, httpTesting } = await renderResetPasswordComponent(
         "test@test.com",
@@ -164,12 +135,6 @@ describe("Reset Password Component", () => {
         .querySelector("button")!;
 
       await user.click(submitButton);
-
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        httpTesting.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
 
       const resetPasswordTestRequest = await waitFor(() =>
         httpTesting.expectOne(resetPasswordRequest),
@@ -201,12 +166,6 @@ describe("Reset Password Component", () => {
 
       await user.click(submitButton);
 
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        httpTesting.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const resetPasswordTestRequest = await waitFor(() =>
         httpTesting.expectOne(resetPasswordRequest),
       );
@@ -237,12 +196,6 @@ describe("Reset Password Component", () => {
 
       await user.click(submitButton);
 
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        httpTesting.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const resetPasswordTestRequest = await waitFor(() =>
         httpTesting.expectOne(resetPasswordRequest),
       );
@@ -272,12 +225,6 @@ describe("Reset Password Component", () => {
         .querySelector("button")!;
 
       await user.click(submitButton);
-
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        httpTesting.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
 
       const resetPasswordTestRequest = await waitFor(() =>
         httpTesting.expectOne(resetPasswordRequest),
@@ -318,12 +265,6 @@ describe("Reset Password Component", () => {
 
     await user.click(submitButton);
 
-    const checkCaptchaTokenTestRequest = await waitFor(() =>
-      httpTesting.expectOne(checkCaptchaTokenRequest),
-    );
-
-    checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
     const resetPasswordTestRequest = await waitFor(() =>
       httpTesting.expectOne(resetPasswordRequest),
     );
@@ -340,7 +281,6 @@ describe("Reset Password Component", () => {
 async function assertFormMessagePresent(testId: string) {
   const formMessages = [
     "bad-credentials-error",
-    "captcha-failed-error",
     "form-unexpected-error",
     "email-code-expired-error",
   ];
@@ -405,19 +345,6 @@ async function renderResetPasswordComponent(
   });
 
   const httpTesting = TestBed.inject(HttpTestingController);
-
-  const captchaDebugElement = renderResult.fixture.debugElement.query(
-    By.directive(RecaptchaComponent),
-  );
-
-  const captchaComponent: RecaptchaComponent | undefined =
-    captchaDebugElement?.componentInstance;
-
-  if (captchaComponent) {
-    vi.spyOn(captchaComponent, "execute").mockImplementation(() =>
-      captchaComponent.resolved.emit("test-captcha-token"),
-    );
-  }
 
   return {
     ...renderResult,

@@ -1,7 +1,6 @@
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import {
   type ApplicationConfig,
-  importProvidersFrom,
   provideBrowserGlobalErrorListeners,
 } from "@angular/core";
 import {
@@ -14,11 +13,6 @@ import {
   QueryClient,
 } from "@tanstack/angular-query-experimental";
 import { withDevtools } from "@tanstack/angular-query-experimental/devtools";
-import {
-  RECAPTCHA_SETTINGS,
-  RecaptchaModule,
-  type RecaptchaSettings,
-} from "ng-recaptcha-2";
 import { provideNgxSkeletonLoader } from "ngx-skeleton-loader";
 
 import { ZephyrHttpError } from "../api/ZephyrHttpError";
@@ -70,15 +64,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideRouter(routes, withComponentInputBinding()),
     provideTanStackQuery(queryClient, withDevtools()),
-    importProvidersFrom(RecaptchaModule),
     { provide: TitleStrategy, useClass: AppTitleStrategy },
-    {
-      provide: RECAPTCHA_SETTINGS,
-      useValue: {
-        siteKey: environment.siteKey,
-        size: "invisible",
-      } satisfies RecaptchaSettings,
-    },
     provideNgxSkeletonLoader(),
   ],
 };

@@ -5,15 +5,10 @@ import {
 } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
-import { By } from "@angular/platform-browser";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import { type UserEvent, userEvent } from "@testing-library/user-event";
-import { RecaptchaComponent } from "ng-recaptcha-2";
 
-import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaTokenErrorResponse.json";
-import checkCaptchaTokenOkResponse from "../../../mocks/captcha/checkCaptchaTokenOkResponse.json";
-import { checkCaptchaTokenRequest } from "../../../mocks/captcha/checkCaptchaTokenRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createGetSessionOkResponse } from "../../../mocks/users/createGetSessionOkResponse";
 import { createPostResendConfirmEmailErrorResponse } from "../../../mocks/users/createPostResendConfirmEmailErrorResponse";
@@ -38,17 +33,6 @@ describe("Register Component", () => {
     http = httpTesting;
     registerContainer = container;
     registerFixture = fixture;
-
-    const captchaDebugElement = fixture.debugElement.query(
-      By.directive(RecaptchaComponent),
-    );
-
-    const captchaComponent: RecaptchaComponent =
-      captchaDebugElement.componentInstance;
-
-    vi.spyOn(captchaComponent, "execute").mockImplementation(() =>
-      captchaComponent.resolved.emit("test-captcha-token"),
-    );
   });
 
   afterAll(() => {
@@ -169,25 +153,7 @@ describe("Register Component", () => {
       await user.click(submitButton);
     });
 
-    test("in the case of a captcha error", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenErrorResponse);
-
-      await assertFormMessagePresent("captcha-failed-error");
-
-      http.verify();
-    });
-
     test("if the user already exists", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const registerTestRequest = await waitFor(() =>
         http.expectOne(registerRequest),
       );
@@ -203,12 +169,6 @@ describe("Register Component", () => {
     });
 
     test("if the user is not confirmed", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const registerTestRequest = await waitFor(() =>
         http.expectOne(registerRequest),
       );
@@ -227,12 +187,6 @@ describe("Register Component", () => {
     });
 
     test("in the case of an unknown error", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const registerTestRequest = await waitFor(() =>
         http.expectOne(registerRequest),
       );
@@ -251,12 +205,6 @@ describe("Register Component", () => {
     });
 
     test("submit button is disabled until the user modifies something", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const registerTestRequest = await waitFor(() =>
         http.expectOne(registerRequest),
       );
@@ -291,12 +239,6 @@ describe("Register Component", () => {
       .querySelector("button")!;
 
     await user.click(submitButton);
-
-    const checkCaptchaTokenTestRequest = await waitFor(() =>
-      http.expectOne(checkCaptchaTokenRequest),
-    );
-
-    checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
 
     const registerTestRequest = await waitFor(() =>
       http.expectOne(registerRequest),
@@ -365,7 +307,6 @@ describe("Register Component", () => {
 
 async function assertFormMessagePresent(testId: string) {
   const formMessages = [
-    "captcha-failed-error",
     "form-unexpected-error",
     "register-already-exists",
     "register-exists-not-confirmed",

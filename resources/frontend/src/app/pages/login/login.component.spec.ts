@@ -5,16 +5,11 @@ import {
 } from "@angular/common/http/testing";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
-import { By } from "@angular/platform-browser";
 import { provideRouter, Router } from "@angular/router";
 import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import { type UserEvent, userEvent } from "@testing-library/user-event";
-import { RecaptchaComponent } from "ng-recaptcha-2";
 
-import checkCaptchaTokenErrorResponse from "../../../mocks/captcha/checkCaptchaTokenErrorResponse.json";
-import checkCaptchaTokenOkResponse from "../../../mocks/captcha/checkCaptchaTokenOkResponse.json";
-import { checkCaptchaTokenRequest } from "../../../mocks/captcha/checkCaptchaTokenRequest";
 import { testQueryClient } from "../../../mocks/testQueryClient";
 import { createGetSessionOkResponse } from "../../../mocks/users/createGetSessionOkResponse";
 import { createLoginErrorResponse } from "../../../mocks/users/createLoginErrorResponse";
@@ -39,17 +34,6 @@ describe("Login Component", () => {
     http = httpTesting;
     loginContainer = container;
     loginFixture = fixture;
-
-    const captchaDebugElement = fixture.debugElement.query(
-      By.directive(RecaptchaComponent),
-    );
-
-    const captchaComponent: RecaptchaComponent =
-      captchaDebugElement.componentInstance;
-
-    vi.spyOn(captchaComponent, "execute").mockImplementation(() =>
-      captchaComponent.resolved.emit("test-captcha-token"),
-    );
   });
 
   afterAll(() => {
@@ -161,25 +145,7 @@ describe("Login Component", () => {
       await user.click(submitButton);
     });
 
-    test("in the case of a captcha error", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenErrorResponse);
-
-      await assertFormMessagePresent("captcha-failed-error");
-
-      http.verify();
-    });
-
     test("if the credentials are bad", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const loginTestRequest = await waitFor(() =>
         http.expectOne(loginRequest),
       );
@@ -195,12 +161,6 @@ describe("Login Component", () => {
     });
 
     test("if the user is not confirmed", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const loginTestRequest = await waitFor(() =>
         http.expectOne(loginRequest),
       );
@@ -216,12 +176,6 @@ describe("Login Component", () => {
     });
 
     test("if there are too many login attempts", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const loginTestRequest = await waitFor(() =>
         http.expectOne(loginRequest),
       );
@@ -240,12 +194,6 @@ describe("Login Component", () => {
     });
 
     test("if the user is already logged in", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const logonTestRequest = await waitFor(() =>
         http.expectOne(loginRequest),
       );
@@ -264,12 +212,6 @@ describe("Login Component", () => {
     });
 
     test("in the case of an unknown error", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const loginTestRequest = await waitFor(() =>
         http.expectOne(loginRequest),
       );
@@ -288,12 +230,6 @@ describe("Login Component", () => {
     });
 
     test("submit button is disabled until the user modifies something", async () => {
-      const checkCaptchaTokenTestRequest = await waitFor(() =>
-        http.expectOne(checkCaptchaTokenRequest),
-      );
-
-      checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
-
       const loginTestRequest = await waitFor(() =>
         http.expectOne(loginRequest),
       );
@@ -331,12 +267,6 @@ describe("Login Component", () => {
       .querySelector("button")!;
 
     await user.click(submitButton);
-
-    const checkCaptchaTokenTestRequest = await waitFor(() =>
-      http.expectOne(checkCaptchaTokenRequest),
-    );
-
-    checkCaptchaTokenTestRequest.flush(checkCaptchaTokenOkResponse);
 
     const loginTestRequest = await waitFor(() => http.expectOne(loginRequest));
     loginTestRequest.flush(createGetSessionOkResponse());
@@ -400,9 +330,6 @@ describe("Login Component", () => {
     ).resolves.toBeInTheDocument();
 
     expect(
-      screen.queryByTestId("captcha-failed-error"),
-    ).not.toBeInTheDocument();
-    expect(
       screen.queryByTestId("bad-credentials-error"),
     ).not.toBeInTheDocument();
     expect(
@@ -428,7 +355,6 @@ describe("Login Component", () => {
 async function assertFormMessagePresent(testId: string) {
   const formMessages = [
     "bad-credentials-error",
-    "captcha-failed-error",
     "form-unexpected-error",
     "register-exists-not-confirmed",
     "register-resend-email-error",

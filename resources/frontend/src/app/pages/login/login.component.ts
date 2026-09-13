@@ -1,10 +1,4 @@
-import {
-  Component,
-  inject,
-  type OnDestroy,
-  signal,
-  ViewChild,
-} from "@angular/core";
+import { Component, inject, type OnDestroy, signal } from "@angular/core";
 import {
   FormControl,
   FormGroup,
@@ -16,19 +10,16 @@ import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { Router } from "@angular/router";
 import { injectMutation } from "@tanstack/angular-query-experimental";
-import { type RecaptchaComponent, RecaptchaModule } from "ng-recaptcha-2";
 
 import { ZephyrHttpError } from "../../../api/ZephyrHttpError";
 import { ButtonLoadableComponent } from "../../components/button-loadable/button-loadable.component";
 import { BadCredentialsComponent } from "../../components/form-alerts/bad-credentials/bad-credentials.component";
-import { CaptchaFailedComponent } from "../../components/form-alerts/captcha-failed/captcha-failed.component";
 import { FormUnexpectedErrorComponent } from "../../components/form-alerts/form-unexpected-error/form-unexpected-error.component";
 import { RegisterExistsNotConfirmedComponent } from "../../components/form-alerts/register-exists-not-confirmed/register-exists-not-confirmed.component";
 import { RegisterResendEmailErrorComponent } from "../../components/form-alerts/register-resend-email-error/register-resend-email-error.component";
 import { RegisterResendEmailSuccessComponent } from "../../components/form-alerts/register-resend-email-success/register-resend-email-success.component";
 import { TooManyLoginAttemptsComponent } from "../../components/form-alerts/too-many-login-attempts/too-many-login-attempts.component";
 import { UserAlreadyLoggedInComponent } from "../../components/form-alerts/user-already-logged-in/user-already-logged-in.component";
-import { CaptchaService } from "../../services/captcha.service";
 import { ResendConfirmationEmailService } from "../../services/resend-confirmation-email.service";
 import { UsersQueryService } from "../../services/users.query.service";
 import { passwordValidator } from "../../validators/password.validator";
@@ -41,13 +32,11 @@ import { passwordValidator } from "../../validators/password.validator";
   imports: [
     BadCredentialsComponent,
     ButtonLoadableComponent,
-    CaptchaFailedComponent,
     FormUnexpectedErrorComponent,
     MatButton,
     MatFormField,
     MatInputModule,
     ReactiveFormsModule,
-    RecaptchaModule,
     RegisterResendEmailErrorComponent,
     RegisterResendEmailSuccessComponent,
     RegisterExistsNotConfirmedComponent,
@@ -58,9 +47,6 @@ import { passwordValidator } from "../../validators/password.validator";
   styleUrl: "./login.component.scss",
 })
 export class LoginComponent implements OnDestroy {
-  @ViewChild("captchaRef") protected captchaRef!: RecaptchaComponent;
-
-  private readonly captchaService = inject(CaptchaService);
   private readonly router = inject(Router);
   private readonly resendRegistrationEmailService = inject(
     ResendConfirmationEmailService,
@@ -72,7 +58,6 @@ export class LoginComponent implements OnDestroy {
 
   /**
    * BAD_CREDENTIALS
-   * || CAPTCHA_FAILED
    * || INTERNAL_SERVER_ERROR
    * || TOO_MANY_LOGIN_ATTEMPTS
    * || USER_ALREADY_LOGGED_IN
@@ -98,24 +83,9 @@ export class LoginComponent implements OnDestroy {
 
   protected readonly email = this.loginForm.get("email");
 
-  protected async onLoginSubmit(token: string | null) {
+  protected async onLogin() {
     this.isLoginInProgress.set(true);
 
-    try {
-      const { score, success } = await this.captchaService.verifyCaptcha(token);
-
-      if (!success || score < 0.5) {
-        this.loginErrorMessage.set("CAPTCHA_FAILED");
-        this.captchaRef.reset();
-      } else {
-        await this.onLogin();
-      }
-    } finally {
-      this.isLoginInProgress.set(false);
-    }
-  }
-
-  private async onLogin() {
     try {
       this.loginErrorMessage.set("");
       this.resendConfirmationEmailErrorMessage.set("");
@@ -137,6 +107,8 @@ export class LoginComponent implements OnDestroy {
       } else {
         this.loginErrorMessage.set("INTERNAL_SERVER_ERROR");
       }
+    } finally {
+      this.isLoginInProgress.set(false);
     }
   }
 
