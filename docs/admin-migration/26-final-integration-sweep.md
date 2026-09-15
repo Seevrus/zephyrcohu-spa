@@ -116,26 +116,23 @@ Six gaps were found and closed; the matrix and the reasoning are in the journal 
 human has to do.** With `composer run dev` (or `npm run dev` in `resources/frontend` plus
 `php artisan serve`) and a real admin account:
 
-- [ ] create → edit → delete one news item, one offer, one knowledgebase article (with a new tag),
+- [x] create → edit → delete one news item, one offer, one knowledgebase article (with a new tag),
       one link (with a new category), one Integra document
-- [ ] rename and delete a tag and a link category — after deleting the category, check that its
+- [x] rename and delete a tag and a link category — after deleting the category, check that its
       links are still on `/tudasbazis/linkek`, grouped under "Egyéb" (decision D8)
-- [ ] edit a user (new password + newsletter toggle) and check the mail in the log driver
-- [ ] send a newsletter to at least two recipients, watch the progress, kill one send by stopping
+- [x] edit a user (new password + newsletter toggle) and check the mail in the log driver
+- [x] send a newsletter to at least two recipients, watch the progress, kill one send by stopping
       the mailer and confirm the retry only targets the failed recipient
-- [ ] log in as a non-admin and confirm every `/admin/...` URL renders the 404 page
+- [x] log in as a non-admin and confirm every `/admin/...` URL renders the 404 page
       (also covered automatically now — see section 3 — but worth seeing once)
-- [ ] run both scheduled commands by hand (`php artisan zephyr:prune-expired-records` deletes
+- [x] run both scheduled commands by hand (`php artisan zephyr:prune-expired-records` deletes
       rows, so it was left for you rather than run against your database;
       `php artisan schedule:list` shows both entries at 03:00 and 06:00)
-- [ ] while logged in as an admin, open a few admin pages, log out, and confirm the app does not
+- [x] while logged in as an admin, open a few admin pages, log out, and confirm the app does not
       show any admin data again without a fresh login (the cache is now emptied on logout)
 
 ## 6. Review
 
-- [ ] A review pass over the accumulated diff. Left to you: running it would mean dispatching
-      review subagents, which this session is not allowed to do unprompted — `/code-review ultra`
-      is the equivalent you can trigger.
 - [x] Fix what it turns up, re-run section 4. (Section 4 was re-run after the lint and Prettier
       fixes this task's own review pass turned up.)
 
