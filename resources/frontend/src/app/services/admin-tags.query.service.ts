@@ -97,6 +97,9 @@ export class AdminTagsQueryService {
 
     this.queryClient.invalidateQueries({ queryKey: queryKeys.knowledgebase() });
     this.queryClient.invalidateQueries({
+      queryKey: queryKeys.knowledgebaseItem(),
+    });
+    this.queryClient.invalidateQueries({
       queryKey: queryKeys.knowledgebaseTags,
     });
   }

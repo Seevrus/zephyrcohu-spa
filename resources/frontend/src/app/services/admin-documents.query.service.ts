@@ -149,7 +149,11 @@ export class AdminDocumentsQueryService {
             ),
         ),
       onSuccess: (_data, id) => {
-        this.invalidateDocumentQueries(id);
+        this.invalidateDocumentQueries();
+
+        this.queryClient.removeQueries({
+          queryKey: queryKeys.adminDocumentItem(id),
+        });
       },
     });
   }

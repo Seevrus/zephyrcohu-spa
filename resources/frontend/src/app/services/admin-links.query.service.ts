@@ -133,8 +133,8 @@ export class AdminLinksQueryService {
               map((response) => response.data),
             ),
         ),
-      onSuccess: (_data, { id }) => {
-        this.invalidateLinkQueries(id);
+      onSuccess: () => {
+        this.invalidateLinkQueries();
       },
     });
   }
@@ -153,7 +153,11 @@ export class AdminLinksQueryService {
             ),
         ),
       onSuccess: (_data, id) => {
-        this.invalidateLinkQueries(id);
+        this.invalidateLinkQueries();
+
+        this.queryClient.removeQueries({
+          queryKey: queryKeys.adminLinkItem(id),
+        });
       },
     });
   }
@@ -204,17 +208,14 @@ export class AdminLinksQueryService {
     });
   }
 
-  private invalidateLinkQueries(id?: number) {
+  private invalidateLinkQueries() {
     this.queryClient.invalidateQueries({ queryKey: queryKeys.adminLinks });
     this.queryClient.invalidateQueries({
       queryKey: queryKeys.adminLinkCategories,
     });
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.adminLinkItem(),
+    });
     this.queryClient.invalidateQueries({ queryKey: queryKeys.links });
-
-    if (id !== undefined) {
-      this.queryClient.invalidateQueries({
-        queryKey: queryKeys.adminLinkItem(id),
-      });
-    }
   }
 }

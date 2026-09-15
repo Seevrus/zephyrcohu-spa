@@ -2037,3 +2037,173 @@ unaffected since it prefills from the fetched item as before.
   change needed either way, just the crontab.
 - Remaining tasks are 26 (final integration sweep, depends on all) and 27 (legacy data import,
   depends on 13, 16, 22, 26). Task 25 had no dependents blocking on it, so either could go next.
+
+---
+
+## 2026-09-13 — Task 26: final integration sweep
+
+**Status:** partially done — sections 1–4 and the added cache review are done and verified;
+section 5 (the manual smoke test) and section 6's review pass are left for a human, because the
+first needs a browser with a real admin account and the second means dispatching review subagents,
+which this session may not do unprompted. Task 26 is therefore still `[ ]` in `00-overview.md`,
+with a note there saying exactly what is outstanding.
+
+**Coverage audit (section 1 — the completed table):**
+
+| Legacy path | Replacement | Task |
+|---|---|---|
+| `/` (`src/_kezdolap`) | `/admin` → redirects to `/admin/hirek` | 02 |
+| `/login`, `/logout` (`src/_login`, `src/_logout`) | existing SPA login/logout | — (already shipped) |
+| `/jelszo` (`src/_jelszo`) | existing SPA profile password change | — (already shipped) |
+| `/ajanlatok*` (`src/_ajanlatok`) | `/admin/ajanlatok*` | 07, 08 |
+| `/felhasznalok*` (`src/_felhasznalok`) | `/admin/felhasznalok*` | 18–21 |
+| `/hirek*` (`src/_hirek`) | `/admin/hirek*` | 04–06 |
+| `/hirlevel*` (`src/_hirlevel`) | `/admin/hirlevel*` | 22–24 |
+| `/integra*` (`src/_integra`) | `/admin/integra*` | 16, 17 |
+| `/linkek*`, `/linkek/kategoriak*` (`src/_linkek`, `src/_linkek/_kategoriak`) | `/admin/linkek*` | 13–15 |
+| `/tudasbazis*`, `/tudasbazis/cimkek*` (`src/_tudasbazis`, `src/_tudasbazis/_cimkek`) | `/admin/tudasbazis*` | 9–12 |
+| `src_cron/send_reminders.php` | `zephyr:send-pending-registrations-reminder` | 25 |
+| `src_cron/clean_db.php` | `zephyr:prune-expired-records` | 25 |
+| the legacy database's content | imported into the new schema | 27 |
+| API documentation node | **out of scope** (decision D11) | — |
+| `src/_emailek/felhasznalo_email.html` | `App\Mail\AdminMessage` + `mail/admin_message` | 18 |
+| `src/_emailek/felhasznalo_modosit.html` | `App\Mail\AdminUpdatedUser` + `mail/admin_updated_user` | 18 |
+| `src/_emailek/felhasznalo_torol.html` | `App\Mail\AdminDeletedUser` + `mail/admin_deleted_user` | 18 |
+| `src/_emailek/hirlevel.html` | `App\Mail\NewsletterSent` + `mail/newsletter_sent` | 22 |
+| `src_cron/reminder_email.html` | `App\Mail\PendingRegistrationsReminder` | 25 |
+| `src/_hiba/hiba_404.php`, `src/hiba_404.php` | the SPA's `NotFoundComponent` | — (already shipped) |
+| `src_check/admin_regcheck.php` | `App\Http\Middleware\EnsureUserIsAdmin` | 01 |
+| `src_check/{connect_to_db,start_session,send_email}.php` | Laravel's DB / session / Mail config | — |
+| `src_check/{szintaktika,tisztitas}.php` | FormRequest validation + `e()` / DOMPurify escaping | — |
+| `src/_assets`, `src/_styles`, `src/_js` | SPA assets, component styles, Angular + TinyMCE | — |
+
+The last nine rows are additions: the original table listed neither the legacy mail templates, the
+404 page, the shared `src_check` includes, nor the static assets. All of them already have homes,
+so **nothing needs a follow-up task file.**
+
+**Shipped (section 4b — the cache invalidation review):**
+- `resources/frontend/src/app/services/users.query.service.ts` — `logout` and `deleteProfile` now
+  call a new private `clearCache()` instead of invalidating a hand-written list of gated-content
+  keys. It empties the query cache, clears the mutation cache (mutation *variables* hold request
+  bodies: generated passwords, message texts) and resets the session query to `null` before
+  invalidating it.
+- `resources/frontend/src/app/services/admin-users.query.service.ts` — `updateAdminUser` and
+  `deleteAdminUser` now also invalidate `adminNewsletters`, `adminNewsletterItem()` and
+  `adminNewsletterRecipients()`.
+- `resources/frontend/src/app/services/admin-tags.query.service.ts` — tag rename/delete now also
+  invalidates the **public** `knowledgebaseItem()`.
+- `resources/frontend/src/app/services/admin-links.query.service.ts` —
+  `invalidateLinkQueries()` lost its `id` parameter and always invalidates `adminLinkItem()` (all
+  of them), so a category rename or delete reaches every cached link; `deleteAdminLink` removes
+  the deleted link's entry.
+- `admin-news`, `admin-offers`, `admin-knowledgebase`, `admin-documents` query services — a delete
+  now **removes** the deleted record's item cache entries (admin and public) instead of
+  invalidating them.
+
+**The mutation → query matrix, and the six gaps it exposed:**
+
+| Mutation | Was missing | Why it goes stale |
+|---|---|---|
+| `logout` | everything but gated content + session | admin responses (other users' email addresses, newsletter recipients) stayed readable in memory after logout |
+| `deleteProfile` | the same | same trigger — the session ends |
+| `updateAdminUser` | `adminNewsletters`, `adminNewsletterItem()`, `adminNewsletterRecipients()` | `AdminNewsletterResource`'s `recipientCount`/`isSentToEveryone` come from `User::where('newsletter', true)->where('confirmed', true)->count()`, and `getRecipients` filters on the same two flags — exactly what the user form toggles |
+| `deleteAdminUser` | the same three | plus `sentCount`: `users_newsletters` is `cascadeOnDelete`, so deleting a user drops their sent rows too |
+| `updateAdminTag` / `deleteAdminTag` | the public `knowledgebaseItem()` | `KnowledgebaseResource` embeds `tags`; `adminKnowledgebaseItem()` was already invalidated, its public twin was not |
+| `updateAdminLinkCategory` / `deleteAdminLinkCategory` | `adminLinkItem()` | `AdminLinkResource` embeds `category`, so a cached link edit form kept a renamed — or deleted — category |
+| all five deletes | item entries were invalidated, not removed | an invalidated entry is still served: opening a deleted record's edit URL rendered its old content for the moment before the refetch 404'd |
+
+Checked and deliberately **not** changed:
+- `sendNewsletterToRecipient` invalidates nothing itself; `admin-newsletter-send.component.ts` owns
+  that on purpose — it invalidates the counters only once a whole run ends, and uses
+  `refetchType: "none"` for the item query it observes itself. The recipients query has
+  `staleTime: 0` and is explicitly refetched before a retry.
+- `registerConfirmEmail` / `registerRevoke` invalidate no session: the login policy denies
+  unconfirmed users, so neither can change the current browser's own session.
+- The 401 branch of `session()` still only invalidates gated content. It cannot call `clearCache()`
+  — that code runs inside the session query's own `catchError`, and removing the query mid-fetch
+  would destroy the query that is executing.
+- `AdminDocumentsQueryService` loops `INTEGRA_CATEGORIES` rather than using the `integra()` prefix.
+  Equivalent, and it covers both the old and the new category when a document moves.
+
+**Shipped (sections 2 and 3):**
+- `resources/frontend/src/app/header/admin-nav/admin-nav.component.spec.ts` — a case that opens
+  every menu, collects all 15 `routerLink`s and asserts both the exact set and that each one
+  resolves to a declared `adminRoutes` path.
+- `tests/Feature/Admin/AdminGuardTest.php` — `adminRouteTargets()` enumerates every `api/admin`
+  route from `Route::getRoutes()` (parameters filled with `1`; the guard answers before binding, so
+  the id never has to exist) and one test sweeps all 40 of them as a guest and as a non-admin.
+- `resources/frontend/src/app/app.component.spec.ts` — the admin route list is now a single
+  `adminRouteCases` const; the non-admin sweep is derived from it (so it no longer misses the five
+  `:id` routes the admin sweep covered) and a guest sweep was added alongside.
+
+**Decisions made while implementing:**
+- **`queryClient.clear()` on its own is wrong here, and the existing header test proved it.** After
+  a bare `clear()` the header's session query stopped refetching: `QueryCache.remove()` destroys
+  the query, but a `QueryObserver` keeps pointing at the destroyed instance and nothing notifies
+  it, so the header went on rendering the logged-in user. `clearCache()` therefore resets the
+  session query in place (`setQueryData(session, null)`, so the old identity is gone immediately),
+  removes every *other* query, clears the mutation cache, and invalidates the session so the server
+  confirms it. A bare `clear()` would be right in a codebase where nothing outlives the
+  post-logout navigation; here the header does.
+- `deleteProfile` clears the cache as well, although only logout was asked for: it ends the session
+  in exactly the same way, and an admin can delete their own profile, which would have left the
+  admin responses cached. One line, same rationale — trivial to revert if unwanted.
+- Deletes `removeQueries` the item instead of invalidating it, because an invalidated entry for a
+  row that no longer exists is strictly worse than no entry at all: it is still handed to the next
+  reader.
+- Task 26 stays unticked rather than being ticked with section 5 unverified.
+
+**Surprises / gotchas:**
+- The "API dokumentáció" checkbox in the task file assumed a dangling `routerLink`. In the legacy
+  header it was an **external** link (`<a href="{{api-address}}" target="_blank">`) to the Swagger
+  UI, so there was never an internal route to dangle — the SPA correctly has no such item, and
+  there is nothing to render as disabled text.
+- Two of the six gaps were asymmetries rather than omissions: the tag mutations invalidated the
+  *admin* article item but not the public one, and the link mutations invalidated one link item but
+  not the ones a category rename touches. That is the kind of thing that only surfaces when the
+  matrix is read as a table against the API resources, which is what section 4b did.
+- Route ordering was worth checking and is correct everywhere: every literal admin child route
+  (`uj`, `kategoriak`, `cimkek`) is declared before its sibling `:id`.
+- Caught myself implementing the link delete's `removeQueries` before its test, and backed it out
+  to write the test first.
+
+**Verification:**
+- `php artisan test --compact` → 389 passed (1047 assertions)
+- `php artisan test --compact tests/Feature/Admin/AdminGuardTest.php` → 5 passed; the sweep's teeth
+  were checked by temporarily appending an unguarded `admin/leak` route and watching it fail with
+  `guest GET /api/admin/leak => 200`, then removing it (`git diff` on `routes/api.php` clean again)
+- `php artisan route:list --path=api/admin --json` → 40 routes, every one with
+  `EnsureUserIsAdmin`, none with `auth:sanctum`
+- `php artisan schedule:list` → both `zephyr:` commands present (03:00 / 06:00)
+- `vendor/bin/pint --dirty --format agent` → passed
+- `npx ng test` → 638 passed, 91 files (607 before this task)
+- `npx ng lint` → clean (after fixing one `sonarjs/no-alphabetical-sort` error and three
+  `vitest/prefer-to-be` warnings in the tests added here)
+- `npx tsc -p tsconfig.app.json`, `npx prettier . --check`, `npx knip` → clean
+- `npx ng build` → succeeds
+
+**Known issue (pre-existing, not fixed here):**
+- `ng build` warns that the initial bundle is 751.51 kB raw against a 500 kB warning budget. It is
+  pre-existing — 751.41 kB on `24d8abe`, measured by stashing this task's changes and rebuilding —
+  and it is a warning, not a failure: the 1 MB *error* budget is met and the estimated transfer
+  size is 193 kB. Cause: the eager bundle is the Angular + Material runtime plus the
+  always-loaded app shell (header, footer, router, TanStack Query); every admin page is already a
+  lazy chunk, so the admin migration did not cause it. The 500 kB warning budget in `angular.json`
+  was never tuned for an app with Material in the shell — raising it, or code-splitting Material,
+  is its own piece of work.
+
+**Left uncommitted for review:** yes.
+
+**Next session should know:**
+- Section 5 of `26-final-integration-sweep.md` is the only real work left in Task 26, and it needs
+  a human: `composer run dev`, a real admin account, and the click-through listed there. One of its
+  items was deliberately not run — `php artisan zephyr:prune-expired-records` deletes rows, and
+  running it against the developer's database unasked was not appropriate.
+- Task 27 (legacy data import) depends on 26. Sections 1–4 are done, so nothing in 27 is actually
+  blocked by what remains — the smoke test is a confidence gate, not a dependency.
+- The invalidation matrix above is the record of what invalidates what. If a mutation or query is
+  added later, re-read that table instead of re-deriving it. The specs that pin it are
+  `users.query.service.spec.ts`, the rename/delete cases in `admin-tags.component.spec.ts` and
+  `admin-link-categories.component.spec.ts`, the newsletter cases in `admin-users` /
+  `admin-user-form`, and the "deleting drops the cached item" case in each of the five admin list
+  specs.

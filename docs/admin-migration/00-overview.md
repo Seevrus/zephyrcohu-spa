@@ -240,6 +240,11 @@ Tasks 04–24 are grouped per feature; inside a feature the BE task must land be
 sibling. Features are independent of each other, so the order *between* features may be changed
 if something turns out to be blocked.
 
+Task 26 is deliberately still open: its coverage audit, navigation wiring, guard sweep and full
+verification are done (see the journal), but its manual smoke test needs a browser and a real
+admin account, so it stays unticked until a human has walked section 5 of
+[26-final-integration-sweep.md](26-final-integration-sweep.md).
+
 Task 27 is the odd one out: it moves the live content out of the legacy MySQL database into the
 new schema. Nothing has been migrated yet, so the new tables are empty and every earlier task
 works against hand-made data. Run 27 last, once the schema has stopped moving.

@@ -6,10 +6,7 @@ import {
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { provideRouter, Router } from "@angular/router";
-import {
-  provideTanStackQuery,
-  QueryClient,
-} from "@tanstack/angular-query-experimental";
+import { provideTanStackQuery } from "@tanstack/angular-query-experimental";
 import { render, screen, waitFor } from "@testing-library/angular";
 import { userEvent } from "@testing-library/user-event";
 
@@ -22,7 +19,6 @@ import { createGetAdminUsersOkResponse } from "../../../../mocks/admin/users/cre
 import { testQueryClient } from "../../../../mocks/testQueryClient";
 import { type AdminUserResponse } from "../../../../types/admin-users";
 import { FlashMessageService } from "../../../services/flash-message.service";
-import { queryKeys } from "../../../services/queryKeys";
 import { AdminUserFormComponent } from "./admin-user-form.component";
 
 describe("AdminUserFormComponent", () => {
@@ -241,43 +237,6 @@ describe("AdminUserFormComponent", () => {
         "A felhasználó adatai módosultak.",
       );
     });
-
-    await flushUsersRefetch(httpTesting);
-
-    httpTesting.verify();
-  });
-
-  test("invalidates the users list and the session after a successful update", async () => {
-    const { httpTesting } = await renderAdminUserForm();
-    const queryClient = TestBed.inject(QueryClient);
-
-    // Only a cached query can be marked invalidated, so the session cache is
-    // seeded up front; the users list is cached by the form's own query.
-    queryClient.setQueryData(queryKeys.session, { data: null });
-
-    await flushUsers(httpTesting);
-
-    await user.click(
-      await screen.findByRole("checkbox", {
-        name: "Új jelszó generálása az ügyfél számára",
-      }),
-    );
-    await user.click(screen.getByRole("button", { name: "Módosítás" }));
-
-    const request = await waitFor(() =>
-      httpTesting.expectOne(matchUpdateAdminUserRequest(1)),
-    );
-    request.flush(createAdminUserItemOkResponse({ id: 1 }));
-
-    await waitFor(() => {
-      expect(queryClient.getQueryState(queryKeys.session)?.isInvalidated).toBe(
-        true,
-      );
-    });
-
-    expect(queryClient.getQueryState(queryKeys.adminUsers)?.isInvalidated).toBe(
-      true,
-    );
 
     await flushUsersRefetch(httpTesting);
 

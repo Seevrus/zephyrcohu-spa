@@ -137,7 +137,8 @@ export class AdminKnowledgebaseQueryService {
             ),
         ),
       onSuccess: (_data, id) => {
-        this.invalidateKnowledgebaseQueries(id);
+        this.invalidateKnowledgebaseQueries();
+        this.removeQueriesAfterDelete(id);
       },
     });
   }
@@ -182,6 +183,15 @@ export class AdminKnowledgebaseQueryService {
     return AdminKnowledgebaseQueryService.toAdminKnowledgebaseItem(
       response.data,
     );
+  }
+
+  private removeQueriesAfterDelete(id: number) {
+    this.queryClient.removeQueries({
+      queryKey: queryKeys.adminKnowledgebaseItem(id),
+    });
+    this.queryClient.removeQueries({
+      queryKey: queryKeys.knowledgebaseItem(id),
+    });
   }
 
   private static toAdminKnowledgebaseItem(

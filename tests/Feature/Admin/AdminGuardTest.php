@@ -36,6 +36,34 @@ describe('Admin Guard', function () {
         $response->assertStatus(200);
     });
 
+    test('every admin route is closed to a guest and to a non-admin', function () {
+        $targets = adminRouteTargets();
+
+        expect($targets)->not->toBeEmpty();
+
+        $failures = [];
+
+        foreach ($targets as [$method, $uri]) {
+            $status = $this->json($method, $uri)->getStatusCode();
+
+            if ($status !== 404) {
+                $failures[] = "guest {$method} {$uri} => {$status}";
+            }
+        }
+
+        Sanctum::actingAs(User::find(1));
+
+        foreach ($targets as [$method, $uri]) {
+            $status = $this->json($method, $uri)->getStatusCode();
+
+            if ($status !== 404) {
+                $failures[] = "non-admin {$method} {$uri} => {$status}";
+            }
+        }
+
+        expect($failures)->toBeEmpty();
+    });
+
     test('returns 405 for a wrong method on an admin route', function () {
         Sanctum::actingAs(User::find(2));
 
@@ -46,6 +74,28 @@ describe('Admin Guard', function () {
         ]);
     });
 });
+
+/**
+ * Every route behind the `api/admin` prefix, taken from the router.
+ *
+ * @return list<array{string, string}>
+ */
+function adminRouteTargets(): array {
+    $targets = [];
+
+    foreach (Route::getRoutes() as $route) {
+        if (! str_starts_with($route->uri(), 'api/admin')) {
+            continue;
+        }
+
+        $method = collect($route->methods())
+            ->first(fn (string $method) => $method !== 'HEAD');
+
+        $targets[] = [$method, '/'.preg_replace('/\{[^}]+}/', '1', $route->uri())];
+    }
+
+    return $targets;
+}
 
 function resetAdminGuardTestData(): void {
     DB::table('users')->insert([

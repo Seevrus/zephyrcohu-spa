@@ -322,7 +322,7 @@ describe("App Component", () => {
   });
 
   describe("Admin routes", () => {
-    test.each([
+    const adminRoutes = [
       { path: "/admin", testId: "admin-news-component" },
       { path: "/admin/ajanlatok", testId: "admin-offers-component" },
       { path: "/admin/ajanlatok/uj", testId: "admin-offer-form-component" },
@@ -369,7 +369,9 @@ describe("App Component", () => {
         path: "/admin/tudasbazis/1",
         testId: "admin-knowledgebase-form-component",
       },
-    ])(
+    ] as const;
+
+    test.each(adminRoutes)(
       "renders the $testId for an admin at $path",
       async ({ path, testId }) => {
         const { httpTesting } = renderAppComponent(path);
@@ -383,28 +385,7 @@ describe("App Component", () => {
       },
     );
 
-    test.each([
-      { path: "/admin" },
-      { path: "/admin/ajanlatok" },
-      { path: "/admin/ajanlatok/uj" },
-      { path: "/admin/felhasznalok" },
-      { path: "/admin/felhasznalok/1" },
-      { path: "/admin/felhasznalok/1/email" },
-      { path: "/admin/hirek" },
-      { path: "/admin/hirek/uj" },
-      { path: "/admin/hirlevel" },
-      { path: "/admin/hirlevel/uj" },
-      { path: "/admin/hirlevel/1" },
-      { path: "/admin/hirlevel/1/kuldes" },
-      { path: "/admin/integra" },
-      { path: "/admin/integra/uj" },
-      { path: "/admin/linkek" },
-      { path: "/admin/linkek/kategoriak" },
-      { path: "/admin/linkek/uj" },
-      { path: "/admin/tudasbazis" },
-      { path: "/admin/tudasbazis/cimkek" },
-      { path: "/admin/tudasbazis/uj" },
-    ])(
+    test.each(adminRoutes)(
       "renders the Not Found Component for a non-admin at $path",
       async ({ path }) => {
         const { httpTesting } = renderAppComponent(path);
@@ -413,6 +394,25 @@ describe("App Component", () => {
           httpTesting.expectOne(sessionRequest),
         );
         request.flush(createGetSessionOkResponse());
+
+        await expect(
+          screen.findByTestId("not-found-component"),
+        ).resolves.toBeInTheDocument();
+      },
+    );
+
+    test.each(adminRoutes)(
+      "renders the Not Found Component for a guest at $path",
+      async ({ path }) => {
+        const { httpTesting } = renderAppComponent(path);
+
+        const request = await waitFor(() =>
+          httpTesting.expectOne(sessionRequest),
+        );
+        request.flush(getSessionErrorResponse, {
+          status: 401,
+          statusText: "Unauthorized",
+        });
 
         await expect(
           screen.findByTestId("not-found-component"),

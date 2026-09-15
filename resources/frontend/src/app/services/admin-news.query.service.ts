@@ -131,7 +131,8 @@ export class AdminNewsQueryService {
             ),
         ),
       onSuccess: (_data, id) => {
-        this.invalidateNewsQueries(id);
+        this.invalidateNewsQueries();
+        this.removeQueriesAfterDelete(id);
       },
     });
   }
@@ -164,6 +165,13 @@ export class AdminNewsQueryService {
     response: AdminNewsItemResponse,
   ): AdminNewsItem {
     return AdminNewsQueryService.toAdminNewsItem(response.data);
+  }
+
+  private removeQueriesAfterDelete(id: number) {
+    this.queryClient.removeQueries({
+      queryKey: queryKeys.adminNewsItem(id),
+    });
+    this.queryClient.removeQueries({ queryKey: queryKeys.newsItem(id) });
   }
 
   private static toAdminNewsItem(news: AdminNewsResponse): AdminNewsItem {

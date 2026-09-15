@@ -44,10 +44,7 @@ export class UsersQueryService {
             ),
         ),
       onSuccess: () => {
-        this.invalidateContentQueries();
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.session,
-        });
+        this.clearCache();
       },
     });
   }
@@ -87,10 +84,7 @@ export class UsersQueryService {
             .pipe(catchError(() => of(void 0))),
         ),
       onSuccess: () => {
-        this.invalidateContentQueries();
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.session,
-        });
+        this.clearCache();
       },
     });
   }
@@ -333,10 +327,39 @@ export class UsersQueryService {
   }
 
   /**
+   * Empties the cache when the session ends. Invalidating the known
+   * gated-content keys is not enough: everything the session fetched - admin
+   * responses carrying other users' email addresses among them - has to stop
+   * being readable, including keys this service knows nothing about. The
+   * mutation cache goes too, because mutation variables hold the request
+   * bodies (generated passwords, message texts).
+   *
+   * Called by every mutation that ends the session (logout, deleteProfile).
+   *
+   * The session query is emptied in place rather than removed: the header
+   * observes it for the whole life of the app, and `removeQueries` would
+   * leave that observer holding a destroyed query - still rendering the
+   * logged-in user - with nothing to trigger a refetch. Overwriting it with
+   * `null` logs the header out at once; the invalidation then has the server
+   * confirm it.
+   */
+  private clearCache() {
+    const [sessionKey] = queryKeys.session;
+
+    this.queryClient.setQueryData(queryKeys.session, null);
+    this.queryClient.removeQueries({
+      predicate: (query) => query.queryKey[0] !== sessionKey,
+    });
+    this.queryClient.getMutationCache().clear();
+    this.queryClient.invalidateQueries({ queryKey: queryKeys.session });
+  }
+
+  /**
    * Invalidates every query whose data can differ based on the current
    * user's authentication state (e.g. gated news/offers/knowledgebase
-   * content). Called whenever a mutation changes who is logged in
-   * (login, logout, deleteProfile, resetPassword, updateProfileConfirmEmail).
+   * content). Called whenever a mutation changes who is logged in without
+   * ending the session (login, resetPassword, updateProfileConfirmEmail), and
+   * when a session query turns out to be unauthenticated.
    */
   private invalidateContentQueries() {
     this.queryClient.invalidateQueries({

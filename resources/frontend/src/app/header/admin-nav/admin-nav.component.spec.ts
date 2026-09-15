@@ -7,6 +7,7 @@ import {
 } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
 
+import { adminRoutes } from "../../admin.routes";
 import { AdminNavComponent } from "./admin-nav.component";
 
 describe("Admin Nav", () => {
@@ -32,6 +33,54 @@ describe("Admin Nav", () => {
     expect(
       screen.getByRole("button", { name: /Tudásbázis/ }),
     ).toBeInTheDocument();
+  });
+
+  test("every link in the admin navigation points at a declared admin route", async () => {
+    const { container } = await renderAdminNav({ currentUrl: "/admin" });
+
+    // Menu items only exist in the DOM while their menu is open, so every
+    // trigger is opened in turn and its links collected.
+    const links = new Set<string>();
+
+    for (const element of container.querySelectorAll("a[routerlink]")) {
+      links.add(element.getAttribute("routerlink")!);
+    }
+
+    for (const trigger of screen.getAllByRole("button")) {
+      await user.click(trigger);
+
+      for (const element of document.querySelectorAll(
+        ".mat-mdc-menu-panel a[routerlink]",
+      )) {
+        links.add(element.getAttribute("routerlink")!);
+      }
+    }
+
+    // Spelled out so that a link the traversal fails to reach - or a new one
+    // nobody meant to add - shows up here rather than passing silently.
+    expect([...links].sort((a, b) => a.localeCompare(b))).toStrictEqual([
+      "/admin/ajanlatok",
+      "/admin/ajanlatok/uj",
+      "/admin/felhasznalok",
+      "/admin/hirek",
+      "/admin/hirek/uj",
+      "/admin/hirlevel",
+      "/admin/hirlevel/uj",
+      "/admin/integra",
+      "/admin/integra/uj",
+      "/admin/linkek",
+      "/admin/linkek/kategoriak",
+      "/admin/linkek/uj",
+      "/admin/tudasbazis",
+      "/admin/tudasbazis/cimkek",
+      "/admin/tudasbazis/uj",
+    ]);
+
+    const declaredPaths = new Set(adminRoutes.map((route) => route.path));
+
+    for (const link of links) {
+      expect(declaredPaths).toContain(link.slice("/admin/".length));
+    }
   });
 
   test.each([

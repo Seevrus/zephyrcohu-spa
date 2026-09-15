@@ -24,6 +24,7 @@ import { loginRequest } from "../../mocks/users/loginRequest";
 import { logoutRequest } from "../../mocks/users/logoutRequest";
 import { resetPasswordRequest } from "../../mocks/users/resetPasswordRequest";
 import { updateProfileConfirmEmailRequest } from "../../mocks/users/updateProfileConfirmEmailRequest";
+import { updateProfileRequest } from "../../mocks/users/updateProfileRequest";
 import { queryKeys } from "./queryKeys";
 import { UsersQueryService } from "./users.query.service";
 
@@ -40,11 +41,38 @@ function contentQueryKeys() {
   ];
 }
 
+function adminQueryKeys() {
+  return [
+    queryKeys.adminDocuments,
+    queryKeys.adminDocumentItem(1),
+    queryKeys.adminKnowledgebase,
+    queryKeys.adminKnowledgebaseItem(1),
+    queryKeys.adminLinkCategories,
+    queryKeys.adminLinks,
+    queryKeys.adminLinkItem(1),
+    queryKeys.adminNews,
+    queryKeys.adminNewsItem(1),
+    queryKeys.adminNewsletters,
+    queryKeys.adminNewsletterItem(1),
+    queryKeys.adminNewsletterRecipients(1),
+    queryKeys.adminOffers,
+    queryKeys.adminOfferItem(1),
+    queryKeys.adminTags,
+    queryKeys.adminUsers,
+  ];
+}
+
 function seedQueries(queryClient: QueryClient) {
   for (const key of contentQueryKeys()) {
     queryClient.setQueryData(key, "cached");
   }
   queryClient.setQueryData(queryKeys.session, "cached");
+}
+
+function seedAdminQueries(queryClient: QueryClient) {
+  for (const key of adminQueryKeys()) {
+    queryClient.setQueryData(key, "cached");
+  }
 }
 
 function expectContentQueriesInvalidated(queryClient: QueryClient) {
@@ -85,11 +113,12 @@ describe("UsersQueryService", () => {
     });
   });
 
-  test("logout invalidates gated content and session queries", async () => {
+  test("logout removes every cached query, gated content and admin data alike", async () => {
     const user = userEvent.setup();
     const queryClient = TestBed.inject(QueryClient);
     const httpTesting = TestBed.inject(HttpTestingController);
     seedQueries(queryClient);
+    seedAdminQueries(queryClient);
 
     await user.click(screen.getByTestId("logout-button"));
 
@@ -97,7 +126,34 @@ describe("UsersQueryService", () => {
     request.flush(null);
 
     await waitFor(() => {
-      expectContentQueriesInvalidated(queryClient);
+      for (const key of [...contentQueryKeys(), ...adminQueryKeys()]) {
+        expect(queryClient.getQueryData(key)).toBeUndefined();
+      }
+    });
+
+    // The session query is the one the header observes for the whole life of
+    // the app, so it is emptied in place instead of removed.
+    expect(
+      queryClient
+        .getQueryCache()
+        .getAll()
+        .map((query) => query.queryKey),
+    ).toStrictEqual([queryKeys.session]);
+  });
+
+  test("logout empties the session query instead of leaving the old identity readable", async () => {
+    const user = userEvent.setup();
+    const queryClient = TestBed.inject(QueryClient);
+    const httpTesting = TestBed.inject(HttpTestingController);
+    queryClient.setQueryData(queryKeys.session, { email: "a@b.com" });
+
+    await user.click(screen.getByTestId("logout-button"));
+
+    const request = await waitFor(() => httpTesting.expectOne(logoutRequest));
+    request.flush(null);
+
+    await waitFor(() => {
+      expect(queryClient.getQueryData(queryKeys.session)).toBeNull();
 
       expect(queryClient.getQueryState(queryKeys.session)?.isInvalidated).toBe(
         true,
@@ -105,11 +161,38 @@ describe("UsersQueryService", () => {
     });
   });
 
-  test("deleteProfile invalidates gated content and session queries", async () => {
+  test("logout drops the mutation cache so request bodies stop being readable", async () => {
+    const user = userEvent.setup();
+    const queryClient = TestBed.inject(QueryClient);
+    const httpTesting = TestBed.inject(HttpTestingController);
+
+    await user.click(screen.getByTestId("update-profile-button"));
+
+    const updateRequest = await waitFor(() =>
+      httpTesting.expectOne(updateProfileRequest),
+    );
+    updateRequest.flush(createGetSessionOkResponse());
+
+    await waitFor(() => {
+      expect(queryClient.getMutationCache().getAll()).not.toStrictEqual([]);
+    });
+
+    await user.click(screen.getByTestId("logout-button"));
+
+    const logout = await waitFor(() => httpTesting.expectOne(logoutRequest));
+    logout.flush(null);
+
+    await waitFor(() => {
+      expect(queryClient.getMutationCache().getAll()).toStrictEqual([]);
+    });
+  });
+
+  test("deleteProfile empties the cache the same way logout does", async () => {
     const user = userEvent.setup();
     const queryClient = TestBed.inject(QueryClient);
     const httpTesting = TestBed.inject(HttpTestingController);
     seedQueries(queryClient);
+    seedAdminQueries(queryClient);
 
     await user.click(screen.getByTestId("delete-profile-button"));
 
@@ -119,8 +202,11 @@ describe("UsersQueryService", () => {
     request.flush(null, { status: 204, statusText: "No Content" });
 
     await waitFor(() => {
-      expectContentQueriesInvalidated(queryClient);
+      for (const key of [...contentQueryKeys(), ...adminQueryKeys()]) {
+        expect(queryClient.getQueryData(key)).toBeUndefined();
+      }
 
+      expect(queryClient.getQueryData(queryKeys.session)).toBeNull();
       expect(queryClient.getQueryState(queryKeys.session)?.isInvalidated).toBe(
         true,
       );
@@ -205,6 +291,18 @@ describe("UsersQueryService", () => {
       Reset password
     </button>
     <button
+      data-testid="update-profile-button"
+      (click)="
+        updateProfileMutation.mutate({
+          email: 'a@b.com',
+          newsletter: true,
+          password: 'Password1!',
+        })
+      "
+    >
+      Update profile
+    </button>
+    <button
       data-testid="update-profile-confirm-email-button"
       (click)="
         updateProfileConfirmEmailMutation.mutate({
@@ -232,6 +330,9 @@ class TestComponent {
   );
   protected readonly resetPasswordMutation = injectMutation(() =>
     this.usersQueryService.resetPassword(),
+  );
+  protected readonly updateProfileMutation = injectMutation(() =>
+    this.usersQueryService.updateProfile(),
   );
   protected readonly updateProfileConfirmEmailMutation = injectMutation(() =>
     this.usersQueryService.updateProfileConfirmEmail(),

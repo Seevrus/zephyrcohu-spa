@@ -131,7 +131,8 @@ export class AdminOffersQueryService {
             ),
         ),
       onSuccess: (_data, id) => {
-        this.invalidateOfferQueries(id);
+        this.invalidateOfferQueries();
+        this.removeQueriesAfterDelete(id);
       },
     });
   }
@@ -164,6 +165,13 @@ export class AdminOffersQueryService {
     response: AdminOfferItemResponse,
   ): AdminOfferItem {
     return AdminOffersQueryService.toAdminOfferItem(response.data);
+  }
+
+  private removeQueriesAfterDelete(id: number) {
+    this.queryClient.removeQueries({
+      queryKey: queryKeys.adminOfferItem(id),
+    });
+    this.queryClient.removeQueries({ queryKey: queryKeys.offerItem(id) });
   }
 
   private static toAdminOfferItem(offer: AdminOfferResponse): AdminOfferItem {

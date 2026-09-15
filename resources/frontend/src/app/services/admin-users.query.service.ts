@@ -72,7 +72,7 @@ export class AdminUsersQueryService {
             ),
         ),
       onSuccess: () => {
-        this.queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers });
+        this.invalidateUserQueries();
         this.queryClient.invalidateQueries({ queryKey: queryKeys.session });
       },
     });
@@ -98,7 +98,7 @@ export class AdminUsersQueryService {
             ),
         ),
       onSuccess: () => {
-        this.queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers });
+        this.invalidateUserQueries();
       },
     });
   }
@@ -123,6 +123,19 @@ export class AdminUsersQueryService {
               ),
             ),
         ),
+    });
+  }
+
+  private invalidateUserQueries() {
+    this.queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers });
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.adminNewsletters,
+    });
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.adminNewsletterItem(),
+    });
+    this.queryClient.invalidateQueries({
+      queryKey: queryKeys.adminNewsletterRecipients(),
     });
   }
 
