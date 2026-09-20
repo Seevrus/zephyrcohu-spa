@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['DELETE', 'GET', 'OPTIONS', 'POST', 'PUT'],
 
-    'allowed_origins' => [env('APP_ORIGIN')],
+    'allowed_origins' => explode(',', (string) env('APP_ORIGIN', '')),
 
     'allowed_origins_patterns' => [],
 

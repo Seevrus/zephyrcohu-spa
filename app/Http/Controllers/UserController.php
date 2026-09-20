@@ -56,6 +56,7 @@ class UserController extends Controller {
 
             return new UserResource($user);
         } catch (Throwable $e) {
+            report($e);
             abort(500);
         }
     }
@@ -79,6 +80,7 @@ class UserController extends Controller {
                 throw new BadRequestException;
             }
 
+            report($e);
             abort(500);
         }
     }
@@ -116,6 +118,7 @@ class UserController extends Controller {
                 throw new BadRequestException;
             }
 
+            report($e);
             abort(500);
         }
     }
@@ -134,6 +137,7 @@ class UserController extends Controller {
                 throw new BadRequestException;
             }
 
+            report($e);
             abort(500);
         }
     }
@@ -172,6 +176,7 @@ class UserController extends Controller {
 
             return new UserResource($newUser->load('admin'));
         } catch (Throwable $e) {
+            report($e);
             abort(500);
         }
     }
@@ -194,6 +199,7 @@ class UserController extends Controller {
 
             return response(null, 201);
         } catch (Throwable $e) {
+            report($e);
             abort(500);
         }
     }
@@ -216,6 +222,7 @@ class UserController extends Controller {
 
             return null;
         } catch (Throwable $e) {
+            report($e);
             abort(500);
         }
     }
@@ -254,6 +261,7 @@ class UserController extends Controller {
                 new ErrorResource(401, ErrorCode::BAD_CREDENTIALS)
             );
         } catch (Throwable $e) {
+            report($e);
             abort(500);
         }
     }
@@ -276,6 +284,7 @@ class UserController extends Controller {
 
             return null;
         } catch (Throwable $e) {
+            report($e);
             abort(500);
         }
     }
@@ -286,6 +295,7 @@ class UserController extends Controller {
 
             return new UserResource($user->load('admin'));
         } catch (Throwable $e) {
+            report($e);
             abort(500);
         }
     }
@@ -322,6 +332,7 @@ class UserController extends Controller {
                 throw new BadRequestException;
             }
 
+            report($e);
             abort(500);
         }
     }
@@ -362,6 +373,7 @@ class UserController extends Controller {
 
             return new UserResource($user->load('admin'));
         } catch (Throwable $e) {
+            report($e);
             abort(500);
         }
     }

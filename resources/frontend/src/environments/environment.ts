@@ -1,5 +1,5 @@
 export const environment = {
-  apiUrl: "https://www.zephyr.co.hu/api",
+  apiUrl: "/api",
   gridDevMode: false,
   secureCookies: true,
 };

@@ -48,7 +48,18 @@ $app = Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(fn (UnsupportedMediaTypeHttpException $e) => ErrorHandling::unsupported_media_type());
         $exceptions->render(fn (ThrottleRequestsException $e) => ErrorHandling::too_many_requests());
 
-        $exceptions->render(fn (HttpException $e) => ErrorHandling::internal_Server_error());
+        // Only a genuine 500 should map to our generic body. Laravel converts several non-HTTP
+        // exceptions (e.g., TokenMismatchException -> 419) into the same literal HttpException class
+        // via Handler::prepareException(), so an exact-class check can't tell them apart from a real
+        // abort(500) - only the status code can. Anything that isn't 500 falls through to Laravel's
+        // normal rendering.
+        $exceptions->render(function (HttpException $e) {
+            if ($e->getStatusCode() !== 500) {
+                return null;
+            }
+
+            return ErrorHandling::internal_Server_error();
+        });
     })->create();
 
 $app->usePublicPath($app->basePath('public_html'));
