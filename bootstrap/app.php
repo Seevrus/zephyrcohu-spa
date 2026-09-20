@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 
-return Application::configure(basePath: dirname(__DIR__))
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
@@ -50,3 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(fn (HttpException $e) => ErrorHandling::internal_Server_error());
     })->create();
+
+$app->usePublicPath($app->basePath('public_html'));
+
+return $app;

@@ -1,10 +1,10 @@
 /.angular/cache
 /.phpunit.cache
 /node_modules
-/public/*
-/public/!.htaccess
-/public/!index.php
-/public/!robots.txt
+/public_html/*
+!/public_html/.htaccess
+!/public_html/index.php
+!/public_html/robots.txt
 /storage/*.key
 /storage/pail
 /vendor
