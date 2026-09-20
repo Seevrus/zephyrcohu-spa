@@ -2207,3 +2207,157 @@ Checked and deliberately **not** changed:
   `admin-link-categories.component.spec.ts`, the newsletter cases in `admin-users` /
   `admin-user-form`, and the "deleting drops the cached item" case in each of the five admin list
   specs.
+
+## 2026-09-15 — Task 26 closed; Task 27 dry run against a sample
+
+**Task 26** is now ticked in `00-overview.md`. The last open item (section 5's manual smoke test)
+was walked by a human with a browser and a real admin account; sections 1–4 were already done as
+of the previous entry.
+
+### Task 27 — legacy data import, first pass
+
+**Status:** dry run only, against a small sample the user provided specifically to test the
+approach before touching real data or files. Task 27 stays unticked.
+
+**What was provided:** `docs/admin-migration/zephyrco_fo_honlap_20260915.sql` — a phpMyAdmin dump
+of the real legacy database, trimmed to a handful of rows per table and with `ajanlatok`,
+`integra`, `hirlevel` and `felhasznalo_hirlevel` left empty (0 rows each), deliberately so the
+Integra file-copy step and the newsletter import could not be exercised yet. It holds real user
+emails, IPs and bcrypt password hashes, so it is now gitignored
+(`docs/admin-migration/*.sql`, added to `.gitignore` this session) — it was untracked already, but
+that closes the door on an accidental `git add -A` picking it up later.
+
+**Environment note:** the app runs its MySQL/MariaDB via Docker (`docker/docker-compose.yml`,
+container `zephyrcohu-spa-mysql-1`) — there is no local `mysql`/`mariadb` client on the host, so
+every step below went through `docker exec … mariadb …`. The client binary in the
+`mariadb:latest` image is `mariadb`, not `mysql` (the alias was dropped in newer MariaDB client
+packages).
+
+**Schema reconciliation (task's Step 1–2):** restored the sample into a scratch `zephyr_legacy`
+schema on the same MariaDB server and ran `SHOW CREATE TABLE` for every table. Full output is long
+(20 tables); the corrections it produced are written directly into
+`27-supporting-legacy-data-import.md`'s mapping table rather than duplicated here. Headlines:
+
+- `felhasznalok` really does have `ip` and `utolso_bejelentkezes` columns — the doc's "these are
+  NULL" was a wrong guess, not a documented fact. `utolso_bejelentkezes` has real
+  `'0000-00-00 00:00:00'` zero-dates (7 of 64 in the sample) that must become NULL.
+- Two legacy tables the doc's mapping table never mentioned exist and matter:
+  `felhasznalo_uj` (→ `users_new`, resolves the "open question" below) and `felhasznalo_ujemail`
+  (→ nothing, for reasons below). Also present but *not* imported, and not previously listed
+  either: `personal_access_tokens` (the legacy app's own Sanctum tokens — unrelated to the new
+  app's table of the same name) and `sikertelen_bejelentkezesek` (failed-login-attempt log, keyed
+  by IP; the new schema's mirror, `users_login_attempts`, is keyed by user and holds one row per
+  user, so it isn't even shape-compatible, and re-importing old rate-limit state makes no sense
+  anyway).
+- The legacy tables are `utf8mb3`/`utf8mb3_hungarian_ci`, not `utf8mb4` as the doc's verification
+  section assumed. Doesn't affect Hungarian text (utf8mb3 only loses 4-byte codepoints like
+  emoji), but the assumption was still wrong and is now corrected in the doc.
+- Decision D16 (recorded after this task file was written) renamed `DocumentCategory`'s values
+  from `integra-*` to Hungarian slugs. The task doc's Integra category table still had the old
+  values — importing against the real enum would have failed the cast. Corrected in the doc.
+
+**Two correctness bugs the doc's assumptions would have caused, found by actually checking rather
+than trusting the write-up:**
+
+1. **Password hashes.** The doc said legacy hashes are all `$2y$…` and that `Hash::check()`
+   "accepts them unchanged." The sample has a real mix: 56/64 are `$2a$08$…`, 8/64 are `$2y$10$…`.
+   This app's bcrypt hasher has `verify: true` by default — Laravel bakes that default in even
+   with no published `config/hashing.php` (`config('hashing.bcrypt')` resolves to
+   `['rounds' => '12', 'verify' => true, 'limit' => null]` out of the box). With `verify: true`,
+   `Hash::check()` calls `isUsingCorrectAlgorithm()`, which is `password_get_info($hash)['algoName']
+   === 'bcrypt'`. On this PHP/OpenSSL build, `password_get_info()` reports `$2a$` hashes as
+   `algoName => 'unknown'` (confirmed with a hand-built `$2a$` hash via `crypt()`, not just the
+   dump's hashes) — so `Hash::check()` **throws** `RuntimeException: This password does not use
+   the Bcrypt algorithm.` instead of returning `false`. Left as documented, every migrated user
+   with a `$2a$` hash would get a 500 on their very first login attempt.
+
+   Fix: `REPLACE(jelszo, '$2a$', '$2y$')` at import time. `$2a$` and `$2y$` are byte-compatible for
+   any password without high-bit characters — that distinction is the entire reason `$2y$` exists
+   — so this is a label rewrite, not a re-hash, and needs no plaintext. Confirmed empirically:
+   built a `$2y$08$…` hash with `crypt()` from a known password, `password_verify()` returned
+   `true`, and `Hash::check()` returned `true` with no exception. Applied in `01_users.sql`; safe
+   no-op on rows already `$2y$`. Bonus: the cost-8 rows will auto-upgrade to cost-12 on next login
+   via this app's existing `rehash_on_login` setting — no extra step needed.
+
+2. **The "open question" (unconfirmed users' pending-registration state) was answerable, not a
+   fork to pick blindly.** The doc offered two either/or options because it couldn't find where
+   the legacy schema stores this. `felhasznalo_uj` is exactly that table (found during
+   reconciliation): `felhasznalo_azonosito` + `email_kod`, FK'd to `felhasznalok`. Read
+   `UserPolicy::confirmEmail()` before assuming it was safe to just copy the code over: it compares
+   `users_new.email_code` with plain `!=`, so it's plaintext in the new schema too — a direct
+   `CAST(email_kod AS CHAR)` copy is correct and needs no hashing, and no expiry blocks it
+   (`confirmEmail` has no time check, only the `confirmed` flag). So the real fix is a third option
+   neither doc fallback considered: **carry the row over as-is.** In the sample, 2 of 5 unconfirmed
+   users had one; those get a `users_new` row and their existing confirmation link keeps working
+   unchanged. The other 3 get no `users_new` row and fall back to the app's own "resend
+   confirmation" flow — there's no source code to carry over for them, and fabricating one would
+   not match anything the user might still have.
+
+   Checked the sibling table, `felhasznalo_ujemail` (pending email changes — new to the mapping,
+   not previously listed at all), the same way before assuming the same treatment applied: it
+   maps to `users_new_emails`, and `UserPolicy::confirmNewEmail()` uses `Hash::check()` (not `!=`)
+   *plus* a 30-minute expiry on `issued_at`. A dump row is, by construction, always older than 30
+   minutes — even correctly hashed, it could never pass. So this one is excluded from the import
+   entirely, the same call the doc already made for `felhasznalo_ujjelszo` (password reset codes,
+   also hash-checked with expiry) — just extended to a table the doc never mentioned.
+
+**What was built:** `database/legacy-import/01_users.sql` through `06_readers.sql`, plus
+`database/legacy-import/README.md` (prerequisites, run order, the file-copy step as a documented
+shell snippet rather than SQL, `AUTO_INCREMENT` reset commands, rollback). `01_users.sql` grew to
+cover `users_new` alongside `users`/`user_admins`, since that's where the resolved open question
+naturally lives.
+
+**What was verified this session (against the sample only):**
+
+- Restored the sample into `zephyr_legacy`, cloned the dev schema's structure (`mariadb-dump
+  --no-data` from `zephyrco_fo_honlap`) into a scratch `zephyrco_fo_honlap_import_test`, and ran
+  all six scripts against it in order. All exited clean.
+- Row counts matched exactly, legacy vs new: users 64/64, user_admins 3/3, users_new 3/3, news
+  20/20, knowledgebase 2/2, tags 7/7, knowledgebase_tags 6/6, link_categories 3/3, links 13/13,
+  users_news 1/1, users_knowledgebase 1/1. `ajanlatok`/`offers`, `integra`/`documents`,
+  `hirlevel`/`newsletters`, `felhasznalo_hirlevel`/`users_newsletters` were 0/0 — scripts ran
+  without error but this proves nothing about their real-data behaviour.
+- Truncated every imported table and re-ran all six scripts a second time: identical counts, no
+  duplicate-key or constraint errors — the re-runnable requirement holds.
+- Spot-checked the fixes: `SELECT LEFT(password,4), COUNT(*) FROM users GROUP BY 1` after import
+  showed 100% `$2y$`, none `$2a$`. `SELECT last_active FROM users WHERE id IN (26,27,28,31,36)`
+  (the sample's zero-date rows) came back NULL, not `0000-00-00`. A knowledgebase article that
+  legacy stored as escaped Word HTML rendered back as live `<p style="...">` markup, not visible
+  entity text.
+- Noticed, while spot-checking, that not every legacy row was actually escaped with
+  `htmlspecialchars` to begin with — `hirek` id=1 holds *raw* HTML (`<!-- [if gte mso 9]…`), not
+  `&lt;!--`. `REPLACE()` is a no-op on text with no entities, so this doesn't break anything, but
+  it does mean the doc's "renders as formatted HTML, not visible tags" verification check doesn't
+  by itself prove decoding works — a row that was never escaped passes that check either way. Left
+  a note in the doc to check a row that is known to need decoding, not just any row.
+- Checked `MAX(LENGTH(foszoveg))`/`MAX(LENGTH(tovabbi))` against the `text` column's 65,535-byte
+  limit (legacy is `longtext`, unbounded): largest sample row was ~57 KB. Comfortably under, but
+  close enough to flag as a real-import risk rather than assume away — added to self-review.
+
+**What is explicitly NOT verified and needs the real dump:**
+
+- `04_integra.sql` and `05_newsletters.sql` ran against 0 rows — their SQL is unexercised.
+- The Integra file-copy step (README documents it as a shell snippet; no upload tree was provided
+  this session, on purpose).
+- `AUTO_INCREMENT` resets (documented in the README, not run — nothing to reset above yet).
+- Every in-app verification item in the task doc (rendered HTML in the browser, a real account
+  logging in, the newsletter list, `php artisan test --compact` after a real import).
+- The `links.title`/`url` NOT NULL vs. legacy `cim`/`uri` nullable mismatch — no NULL in the
+  sample's 13 rows, so unexercised; documented as a safe failure mode (constraint violation aborts
+  the transaction) rather than papered over with a fallback.
+
+**Left uncommitted for review:** yes. The scratch databases used for testing (`zephyr_legacy`,
+`zephyrco_fo_honlap_import_test`) were dropped at the end of this session — the real dump should
+be restored fresh as `zephyr_legacy` when the actual import happens, not layered onto this
+session's leftovers.
+
+**Next session should know:**
+- Re-run the same six scripts against the real dump once it's restored as `zephyr_legacy` on the
+  target server, after copying the upload tree first (04_integra.sql assumes the files already
+  exist at the paths it writes to `documents.path`).
+- Do the `AUTO_INCREMENT` resets from the README immediately after the real import, before the app
+  is pointed at the database — the scripts intentionally don't do this themselves (they need to
+  stay re-runnable against a truncated table, which a self-incrementing reset would fight).
+- The password and pending-registration fixes above are the two things most worth re-reading
+  before running this for real — both are silent-failure-shaped bugs the task doc's original text
+  would have walked straight into.

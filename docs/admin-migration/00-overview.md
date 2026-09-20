@@ -233,18 +233,20 @@ These paths are exactly the ones the already-shipped `app-admin-nav` component l
 | 23 | FE | [Newsletter list + view](23-fe-newsletters-list.md) | 03, 22 | [x] |
 | 24 | FE | [Newsletter compose + FE-governed sending](24-fe-newsletter-compose-send.md) | 23 | [x] |
 | 25 | BE | [Scheduled commands](25-be-schedules.md) | — | [x] |
-| 26 | Supporting | [Final integration sweep](26-final-integration-sweep.md) | all | [ ] |
+| 26 | Supporting | [Final integration sweep](26-final-integration-sweep.md) | all | [x] |
 | 27 | Supporting | [Legacy data import](27-supporting-legacy-data-import.md) | 13, 16, 22, 26 | [ ] |
 
 Tasks 04–24 are grouped per feature; inside a feature the BE task must land before its FE
 sibling. Features are independent of each other, so the order *between* features may be changed
 if something turns out to be blocked.
 
-Task 26 is deliberately still open: its coverage audit, navigation wiring, guard sweep and full
-verification are done (see the journal), but its manual smoke test needs a browser and a real
-admin account, so it stays unticked until a human has walked section 5 of
-[26-final-integration-sweep.md](26-final-integration-sweep.md).
+Task 26's manual smoke test (section 5 of [26-final-integration-sweep.md](26-final-integration-sweep.md))
+has been walked by a human with a browser and a real admin account, closing out the last open
+item from that task.
 
 Task 27 is the odd one out: it moves the live content out of the legacy MySQL database into the
-new schema. Nothing has been migrated yet, so the new tables are empty and every earlier task
-works against hand-made data. Run 27 last, once the schema has stopped moving.
+new schema. A first dry run against a small, no-files sample is done (six import scripts in
+`database/legacy-import/`, verified against the sample's row counts) — see the journal and
+[27-supporting-legacy-data-import.md](27-supporting-legacy-data-import.md) for what is and is not
+yet proven. The real production dump, the upload-tree file copy, and the in-app verification
+still need a human before this one can be ticked.
