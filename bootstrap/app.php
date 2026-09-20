@@ -26,7 +26,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->append(AddCspHeaders::class);
+        $middleware->api(append: [AddCspHeaders::class]);
         $middleware->statefulApi();
         $middleware->throttleApi();
         $middleware->alias([
