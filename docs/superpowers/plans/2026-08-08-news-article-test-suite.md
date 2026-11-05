@@ -12,7 +12,7 @@
 
 - Follow `resources/frontend/angular-guideline.md`: standalone components (default), no explicit `OnPush`, signals-based state — this plan only touches specs/mocks so these mostly constrain what NOT to change.
 - Follow established test conventions found in `news.component.spec.ts`, `login.component.spec.ts`, `profile.component.spec.ts`, `header.component.spec.ts`: a `renderX()` helper returning `{ ...renderResult, httpTesting }`, `HttpTestingController` for HTTP assertions, `waitFor`/`findBy*` from `@testing-library/angular`, one `httpTesting.verify()` per test.
-- `testQueryClient` (`src/mocks/testQueryClient.ts`) is a shared singleton; `vitest.setup.ts` already calls `testQueryClient.clear()` in a global `afterEach`, so no manual clearing is needed in the new spec.
+- `testQueryClient` (`src/mocks/testQueryClient.ts`) is a shared singleton; `vitest.setup.mts` already calls `testQueryClient.clear()` in a global `afterEach`, so no manual clearing is needed in the new spec.
 - Do not create documentation files beyond this plan; do not modify application dependencies.
 - Run tests from `resources/frontend`: `npx ng test` (the project's `test` script; there is no way to filter to a single spec file with the `@angular/build:unit-test` builder in this project, so the full suite is the verification command throughout).
 

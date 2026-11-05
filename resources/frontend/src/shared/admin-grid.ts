@@ -1,4 +1,4 @@
-import { AG_GRID_LOCALE_HU } from "@ag-grid-community/locale";
+import { AG_GRID_LOCALE_HU_HU } from "@ag-grid-community/locale";
 import {
   CellStyleModule,
   type ColDef,
@@ -30,4 +30,4 @@ export const adminPaginationPanels: PaginationPanel[] = [
   { type: "pageSize", paginationPageSize: 25 },
 ];
 
-export const adminGridLocaleText = AG_GRID_LOCALE_HU;
+export const adminGridLocaleText = AG_GRID_LOCALE_HU_HU;

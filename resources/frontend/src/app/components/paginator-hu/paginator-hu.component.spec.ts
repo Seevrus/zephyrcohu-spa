@@ -15,10 +15,6 @@ describe("PaginatorHuComponent", () => {
     user = userEvent.setup();
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
   afterAll(() => {
     vi.restoreAllMocks();
   });

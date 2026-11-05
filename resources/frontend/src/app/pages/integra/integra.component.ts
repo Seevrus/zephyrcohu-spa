@@ -1,4 +1,4 @@
-import { AG_GRID_LOCALE_HU } from "@ag-grid-community/locale";
+import { AG_GRID_LOCALE_HU_HU } from "@ag-grid-community/locale";
 import { Component, computed, effect, inject, input } from "@angular/core";
 import { MatProgressBar } from "@angular/material/progress-bar";
 import { injectQuery } from "@tanstack/angular-query-experimental";
@@ -117,7 +117,7 @@ export class IntegraComponent {
     },
   ];
 
-  protected readonly localeText = AG_GRID_LOCALE_HU;
+  protected readonly localeText = AG_GRID_LOCALE_HU_HU;
 
   protected readonly paginationPanels: PaginationPanel[] = [
     {

@@ -238,15 +238,6 @@ describe("Profile Component", () => {
   });
 
   describe("Delete Profile Component", () => {
-    beforeAll(() => {
-      // @ts-expect-error: https://github.com/jsdom/jsdom/issues/1937
-      vi.spyOn(window._virtualConsole, "emit").mockImplementation(() => void 0);
-    });
-
-    afterAll(() => {
-      vi.restoreAllMocks();
-    });
-
     describe("should render the form correctly", () => {
       test("checkbox are displayed correctly", async () => {
         await renderProfileComponent();
