@@ -10,8 +10,6 @@ describe("CookieConsentComponent", () => {
   test("should render the component", async () => {
     const { container } = await renderCookieConsentComponent();
 
-    screen.debug();
-
     expect(container.querySelector(".mat-mdc-card-title")).toHaveTextContent(
       "Az Ön adatainak védelme fontos számunkra",
     );
