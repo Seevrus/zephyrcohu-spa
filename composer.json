@@ -9,16 +9,16 @@
   ],
   "license": "MIT",
   "require": {
-    "php": "^8.3",
+    "php": "^8.5",
     "ext-pdo": "*",
-    "laravel/framework": "^13.30.1",
+    "laravel/framework": "^13.40.0",
     "laravel/sanctum": "^4.3.3",
     "laravel/tinker": "^3.0.2",
-    "spatie/laravel-csp": "^3.28.3"
+    "spatie/laravel-csp": "^3.31.0"
   },
   "require-dev": {
-    "laravel/boost": "^2.7.0",
-    "laravel/pint": "^1.30.5",
+    "laravel/boost": "^2.10.4",
+    "laravel/pint": "^1.32.1",
     "mockery/mockery": "^1.6.15",
     "nunomaduro/collision": "^8.9.5",
     "pestphp/pest": "^4.7.8",
